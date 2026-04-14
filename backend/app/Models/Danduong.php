@@ -14,4 +14,10 @@ class Danduong extends Model
     {
         return $this->hasMany(DanduongNgonngu::class, 'danduong_id');
     }
+
+    public function url()
+    {
+        return $this->hasMany(Url::class, 'entity_id')
+            ->where('entity_type', 'danduong');
+    }
 }
