@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Frontend\ApiController;
 use App\Http\Controllers\Api\Admin\MenuController;
