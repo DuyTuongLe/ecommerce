@@ -33,10 +33,6 @@ export default function MenuToolbar({
         </select>
 
         <button onClick={onReload}>🔄</button>
-      </div>
-
-      {/* RIGHT */}
-      <div className="toolbar-right">
         <button onClick={onCreate}>➕</button>
         <button onClick={onEdit}>✏️</button>
         <button onClick={onDelete}>🗑</button>

@@ -11,7 +11,15 @@ export const api = {
 
     return request(`/menu?${params.toString()}`);
   },
-  getMenuAdmin: (lang) => request(`/admin/menu?lang=${lang}`),
+
+  getMenuAdmin(lang, group) {
+    const params = new URLSearchParams();
+
+    if (lang) params.append("lang", lang);
+    if (group) params.append("group", group);
+
+    return request(`/admin/menu?${params.toString()}`);
+  },
 
   createMenu: (data) =>
     request(`/admin/menu`, {

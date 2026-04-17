@@ -16,15 +16,24 @@ class MenuController extends Controller
     //
     public function index(Request $request) {
         $ngonngu = $request->get('lang', 'vi');
-        $menus = Danduong::with(['ngonngu', 'url'])
-            ->orderBy('thutu')
-            ->get();
+        $group = $request->get('group');
+
+        $query = Danduong::with(['ngonngu', 'url'])
+            ->orderBy('thutu');
+
+        // 🔥 FILTER THEO GROUP
+        if ($group) {
+            $query->where('danduong_nhom_id', $group);
+        }
+
+        $menus = $query->get();
 
         return response()->json(
             $menus->map(function ($item) use ($ngonngu) {
 
-                // lấy đúng ngôn ngữ
-                $langItem = $item->ngonngu->where('ngonngu', $ngonngu)->first();
+                $langItem = $item->ngonngu
+                    ->where('ngonngu', $ngonngu)
+                    ->first();
 
                 return [
                     'id' => $item->id,
@@ -32,10 +41,7 @@ class MenuController extends Controller
                     'thutu' => $item->thutu,
                     'trangthai' => $item->trangthai,
                     'type' => $item->type,
-
-                    // chỉ trả 1 ngôn ngữ
                     'ten' => $langItem->danduong_nn_ten ?? '',
-
                     'slug' => optional($item->url->first())->slug,
                 ];
             })

@@ -1,5 +1,5 @@
 //admin/pages/MenuManager.jsx
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import useMenuAdmin from "../hooks/useMenuAdmin";
 import { buildTree } from "../../shared/utils/buildTree";
 import MenuToolbar from "../components/MenuToolbar";
@@ -58,13 +58,25 @@ export default function MenuManager() {
   const groups = useMenuGroup();
   const [group, setGroup] = useState("");
   const [selected, setSelected] = useState([]);
+  const [reloadKey, setReloadKey] = useState(0);
+  // set group mặc định
+  useEffect(() => {
+    if (!group && groups.length > 0) {
+      setGroup(groups[0].id);
+    }
+  }, [groups, group]);
 
-  const raw = useMenuAdmin(lang);
+  // reset selected khi đổi group
+  useEffect(() => {
+    setSelected([]);
+  }, [group]);
+
+  const raw = useMenuAdmin(lang, group, reloadKey);
   const tree = useMemo(() => buildTree(raw), [raw]);
 
   // handlers
   const handleReload = () => {
-    console.log("Reload");
+    setReloadKey(prev => prev + 1);
   };
 
   const handleCreate = () => {
