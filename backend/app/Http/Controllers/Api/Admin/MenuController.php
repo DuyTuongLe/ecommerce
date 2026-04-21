@@ -40,6 +40,7 @@ class MenuController extends Controller
                     'goc_id' => $item->goc_id,
                     'thutu' => $item->thutu,
                     'trangthai' => $item->trangthai,
+                    'macdinh' => $item->macdinh,
                     'type' => $item->type,
                     'ten' => $langItem->danduong_nn_ten ?? '',
                     'slug' => optional($item->url->first())->slug,

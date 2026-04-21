@@ -25,19 +25,41 @@ export default function MenuToolbar({
         </select>
 
         <select value={group} onChange={e => setGroup(e.target.value)}>
-            {groups.map(g => (
-                <option key={g.id} value={g.id}>
-                {g.danduong_nhom_tieude}
-                </option>
-            ))}
+          {groups.map(g => (
+            <option key={g.id} value={g.id}>
+              {g.danduong_nhom_tieude}
+            </option>
+          ))}
         </select>
 
-        <button onClick={onReload}>🔄</button>
-        <button onClick={onCreate}>➕</button>
-        <button onClick={onEdit}>✏️</button>
-        <button onClick={onDelete}>🗑</button>
-        <button onClick={onPublish}>👁</button>
-        <button onClick={onUnpublish}>🚫</button>
+        <button onClick={onReload}>
+          <i className="fa-solid fa-rotate"></i>
+        </button>
+
+        <button onClick={onCreate}>
+          <i className="fa-solid fa-plus"></i>
+          Add
+        </button>
+
+        <button onClick={onEdit}>
+          <i className="fa-solid fa-pen"></i>
+          Edit
+        </button>
+
+        <button onClick={onDelete}>
+          <i className="fa-solid fa-trash"></i>
+          Remove
+        </button>
+
+        <button onClick={onPublish}>
+          <i className="fa-solid fa-circle-check"></i>
+          Publish
+        </button>
+
+        <button onClick={onUnpublish}>
+          <i className="fa-solid fa-xmark"></i>
+          Unpublish
+        </button>
       </div>
 
     </div>

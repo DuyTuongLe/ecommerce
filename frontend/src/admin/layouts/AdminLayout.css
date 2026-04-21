@@ -1,0 +1,132 @@
+/*admin/layouts/AdminLayout.css*/
+body {
+    margin: 0;
+    font-size: 14px;
+    font-family: arial,verdana,helvetica,Sans,sans-serif;
+}
+.container-admin {
+    display: flex;
+    height: 100vh;
+}
+.sidebar {
+    width: 180px;
+    background: #111;
+    color: #fff;
+    padding: 20px;
+}
+.sidebar nav {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+}
+.sidebar nav a {
+    color: #fff;
+}
+.main {
+    flex: 1 1 0%;
+}
+
+.menuManager {
+  display: flex;
+  height: 100%;
+}
+.menuContent {
+  flex: 1;
+  overflow: auto;
+}
+
+.menu-form-panel {
+  width: 300px;
+  background: #1a1a1a;
+  color: #fff;
+  transition: width 0.1s ease;
+}
+
+/* THANH KÉO */
+.resizer-vertical {
+  width: 5px;
+  cursor: col-resize;
+  background: transparent;
+}
+
+.resizer-vertical:hover {
+  background: #444;
+}
+
+.toolbar-left {
+    display: flex;
+    gap: 10px;
+    padding: 4px;
+    flex-wrap: wrap;
+}
+.toolbar-left button {
+    font-size: 16px;
+  background: none;
+  border: none;
+  color: #3a3a3a;
+}
+.toolbar-left button i {
+    font-weight: 600;
+}
+.menu-form {
+  padding: 16px;
+}
+
+.form-section {
+  margin-bottom: 24px;
+}
+
+.form-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+/* label bên trái */
+.form-group label {
+  width: 140px;
+  font-size: 14px;
+}
+
+/* input bên phải */
+.form-group input,
+.form-group select {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+}
+
+/* textarea cao hơn */
+.form-group textarea {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  min-height: 80px;
+}
+
+/* textarea align top */
+.form-group textarea,
+.form-group label {
+  align-self: flex-start;
+}
+
+/* button */
+.btn-save {
+  width: 100%;
+  padding: 10px;
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-save:hover {
+  background: #2563eb;
+}
