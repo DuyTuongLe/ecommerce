@@ -1,4 +1,5 @@
 //admin/components/MenuToolbar.jsx
+import useLanguage from "../hooks/useLanguage";
 
 export default function MenuToolbar({
   lang,
@@ -7,12 +8,14 @@ export default function MenuToolbar({
   groups,
   setGroup,
   onReload,
+  languages,
   onCreate,
   onEdit,
   onDelete,
   onPublish,
   onUnpublish
 }) {
+  
   return (
     <div className="toolbar">
 
@@ -20,8 +23,12 @@ export default function MenuToolbar({
       <div className="toolbar-left">
 
         <select value={lang} onChange={e => setLang(e.target.value)}>
-          <option value="vi">VI</option>
-          <option value="en">EN</option>
+          {languages.map(l => (
+            <option key={l.code} value={l.code}>
+              {l.name.toUpperCase()}
+            </option>
+          ))
+          }
         </select>
 
         <select value={group} onChange={e => setGroup(e.target.value)}>

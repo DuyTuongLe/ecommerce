@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Api\Frontend\ApiController;
 use App\Http\Controllers\Api\Admin\MenuController;
 use App\Http\Controllers\Api\Admin\MenuGroupController;
+use App\Http\Controllers\Api\Admin\LanguageController;
 
 Route::get('/check-db', function () {
     try {
@@ -28,3 +29,4 @@ Route::prefix('admin')->group(function () {
 
 });
 Route::get('/admin/menu-group', [MenuGroupController::class, 'index']);
+Route::get('/languages', [LanguageController::class, 'index']);

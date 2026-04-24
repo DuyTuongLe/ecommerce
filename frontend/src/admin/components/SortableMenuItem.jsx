@@ -92,7 +92,7 @@ export default function SortableMenuItem({
 
         {/* PUBLISH */}
         <div onClick={handleSelect} style={{ textAlign: "center", cursor: "pointer" }}>
-          {item.trangthai == 1 ? <i class='fa-solid fa-circle-check text-lime-600 text-lg'></i> : <i class='fa-solid fa-xmark text-red-600 text-lg'></i>}
+          {item.trangthai == 1 ? <i className='fa-solid fa-circle-check text-lime-600 text-lg'></i> : <i className='fa-solid fa-xmark text-red-600 text-lg'></i>}
         </div>
         
         {/* ID */}

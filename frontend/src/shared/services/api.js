@@ -21,6 +21,8 @@ export const api = {
     return request(`/admin/menu?${params.toString()}`);
   },
 
+  getLanguages: () => request(`/languages`),
+
   createMenu: (data) =>
     request(`/admin/menu`, {
       method: "POST",

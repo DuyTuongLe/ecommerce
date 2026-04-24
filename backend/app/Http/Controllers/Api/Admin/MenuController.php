@@ -18,8 +18,13 @@ class MenuController extends Controller
         $ngonngu = $request->get('lang', 'vi');
         $group = $request->get('group');
 
-        $query = Danduong::with(['ngonngu', 'url'])
-            ->orderBy('thutu');
+        $query = Danduong::with([
+            'ngonngu' => function ($q) use ($ngonngu) {
+                $q->where('ngonngu', $ngonngu);
+            },
+            'url'
+        ])
+        ->orderBy('thutu');
 
         // 🔥 FILTER THEO GROUP
         if ($group) {
@@ -31,10 +36,6 @@ class MenuController extends Controller
         return response()->json(
             $menus->map(function ($item) use ($ngonngu) {
 
-                $langItem = $item->ngonngu
-                    ->where('ngonngu', $ngonngu)
-                    ->first();
-
                 return [
                     'id' => $item->id,
                     'goc_id' => $item->goc_id,
@@ -42,7 +43,7 @@ class MenuController extends Controller
                     'trangthai' => $item->trangthai,
                     'macdinh' => $item->macdinh,
                     'type' => $item->type,
-                    'ten' => $langItem->danduong_nn_ten ?? '',
+                    'ten' => optional($item->ngonngu->first())->danduong_nn_ten,
                     'slug' => optional($item->url->first())->slug,
                 ];
             })

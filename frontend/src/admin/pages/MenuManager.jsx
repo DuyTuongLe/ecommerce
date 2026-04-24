@@ -12,10 +12,11 @@ import { useSensors, useSensor, PointerSensor } from "@dnd-kit/core";
 import { flattenTreeWithDepth } from "../../shared/utils/flattenTreeWithDepth";
 import { buildTreeFromFlat } from "../../shared/utils/buildTreeFromFlat";
 import MenuForm from "../components/MenuForm";
+import useLanguage from "../hooks/useLanguage";
 
 export default function MenuManager() {
   const saveTimeout = useRef(null);
-
+  const languages = useLanguage();
   const [lang, setLang] = useState("vi");
   const groups = useMenuGroup();
   const [group, setGroup] = useState("");
@@ -53,6 +54,13 @@ export default function MenuManager() {
   useEffect(() => {
     setFlatItems(flattenTreeWithDepth(treeState));
   }, [treeState]);
+
+  useEffect(() => {
+    if (!lang && languages.length > 0) {
+      const def = languages.find(l => l.macdinh == 1);
+      setLang(def ? def.code : languages[0].code);
+    }
+  }, [languages, lang]);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -164,6 +172,7 @@ export default function MenuManager() {
           setLang={setLang}
           group={group}
           groups={groups}
+          languages={languages}
           setGroup={setGroup}
           onReload={() => setReloadKey(prev => prev + 1)}
         />
@@ -179,7 +188,7 @@ export default function MenuManager() {
             background: "#fafafa"
           }}
         >
-          <div class="text-center"><i class="fa-regular fa-square"></i></div>
+          <div className="text-center"><i class="fa-regular fa-square"></i></div>
           <div>Tiêu đề</div>
           <div style={{ textAlign: "center" }}>Default</div>
           <div style={{ textAlign: "center" }}>Publish</div>
@@ -246,7 +255,11 @@ export default function MenuManager() {
         className="menu-form-panel"
         style={{ width: formWidth }}
       >
-        <MenuForm />
+        <MenuForm 
+          lang={lang}
+          parents={raw}
+          groups={groups}
+        />
       </div>
     </div>
   );
