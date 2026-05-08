@@ -9,8 +9,12 @@ class Url extends Model
     //
     protected $table = 'url';
 
-    public function danduong()
-    {
-        return $this->belongsTo(Danduong::class, 'entity_id');
-    }
+    protected $fillable = [
+        'entity_type',
+        'entity_id',
+        'redirect_to',
+        'status',
+        'slug',
+        'ngonngu'
+    ];
 }

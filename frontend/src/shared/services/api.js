@@ -1,66 +1,65 @@
-// shared/services/api.js
 const API_URL = "http://localhost:8000/api";
 
-export const api = {
-  getMenu: ({ lang = "vi", type, root_id } = {}) => {
-    const params = new URLSearchParams();
+/*
+|--------------------------------------------------------------------------
+| Admin
+|--------------------------------------------------------------------------
+*/
 
-    if (lang) params.append("lang", lang);
-    if (type) params.append("type", type);
-    if (root_id) params.append("root_id", root_id);
+export async function getAdminMenus(
+  lang = "vi"
+) {
 
-    return request(`/menu?${params.toString()}`);
-  },
+  const res = await fetch(
 
-  getMenuAdmin(lang, group) {
-    const params = new URLSearchParams();
+    `${API_URL}/admin/menus?lang=${lang}`
 
-    if (lang) params.append("lang", lang);
-    if (group) params.append("group", group);
+  );
 
-    return request(`/admin/menu?${params.toString()}`);
-  },
+  return await res.json();
+}
 
-  getLanguages: () => request(`/languages`),
+export async function getProductCategories(
+  lang = "vi"
+) {
 
-  createMenu: (data) =>
-    request(`/admin/menu`, {
-      method: "POST",
-      body: JSON.stringify(data),
-    }),
+  const res = await fetch(
 
-  updateMenu: (id, data) =>
-    request(`/admin/menu/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    }),
+    `${API_URL}/admin/product-categories?lang=${lang}`
 
-  deleteMenu: (id) =>
-    request(`/admin/menu/${id}`, {
-      method: "DELETE",
-    }),
+  );
 
-  reorderMenu: (items) =>
-    request(`/admin/menu/reorder`, {
-      method: "POST",
-      body: JSON.stringify({ items }),
-    }),
+  return await res.json();
+}
 
-  getMenuGroup: () => request(`/admin/menu-group`),
+/*
+|--------------------------------------------------------------------------
+| Frontend
+|--------------------------------------------------------------------------
+*/
 
-};
-async function request(url, options = {}) {
-  const res = await fetch(`${API_URL}${url}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    ...options,
-  });
+export async function getHeaderMenu(
+  lang = "vi"
+) {
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw err;
-  }
+  const res = await fetch(
 
-  return res.json();
+    `${API_URL}/menus/header?lang=${lang}`
+
+  );
+
+  return await res.json();
+}
+
+export async function getFrontendProductMenu(
+  lang = "vi"
+) {
+
+  const res = await fetch(
+
+    `${API_URL}/menus/product-menu?lang=${lang}`
+
+  );
+
+  return await res.json();
 }

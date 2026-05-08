@@ -9,7 +9,18 @@ class DanduongNgonngu extends Model
     //
     protected $table = 'danduong_ngonngu';
 
-    public function language() {
-        return $this->belongsTo(Ngonngu::class, 'ngonngu', 'code');
+    protected $fillable = [
+        'danduong_id',
+        'danduong_nn_ten',
+        'mota',
+        'seo_title',
+        'seo_description',
+        'seo_keywork',
+        'ngonngu'
+    ];
+
+    public function danduong()
+    {
+        return $this->belongsTo(Danduong::class,'danduong_id');
     }
 }

@@ -1,9 +1,9 @@
+//src/admin/router.jsx
 import { Route, Routes } from "react-router-dom";
 import AdminLayout from "./layouts/AdminLayout";
 import MenuManager from "./pages/MenuManager";
 
 function Dashboard() {
-  return <h2>Dashboard Page</h2>;
 }
 
 export default function AdminRoutes() {
