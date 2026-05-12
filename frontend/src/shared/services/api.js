@@ -1,65 +1,12 @@
-const API_URL = "http://localhost:8000/api";
+// shared/services/api.js
 
-/*
-|--------------------------------------------------------------------------
-| Admin
-|--------------------------------------------------------------------------
-*/
+import axios from "axios";
 
-export async function getAdminMenus(
-  lang = "vi"
-) {
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
 
-  const res = await fetch(
-
-    `${API_URL}/admin/menus?lang=${lang}`
-
-  );
-
-  return await res.json();
-}
-
-export async function getProductCategories(
-  lang = "vi"
-) {
-
-  const res = await fetch(
-
-    `${API_URL}/admin/product-categories?lang=${lang}`
-
-  );
-
-  return await res.json();
-}
-
-/*
-|--------------------------------------------------------------------------
-| Frontend
-|--------------------------------------------------------------------------
-*/
-
-export async function getHeaderMenu(
-  lang = "vi"
-) {
-
-  const res = await fetch(
-
-    `${API_URL}/menus/header?lang=${lang}`
-
-  );
-
-  return await res.json();
-}
-
-export async function getFrontendProductMenu(
-  lang = "vi"
-) {
-
-  const res = await fetch(
-
-    `${API_URL}/menus/product-menu?lang=${lang}`
-
-  );
-
-  return await res.json();
-}
+  headers: {
+    "Content-Type": "application/json"
+  }
+});
+export default api;

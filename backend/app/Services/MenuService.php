@@ -5,6 +5,7 @@
 namespace App\Services;
 
 use App\Models\Danduong;
+use App\Models\DanduongNhom;
 
 class MenuService
 {
@@ -12,40 +13,58 @@ class MenuService
     {
         return Danduong::query()
             ->with([
+                'group',
                 'ngonngus' => function ($query) use ($lang) {
-                    $query -> where('ngonngu',$lang);
+                    $query->where('ngonngu', $lang);
                 },
 
                 'urls' => function ($query) use ($lang) {
-                    $query -> where('ngonngu',$lang);
+                    $query->where('ngonngu', $lang);
                 }
             ]);
     }
 
-    public function getAdminMenus($lang = 'vi')
+    public function getMenuGroups()
     {
-        return $this->baseQuery($lang)
-        ->orderBy('goc_id')
-        ->orderBy('thutu')
+        return DanduongNhom::query()
+        ->orderBy('id')
         ->get();
     }
 
-    public function getProductCategories($lang ='vi'){
+    public function getAdminMenus($lang = 'vi', $groupId = null)
+    {
+        $query = $this->baseQuery($lang);
+        if ($groupId) {
+
+            $query->where(
+                'danduong_nhom_id',
+                $groupId
+            );
+        }
+        return $query
+            ->orderBy('goc_id')
+            ->orderBy('thutu')
+            ->get();
+    }
+
+    public function getProductCategories($lang = 'vi')
+    {
         return $this->baseQuery($lang)
-        ->whereIn('type', [
-            'menu_group','product_category'
-        ])
-        ->orderBy('goc_id')
-        ->orderBy('thutu')
-        ->get();
+            ->whereIn('type', [
+                'menu_group',
+                'product_category'
+            ])
+            ->orderBy('goc_id')
+            ->orderBy('thutu')
+            ->get();
     }
 
     public function getHeaderMenu($lang = 'vi')
     {
         $menus = $this->baseQuery($lang)
-        ->where('trangthai',1)
-        ->orderBy('thutu')
-        ->get();
+            ->where('trangthai', 1)
+            ->orderBy('thutu')
+            ->get();
 
         return $this->buildTree($menus);
     }
@@ -70,10 +89,8 @@ class MenuService
         );
     }
 
-    private function buildTree(
-        $items,
-        $parentId = null
-    ) {
+    private function buildTree($items, $parentId = null)
+    {
         $branch = [];
 
         foreach ($items as $item) {

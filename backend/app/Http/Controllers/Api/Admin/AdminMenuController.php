@@ -24,9 +24,10 @@ class AdminMenuController extends Controller
     public function index(Request $request)
     {
         $lang = $request->lang ?? 'vi';
+        $groupId = $request->group_id;
 
         return response()->json(
-            $this->menuService->getAdminMenus($lang)
+            $this->menuService->getAdminMenus($lang, $groupId)
         );
     }
 
@@ -37,6 +38,13 @@ class AdminMenuController extends Controller
 
         return response()->json(
             $this->menuService->getProductCategories($lang)
+        );
+    }
+
+    public function groups()
+    {
+        return response()->json(
+            $this->menuService->getMenuGroups()
         );
     }
 }

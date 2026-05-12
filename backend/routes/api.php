@@ -17,6 +17,11 @@ Route::prefix('admin')->group(function () {
         [AdminMenuController::class, 'productCategories']
     );
 
+    Route::get(
+        '/menu-groups',
+        [AdminMenuController::class, 'groups']
+    );
+
 });
 
 Route::prefix('menus')->group(function () {

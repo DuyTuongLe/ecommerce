@@ -37,4 +37,9 @@ class Danduong extends Model
     {
         return $this->hasMany(Danduong::class.'goc_id');
     }
+
+    public function group()
+    {
+        return $this->belongsTo(DanduongNhom::class, "danduong_nhom_id");
+    }
 }
