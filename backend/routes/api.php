@@ -24,6 +24,13 @@ Route::prefix('admin')->group(function () {
 
 });
 
+Route::post(
+    '/admin/menus/sort',
+    [AdminMenuController::class, "sort"]
+);
+
+
+
 Route::prefix('menus')->group(function () {
 
     // Header menu

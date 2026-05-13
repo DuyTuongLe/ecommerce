@@ -31,6 +31,15 @@ class AdminMenuController extends Controller
         );
     }
 
+    public function sort(Request $request)
+    {
+        $items = $request->all();
+
+        $this->menuService->sortMenus($items);
+
+        return response()->json(['sucess' => true]);
+    }
+
 
     public function productCategories(Request $request)
     {

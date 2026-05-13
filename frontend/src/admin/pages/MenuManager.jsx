@@ -10,11 +10,22 @@ import {
   useMenuGroups
 } from "../hooks/useMenuGroups";
 
-import MenuTable from "../components/MenuTable";
+import {
+  message
+} from "antd";
 
 import MenuToolbar from "../components/MenuToolbar";
 
+import MenuTree from "../components/MenuTree";
+
+import { buildSortPayload } from "../components/treeUtils";
+
+import { sortMenus } from "../../shared/services/menuApi";
+
 export default function MenuManager() {
+
+  const [treeItems, setTreeItems] =
+    useState([]);
 
   const [language, setLanguage] =
     useState("vi");
@@ -37,7 +48,37 @@ export default function MenuManager() {
 
   const groups =
     useMenuGroups();
-  console.log(groups);
+
+
+  async function handleSave() {
+
+  try {
+
+    const payload =
+      buildSortPayload(
+        treeItems
+      );
+
+    await sortMenus(
+      payload
+    );
+
+    message.success(
+      "Saved successfully"
+    );
+
+  }
+  catch (error) {
+
+    console.error(error);
+
+    message.error(
+      "Save failed"
+    );
+
+  }
+
+}
   return (
 
     <div>
@@ -56,13 +97,17 @@ export default function MenuManager() {
 
         groups={groups}
 
+        onSave={handleSave}
+
       />
 
-      <MenuTable
+      <MenuTree
 
-        data={menus}
+        items={menus}
 
-        loading={loading}
+        onChange={
+          setTreeItems
+        }
 
       />
 

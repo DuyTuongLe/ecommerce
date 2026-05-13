@@ -27,8 +27,8 @@ class MenuService
     public function getMenuGroups()
     {
         return DanduongNhom::query()
-        ->orderBy('id')
-        ->get();
+            ->orderBy('id')
+            ->get();
     }
 
     public function getAdminMenus($lang = 'vi', $groupId = null)
@@ -41,10 +41,26 @@ class MenuService
                 $groupId
             );
         }
-        return $query
+        $menu = $query
             ->orderBy('goc_id')
             ->orderBy('thutu')
             ->get();
+        return $this->buildTree($menu);
+    }
+
+    public function sortMenus($items)
+    {
+        foreach ($items as $item) {
+            Danduong::where(
+                "id",
+                $item["id"]
+            )
+
+            ->update([
+                "goc_id" => $item["goc_id"],
+                "thutu" => $item["thutu"]
+            ]);
+        }
     }
 
     public function getProductCategories($lang = 'vi')
@@ -102,7 +118,10 @@ class MenuService
                     $item->id
                 );
 
-                $item->children = $children;
+                if (!empty($children)) {
+
+                    $item->children = $children;
+                }
 
                 $branch[] = $item;
             }

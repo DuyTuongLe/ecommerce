@@ -8,7 +8,8 @@ export default function MenuToolbar({
 
     menuGroup,
     onChangeMenuGroup,
-    groups }) {
+    groups,
+onSave }) {
     return (
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
             <Space>
@@ -49,6 +50,12 @@ export default function MenuToolbar({
             </Space>
 
             <Space>
+                <Button
+  type="primary"
+  onClick={onSave}
+>
+  Save
+</Button>
                 <Button>
                     Reload
                 </Button>

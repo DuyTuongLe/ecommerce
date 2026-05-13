@@ -42,6 +42,14 @@ export async function getMenuGroups() {
 
 }
 
+export async function sortMenus(items) {
+  const res = await api.post(
+    "/admin/menus/sort",
+    items
+  );
+  return res.data;
+}
+
 /*
 |--------------------------------------------------------------------------
 | Frontend
