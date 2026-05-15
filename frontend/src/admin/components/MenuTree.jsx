@@ -39,25 +39,25 @@ import {
 } from "../../shared/services/menuApi";
 
 export default function
-MenuTree({
+  MenuTree({
 
-  items, onChange
+    items, onChange
 
-}) {
+  }) {
 
   const [treeItems, setTreeItems] =
     useState([]);
 
   useEffect(() => {
 
-  const flat =
-    flattenTree(items);
+    const flat =
+      flattenTree(items);
 
-  setTreeItems(flat);
+    setTreeItems(flat);
 
-  onChange?.(flat);
+    onChange?.(flat);
 
-}, [items]);
+  }, [items]);
 
 
   function handleDragEnd(event) {
@@ -201,16 +201,6 @@ MenuTree({
   return (
 
     <div>
-
-      {/* Toolbar */}
-
-      <div
-        style={{
-          marginBottom: 20
-        }}
-      >
-
-      </div>
 
       {/* Tree */}
 

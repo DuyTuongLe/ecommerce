@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\Api\Admin\AdminMenuController;
 use App\Http\Controllers\Api\Frontend\MenuController;
+use App\Http\Controllers\Api\Admin\LanguageController;
 
 Route::prefix('admin')->group(function () {
 
@@ -20,6 +21,11 @@ Route::prefix('admin')->group(function () {
     Route::get(
         '/menu-groups',
         [AdminMenuController::class, 'groups']
+    );
+
+    Route::get(
+        '/languages',
+        [LanguageController::class, "index"]
     );
 
 });

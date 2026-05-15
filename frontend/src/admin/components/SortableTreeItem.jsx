@@ -21,14 +21,14 @@ import {
 } from "antd";
 
 export default function
-SortableTreeItem({
+  SortableTreeItem({
 
-  item,
+    item,
 
-  onIndent,
-  onOutdent
+    onIndent,
+    onOutdent
 
-}) {
+  }) {
 
   const {
 
@@ -47,89 +47,163 @@ SortableTreeItem({
 
   const style = {
 
-  transform:
-    CSS.Transform.toString(
-      transform
-    ),
+    transform:
+      CSS.Transform.toString(
+        transform
+      ),
 
-  transition,
+    transition,
 
-  marginLeft:
-    item.depth * 40,
+    marginLeft:
+      item.depth * 40,
 
-  background:
-    isDragging
-      ? "#f5f5f5"
-      : "#fff",
+    background:
+      isDragging
+        ? "#f5f5f5"
+        : "#fff",
 
-  border: "1px solid #eee",
+    border: "1px solid #eee",
 
-  borderRadius: 10,
+    borderRadius: 10,
 
-  padding: 14,
+    padding: 14,
 
-  marginBottom: 10,
+    marginBottom: 10,
 
-  display: "grid",
+    display: "grid",
 
-  gridTemplateColumns:
-    "60px 1fr 120px 140px 120px",
+    gridTemplateColumns:
+      "40px 1fr 80px 90px 100px 40px",
 
-  alignItems: "center",
+    alignItems: "center",
 
-  gap: 12,
+    gap: 12,
 
-  boxShadow:
-    isDragging
-      ? "0 4px 12px rgba(0,0,0,.1)"
-      : "none"
+    boxShadow:
+      isDragging
+        ? "0 4px 12px rgba(0,0,0,.1)"
+        : "none"
 
-};
+  };
 
   return (
 
-  <div
-
-    ref={setNodeRef}
-
-    style={style}
-
-  >
-
-    {/* DRAG */}
-
     <div
 
-      {...attributes}
-      {...listeners}
+      ref={setNodeRef}
 
-      style={{
-        cursor: "grab",
-        fontSize: 18
-      }}
+      style={style}
 
     >
 
-      ☰
-
-    </div>
-
-    <div>
+      {/* DRAG */}
 
       <div
+
+        {...attributes}
+        {...listeners}
+
         style={{
-          fontWeight: 600
+          cursor: "grab",
+          fontSize: 18
         }}
+
       >
+
+        ☰
+
+      </div>
+
+      <div>
+
+        <div
+          style={{
+            fontWeight: 600
+          }}
+        >
+
+          {
+
+            item.ngonngus?.[0]
+              ?.danduong_nn_ten
+
+          }
+
+        </div>
+
+      </div>
+
+      <div>
 
         {
 
-          item.ngonngus?.[0]
-            ?.danduong_nn_ten
+          item.macdinh
+
+            ? (
+              <Tag color="green">
+                Default
+              </Tag>
+            )
+
+            : (
+              <Tag>
+                No
+              </Tag>
+            )
 
         }
 
       </div>
+
+      {/* STATUS */}
+
+      <div>
+
+        {
+
+          item.trangthai
+
+            ? (
+              <Tag color="green">
+                Publish
+              </Tag>
+            )
+
+            : (
+              <Tag color="red">
+                UnPublish
+              </Tag>
+            )
+
+        }
+
+      </div>
+
+      {/* ACTIONS */}
+
+      <Space>
+
+        <Button
+          size="small"
+          onClick={() =>
+            onIndent(item.id)
+          }
+        >
+          →
+        </Button>
+
+        <Button
+          size="small"
+          onClick={() =>
+            onOutdent(item.id)
+          }
+        >
+          ←
+        </Button>
+
+      </Space>
+
+
 
       <div
         style={{
@@ -138,84 +212,14 @@ SortableTreeItem({
         }}
       >
 
-        ID: {item.id}
+
+
+        ID: {item.id ? item.id : 0}
 
       </div>
 
     </div>
 
-    <div>
-
-      {
-
-        item.macdinh
-
-          ? (
-            <Tag color="green">
-              Default
-            </Tag>
-          )
-
-          : (
-            <Tag>
-              No
-            </Tag>
-          )
-
-      }
-
-    </div>
-
-    {/* STATUS */}
-
-    <div>
-
-      {
-
-        item.trangthai
-
-          ? (
-            <Tag color="green">
-              Publish
-            </Tag>
-          )
-
-          : (
-            <Tag color="red">
-              UnPublish
-            </Tag>
-          )
-
-      }
-
-    </div>
-
-    {/* ACTIONS */}
-
-    <Space>
-
-      <Button
-        size="small"
-        onClick={() =>
-          onIndent(item.id)
-        }
-      >
-        →
-      </Button>
-
-      <Button
-        size="small"
-        onClick={() =>
-          onOutdent(item.id)
-        }
-      >
-        ←
-      </Button>
-
-    </Space>
-
-  </div>
-
-);
+  );
 
 }

@@ -13,7 +13,9 @@ export function useMenus(
 
   language = "vi",
 
-  groupId = 1
+  groupId = 1,
+
+  reloadKey = 0
 
 ) {
 
@@ -61,7 +63,8 @@ export function useMenus(
   }, [
 
     language,
-    groupId
+    groupId,
+    reloadKey
 
   ]);
 

@@ -2,6 +2,14 @@
 
 import api from "./api";
 
+
+export async function getLanguages() {
+  const res = await api.get(
+    "/admin/languages"
+  );
+
+  return res.data;
+}
 /*
 |--------------------------------------------------------------------------
 | Admin

@@ -16,7 +16,21 @@ const {
   Content
 } = Layout;
 
+import {
+
+  DashboardOutlined,
+  MenuOutlined,
+  ShoppingOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined
+
+} from "@ant-design/icons";
+
+import { useState } from "react";
+
 export default function AdminLayout() {
+
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
 
@@ -29,8 +43,12 @@ export default function AdminLayout() {
       {/* Sidebar */}
 
       <Sider
-        width={300}
+        width={200}
         theme="light"
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        trigger={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       >
 
         <div
@@ -48,6 +66,7 @@ export default function AdminLayout() {
 
             {
               key: "dashboard",
+              icon: <DashboardOutlined />,
               label: (
                 <Link to="/admin/dashboard">
                   Dashboard
@@ -57,6 +76,7 @@ export default function AdminLayout() {
 
             {
               key: "menus",
+              icon: <MenuOutlined />,
               label: (
                 <Link to="/admin/menus">
                   Menu Manager
@@ -66,6 +86,7 @@ export default function AdminLayout() {
 
             {
               key: "products",
+              icon: <ShoppingOutlined />,
               label: (
                 <Link to="/admin/products">
                   Products
@@ -80,7 +101,12 @@ export default function AdminLayout() {
 
       {/* Main */}
 
-      <Layout>
+      <Layout
+        style={{
+          height: "100vh",
+          overflow: "hidden"
+        }}
+      >
 
         {/* Header */}
 
@@ -99,7 +125,8 @@ export default function AdminLayout() {
 
         <Content
           style={{
-            padding: 20
+            padding: 20,
+            overflow: "hidden"
           }}
         >
 

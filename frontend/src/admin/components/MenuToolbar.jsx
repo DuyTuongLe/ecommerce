@@ -4,44 +4,40 @@ import { Button, Select, Space } from "antd";
 
 export default function MenuToolbar({
     language,
+    languages,
     onChangeLanguage,
 
     menuGroup,
     onChangeMenuGroup,
-    groups,
-onSave }) {
+    menuGroups,
+    onSave,
+    onReload
+}) {
     return (
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
             <Space>
                 <Select
 
-                    defaultValue="vi"
                     value={language}
                     onChange={onChangeLanguage}
                     style={{
                         width: 140
                     }}
-                    options={[
-
-                        {
-                            label: "Tiếng Việt",
-                            value: "vi"
-                        },
-
-                        {
-                            label: "English",
-                            value: "en"
-                        }
-
-                    ]}
+                    options={
+                        languages.map(lang => ({
+                            label: lang.name,
+                            value: lang.code
+                        }))
+                    }
 
                 />
                 <Select
+
                     value={menuGroup}
                     onChange={onChangeMenuGroup}
                     style={{ width: 180 }}
                     options={
-                        groups.map(group => ({
+                        menuGroups.map(group => ({
                             label: group.danduong_nhom_tieude,
                             value: group.id
                         }))
@@ -51,12 +47,12 @@ onSave }) {
 
             <Space>
                 <Button
-  type="primary"
-  onClick={onSave}
->
-  Save
-</Button>
-                <Button>
+                    type="primary"
+                    onClick={onSave}
+                >
+                    Save Menu
+                </Button>
+                <Button onClick={onReload}>
                     Reload
                 </Button>
 
