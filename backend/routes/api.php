@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 
@@ -28,6 +29,11 @@ Route::prefix('admin')->group(function () {
         [AdminMenuController::class, "sort"]
     );
 
+    Route::delete(
+        '/menus/{id}',
+        [AdminMenuController::class, 'destroy']
+    );
+    
     Route::get(
         '/menu-groups',
         [AdminMenuController::class, 'groups']
@@ -57,5 +63,4 @@ Route::prefix('menus')->group(function () {
         '/product-menu',
         [MenuController::class, 'productMenu']
     );
-
 });

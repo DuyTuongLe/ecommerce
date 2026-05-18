@@ -66,6 +66,16 @@ export async function saveMenu(data) {
   return res.data;
 }
 
+export async function deleteMenu(id) {
+
+  const res = await api.delete(
+    `/admin/menus/${id}`
+  );
+
+  return res.data;
+
+}
+
 /*
 |--------------------------------------------------------------------------
 | Frontend

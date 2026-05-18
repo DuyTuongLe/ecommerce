@@ -67,4 +67,13 @@ class AdminMenuController extends Controller
 
         );
     }
+
+    public function destroy($id)
+    {
+        $this->menuService->deleteMenu($id);
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
 }

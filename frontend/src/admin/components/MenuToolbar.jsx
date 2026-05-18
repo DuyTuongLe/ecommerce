@@ -13,6 +13,7 @@ export default function MenuToolbar({
     onSave,
     onReload,
     onAdd,
+    onRemove
 }) {
     return (
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
@@ -61,16 +62,11 @@ export default function MenuToolbar({
                     Add
                 </Button>
 
-                <Button danger>
+                <Button
+                    danger
+                    onClick={onRemove}
+                >
                     Remove
-                </Button>
-
-                <Button>
-                    Publish
-                </Button>
-
-                <Button>
-                    UnPublish
                 </Button>
             </Space>
         </div>

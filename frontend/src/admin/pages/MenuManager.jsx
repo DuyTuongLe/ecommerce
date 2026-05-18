@@ -18,7 +18,7 @@ import {
 } from "../hooks/useLanguages";
 
 import {
-  message
+  message, Modal
 } from "antd";
 
 import MenuToolbar from "../components/MenuToolbar";
@@ -27,7 +27,7 @@ import MenuTree from "../components/MenuTree";
 
 import { buildSortPayload } from "../components/treeUtils";
 
-import { sortMenus, saveMenu } from "../../shared/services/menuApi";
+import { sortMenus, saveMenu, deleteMenu } from "../../shared/services/menuApi";
 
 import MenuForm from "../components/MenuForm";
 
@@ -71,6 +71,9 @@ export default function MenuManager() {
 
   const languages =
     useLanguages();
+
+  const [formKey, setFormKey] =
+    useState(0);
 
   useEffect(() => {
 
@@ -159,16 +162,75 @@ export default function MenuManager() {
     }
 
   }
+  async function handleRemove() {
+
+    if (!selectedItem) {
+
+      message.warning(
+        "Please select menu"
+      );
+
+      return;
+    }
+
+    Modal.confirm({
+
+      title: "Delete Menu",
+
+      content:
+        "Are you sure to delete this menu?",
+
+      okText: "Delete",
+
+      okButtonProps: {
+        danger: true
+      },
+
+      async onOk() {
+
+        try {
+
+          await deleteMenu(
+            selectedItem.id
+          );
+
+          message.success(
+            "Deleted successfully"
+          );
+
+          setSelectedItem(null);
+
+          setMode("add");
+
+          handleReload(false);
+
+        } catch (error) {
+
+          console.error(error);
+
+          message.error(
+            "Delete failed"
+          );
+
+        }
+
+      }
+
+    });
+
+  }
 
 
-  function handleReload() {
+  function handleReload(showMessage = true) {
     setReloadKey(
       prev => prev + 1
     );
 
-    message.success(
-      "Reload successful"
-    );
+    if (showMessage) {
+      message.success(
+        "Reload successful"
+      );
+    }
   }
 
   async function handleSubmit(values) {
@@ -203,7 +265,7 @@ export default function MenuManager() {
         "Saved successfully"
       );
 
-      handleReload();
+      handleReload(false);
 
     }
     catch (error) {
@@ -249,8 +311,12 @@ export default function MenuManager() {
           setSelectedItem(null);
 
           setFormLanguage(language);
-
+          setFormKey(
+            prev => prev + 1
+          );
         }}
+
+        onRemove={handleRemove}
 
       />
 
@@ -264,11 +330,8 @@ export default function MenuManager() {
 
           gap: 20,
 
-          height:
-            "calc(100vh - 140px)",
-
-          overflow: "hidden"
-
+          minHeight:
+            "calc(100vh - 140px)"
         }}
       >
 
@@ -276,10 +339,6 @@ export default function MenuManager() {
           style={{
 
             minWidth: 0,
-
-            overflowY: "auto",
-
-            height: "100%"
 
           }}
         >
@@ -310,37 +369,23 @@ export default function MenuManager() {
         <div
           style={{
 
-            overflowY: "auto",
-
-            height: "100%"
-
           }}
         >
 
           <MenuForm
-
+            key={formKey}
             mode={mode}
-
             language={language}
-
             formLanguage={formLanguage}
-
             setFormLanguage={
               setFormLanguage
             }
-
             languages={languages}
-
             selectedItem={selectedItem}
-
             menus={menus}
-
             menuGroups={menuGroups}
-
             menuGroup={menuGroup}
-
             onSubmit={handleSubmit}
-
           />
 
         </div>

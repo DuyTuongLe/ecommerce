@@ -8,6 +8,9 @@ use App\Models\Danduong;
 use App\Models\DanduongNhom;
 use App\Models\DanduongNgonngu;
 use App\Models\Url;
+
+use App\Services\SlugService;
+
 use Illuminate\Support\Facades\DB;
 
 class MenuService
@@ -59,10 +62,10 @@ class MenuService
                 $item["id"]
             )
 
-            ->update([
-                "goc_id" => $item["goc_id"],
-                "thutu" => $item["thutu"]
-            ]);
+                ->update([
+                    "goc_id" => $item["goc_id"],
+                    "thutu" => $item["thutu"]
+                ]);
         }
     }
 
@@ -81,165 +84,232 @@ class MenuService
 
 
     public function saveMenu($data)
-{
-    DB::beginTransaction();
+    {
+        DB::beginTransaction();
 
-    try {
+        try {
 
-        /*
+            /*
         |--------------------------------------------------------------------------
         | MAIN MENU
         |--------------------------------------------------------------------------
         */
 
-        if (!empty($data['id'])) {
+            if (!empty($data['id'])) {
 
-            $menu = Danduong::findOrFail(
-                $data['id']
-            );
+                $menu = Danduong::findOrFail(
+                    $data['id']
+                );
 
-            $menu->update([
+                $menu->update([
 
-                'goc_id' => $data['goc_id'] ?? null,
+                    'goc_id' => $data['goc_id'] ?? null,
 
-                'danduong_nhom_id' =>
+                    'danduong_nhom_id' =>
                     $data['danduong_nhom_id'],
 
-                'type' =>
+                    'type' =>
                     $data['type'],
 
-                'target' =>
+                    'target' =>
                     $data['target'] ?? '_self',
 
-                'external_url' =>
+                    'external_url' =>
                     $data['external_url'] ?? null,
 
-                'trangthai' =>
+                    'trangthai' =>
                     $data['trangthai'] ?? 1,
 
-            ]);
+                ]);
+            } else {
+                $maxSort = Danduong::query()
 
-        } else {
-            $maxSort = Danduong::query()
+                    ->where(
+                        'goc_id',
+                        $data['goc_id'] ?? null
+                    )
 
-    ->where(
-        'goc_id',
-        $data['goc_id'] ?? null
-    )
+                    ->max('thutu');
 
-    ->max('thutu');
+                $nextSort = ($maxSort ?? 0) + 1;
 
-$nextSort = ($maxSort ?? 0) + 1;
+                $menu = Danduong::create([
 
-            $menu = Danduong::create([
+                    'goc_id' => $data['goc_id'] ?? null,
 
-                'goc_id' => $data['goc_id'] ?? null,
-
-                'danduong_nhom_id' =>
+                    'danduong_nhom_id' =>
                     $data['danduong_nhom_id'],
 
-                'type' =>
+                    'type' =>
                     $data['type'],
 
-                'target' =>
+                    'target' =>
                     $data['target'] ?? '_self',
 
-                'external_url' =>
+                    'external_url' =>
                     $data['external_url'] ?? null,
 
-                'trangthai' =>
+                    'trangthai' =>
                     $data['trangthai'] ?? 1,
 
-                'thutu' => $nextSort
+                    'thutu' => $nextSort
 
-            ]);
-        }
+                ]);
+            }
+/*
+|--------------------------------------------------------------------------
+| SLUG
+|--------------------------------------------------------------------------
+*/
 
-        /*
+$slug = SlugService::generate([
+
+    'text' => $data['slug'],
+
+    'entity_type' => 'danduong',
+
+    'entity_id' => $menu->id,
+
+    'ngonngu' => $data['ngonngu']
+
+]);
+
+Url::updateOrCreate(
+
+    [
+
+        'entity_type' => 'danduong',
+
+        'entity_id' => $menu->id,
+
+        'ngonngu' => $data['ngonngu']
+
+    ],
+
+    [
+
+        'slug' => $slug
+
+    ]
+
+);
+            /*
         |--------------------------------------------------------------------------
         | TRANSLATION
         |--------------------------------------------------------------------------
         */
 
-        DanduongNgonngu::updateOrCreate(
-
-            [
-
-                'danduong_id' =>
-                    $menu->id,
-
-                'ngonngu' =>
-                    $data['ngonngu']
-
-            ],
-
-            [
-
-                'danduong_nn_ten' =>
-                    $data['danduong_nn_ten'] ?? null,
-
-                'mota' =>
-                    $data['mota'] ?? null,
-
-                'seo_title' =>
-                    $data['seo_title'] ?? null,
-
-                'seo_description' =>
-                    $data['seo_description'] ?? null,
-
-                'seo_keywords' =>
-                    $data['seo_keywords'] ?? null,
-
-            ]
-
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | URL
-        |--------------------------------------------------------------------------
-        */
-
-        if (!empty($data['slug'])) {
-
-            Url::updateOrCreate(
+            DanduongNgonngu::updateOrCreate(
 
                 [
 
-                    'entity_type' => 'danduong',
+                    'danduong_id' =>
+                    $menu->id,
 
-                    'entity_id' => $menu->id,
-
-                    'ngonngu' => $data['ngonngu']
+                    'ngonngu' =>
+                    $data['ngonngu']
 
                 ],
 
                 [
 
-                    'slug' => $data['slug']
+                    'danduong_nn_ten' =>
+                    $data['danduong_nn_ten'] ?? null,
+
+                    'mota' =>
+                    $data['mota'] ?? null,
+
+                    'seo_title' =>
+                    $data['seo_title'] ?? null,
+
+                    'seo_description' =>
+                    $data['seo_description'] ?? null,
+
+                    'seo_keywords' =>
+                    $data['seo_keywords'] ?? null,
 
                 ]
 
             );
+
+            DB::commit();
+
+            return [
+
+                'success' => true,
+
+                'id' => $menu->id
+
+            ];
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            throw $e;
         }
-
-        DB::commit();
-
-        return [
-
-            'success' => true,
-
-            'id' => $menu->id
-
-        ];
-
-    } catch (\Exception $e) {
-
-        DB::rollBack();
-
-        throw $e;
     }
-}
+
+    public function deleteMenu($id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            /*
+        |--------------------------------------------------------------------------
+        | DELETE TRANSLATIONS
+        |--------------------------------------------------------------------------
+        */
+
+            DanduongNgonngu::query()
+
+                ->where(
+                    'danduong_id',
+                    $id
+                )
+
+                ->delete();
+
+            /*
+        |--------------------------------------------------------------------------
+        | DELETE URLS
+        |--------------------------------------------------------------------------
+        */
+
+            Url::query()
+
+                ->where(
+                    'entity_type',
+                    'danduong'
+                )
+
+                ->where(
+                    'entity_id',
+                    $id
+                )
+
+                ->delete();
+
+            /*
+        |--------------------------------------------------------------------------
+        | DELETE MENU
+        |--------------------------------------------------------------------------
+        */
+
+            Danduong::query()
+
+                ->where('id', $id)
+
+                ->delete();
+
+            DB::commit();
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            throw $e;
+        }
+    }
 
 
 

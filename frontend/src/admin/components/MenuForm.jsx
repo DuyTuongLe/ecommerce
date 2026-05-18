@@ -28,6 +28,8 @@ import {
 
 } from "@ant-design/icons";
 
+import slugify from "slugify";
+
 const {
   TextArea
 } = Input;
@@ -58,6 +60,75 @@ export default function MenuForm({
 
   const [form] =
     Form.useForm();
+
+    function handleTitleBlur() {
+
+  /*
+  |--------------------------------------------------------------------------
+  | Only Add Mode
+  |--------------------------------------------------------------------------
+  */
+
+  if (mode !== "add") {
+    return;
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | User Already Edited Slug
+  |--------------------------------------------------------------------------
+  */
+
+  const currentSlug =
+    form.getFieldValue("slug");
+
+  if (currentSlug) {
+    return;
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Get Title
+  |--------------------------------------------------------------------------
+  */
+
+  const title =
+    form.getFieldValue(
+      "danduong_nn_ten"
+    );
+
+  if (!title) {
+    return;
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Generate Slug
+  |--------------------------------------------------------------------------
+  */
+
+  const slug = slugify(title, {
+
+    lower: true,
+
+    strict: true,
+
+    locale: "vi"
+
+  });
+
+  /*
+  |--------------------------------------------------------------------------
+  | Set Form
+  |--------------------------------------------------------------------------
+  */
+
+  form.setFieldValue(
+    "slug",
+    slug
+  );
+
+}
 
   const currentLanguage =
 
@@ -224,450 +295,434 @@ export default function MenuForm({
   return (
 
     <Card
-  title="Add or Edit Menu"
+      title="Add or Edit Menu"
 
-  styles={{
+      styles={{
 
-    body: {
+        body: {
 
-      display: "flex",
-
-      flexDirection: "column",
-
-      height: "calc(100vh - 180px)",
-
-      paddingBottom: 0
-
-    }
-
-  }}
-
->
-
-      <Form
-
-  form={form}
-
-  layout="vertical"
-
-  onFinish={onSubmit}
-
-  style={{
-
-    display: "flex",
-
-    flexDirection: "column",
-
-    height: "100%"
-
-  }}
-
->
-  <div
-  style={{
-
-    flex: 1,
-
-    overflowY: "auto",
-
-    paddingRight: 6
-
-  }}
->
-
-        {/* Language */}
-
-        {
-
-          mode === "add" && (
-
-            <Form.Item
-              label="Language"
-            >
-
-              <Select
-
-                value={formLanguage}
-
-                onChange={
-                  setFormLanguage
-                }
-
-                options={
-                  (languages || []).map((lang => ({
-
-                    label: lang.name,
-
-                    value: lang.code
-
-                  })))
-                }
-
-              />
-
-            </Form.Item>
-
-          )
+          display: "flex",
+          flexDirection: "column",
+          height: "calc(100vh - 180px)",
+          paddingBottom: 0
 
         }
 
-        {/* Title */}
+      }}
 
-        <Form.Item
+    >
 
-          name="danduong_nn_ten"
+      <Form
 
-          label="Menu Title"
+        form={form}
+        layout="vertical"
+        onFinish={onSubmit}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%"
+        }}
 
+      >
+        <div
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            paddingRight: 6,
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+
+          }}
         >
 
-          <Input
-            placeholder="Enter menu title"
-          />
-
-        </Form.Item>
-
-        <Form.Item
-          name="slug"
-          label="Slug"
-        >
-          <Input />
-        </Form.Item>
-
-        {/* Description */}
-
-        <Form.Item
-
-          name="mota"
-
-          label="Description"
-
-        >
-
-          <TextArea
-
-            rows={4}
-
-            placeholder="Enter description"
-
-          />
-
-        </Form.Item>
-
-        {/* Menu Type */}
-
-        <Form.Item
-          name="type"
-          label="Menu Type"
-        >
-
-          <Select
-            placeholder="No Type"
-
-            options={[
-
-              {
-                label: "Page",
-                value: "page"
-              },
-
-              {
-                label: "Menu Group",
-                value: "menu_group"
-              },
-
-              {
-                label: "Product Category",
-                value: "product_category"
-              },
-
-              {
-                label: "External Link",
-                value: "external"
-              }
-
-            ]}
-
-          />
-
-        </Form.Item>
-
-        <Form.Item
-
-          shouldUpdate
-
-          noStyle
-
-        >
+          {/* Language */}
 
           {
 
-            ({ getFieldValue }) => {
+            mode === "add" && (
 
-              const type =
-                getFieldValue("type");
+              <Form.Item
+                label="Language"
+              >
 
-              if (type !== "external") {
-                return null;
-              }
+                <Select
 
-              return (
+                  value={formLanguage}
 
-                <Form.Item
+                  onChange={
+                    setFormLanguage
+                  }
 
-                  name="external_url"
+                  options={
+                    (languages || []).map((lang => ({
 
-                  label="External URL"
+                      label: lang.name,
 
-                  rules={[
+                      value: lang.code
 
-                    {
-                      required: true,
-                      message:
-                        "Please enter external URL"
-                    }
+                    })))
+                  }
 
-                  ]}
+                />
 
-                >
+              </Form.Item>
 
-                  <Input
-                    placeholder="https://example.com"
-                  />
-
-                </Form.Item>
-
-              );
-
-            }
+            )
 
           }
 
-        </Form.Item>
+          {/* Title */}
 
-        {/* Group */}
+          <Form.Item
 
-        <Form.Item
+            name="danduong_nn_ten"
 
-          name="danduong_nhom_id"
+            label="Menu Title"
 
-          label="Group"
+          >
 
-        >
+            <Input onBlur={handleTitleBlur}
+              placeholder="Enter menu title"
+            />
 
-          <Select
+          </Form.Item>
 
-            options={
+          <Form.Item
+            name="slug"
+            label="Slug"
+          >
+            <Input />
+          </Form.Item>
 
-              (menuGroups || []).map(group => ({
+          {/* Description */}
 
-                label:
-                  group.danduong_nhom_tieude,
+          <Form.Item
 
-                value: group.id
+            name="mota"
 
-              }))
+            label="Description"
+
+          >
+
+            <TextArea
+
+              rows={4}
+
+              placeholder="Enter description"
+
+            />
+
+          </Form.Item>
+
+          {/* Menu Type */}
+
+          <Form.Item
+            name="type"
+            label="Menu Type"
+          >
+
+            <Select
+              placeholder="No Type"
+
+              options={[
+
+                {
+                  label: "Page",
+                  value: "page"
+                },
+
+                {
+                  label: "Menu Group",
+                  value: "menu_group"
+                },
+
+                {
+                  label: "Product Category",
+                  value: "product_category"
+                },
+
+                {
+                  label: "External Link",
+                  value: "external"
+                }
+
+              ]}
+
+            />
+
+          </Form.Item>
+
+          <Form.Item
+
+            shouldUpdate
+
+            noStyle
+
+          >
+
+            {
+
+              ({ getFieldValue }) => {
+
+                const type =
+                  getFieldValue("type");
+
+                if (type !== "external") {
+                  return null;
+                }
+
+                return (
+
+                  <Form.Item
+
+                    name="external_url"
+
+                    label="External URL"
+
+                    rules={[
+
+                      {
+                        required: true,
+                        message:
+                          "Please enter external URL"
+                      }
+
+                    ]}
+
+                  >
+
+                    <Input
+                      placeholder="https://example.com"
+                    />
+
+                  </Form.Item>
+
+                );
+
+              }
 
             }
 
-          />
+          </Form.Item>
 
-        </Form.Item>
+          {/* Group */}
 
-        {/* Parent */}
+          <Form.Item
 
-        <Form.Item
+            name="danduong_nhom_id"
 
-          name="parent_id"
+            label="Group"
 
-          label="Parent Item"
+          >
 
-        >
+            <Select
 
-          <Select
+              options={
 
-            allowClear
+                (menuGroups || []).map(group => ({
 
-            placeholder="No Parent"
+                  label:
+                    group.danduong_nhom_tieude,
 
-            options={parentOptions}
+                  value: group.id
 
-            optionRender={(option) => {
+                }))
 
-              return (
-                option.data.displayLabel
-              );
-
-            }}
-
-          />
-
-        </Form.Item>
-
-        {/* Publish */}
-
-        <Form.Item
-
-          name="trangthai"
-
-          label="Publish"
-
-          valuePropName="checked"
-
-        >
-
-          <Switch />
-
-        </Form.Item>
-
-        {/* Target */}
-
-        <Form.Item
-
-          name="target"
-
-          label="Target Window"
-
-        >
-
-          <Select
-
-            options={[
-
-              {
-                label: "Same Window",
-                value: "_self"
-              },
-
-              {
-                label: "New Window",
-                value: "_blank"
               }
 
-            ]}
+            />
 
-          />
+          </Form.Item>
 
-        </Form.Item>
+          {/* Parent */}
 
-        {/* Image */}
+          <Form.Item
 
-        <Form.Item
-          label="Image"
-        >
+            name="parent_id"
 
-          <Upload>
+            label="Parent Item"
 
-            <Button
-              icon={
-                <UploadOutlined />
-              }
-            >
+          >
 
-              Upload Image
+            <Select
 
-            </Button>
+              allowClear
 
-          </Upload>
+              placeholder="No Parent"
 
-        </Form.Item>
+              options={parentOptions}
 
-        {/* META */}
+              optionRender={(option) => {
 
-        <Divider orientation="left">
+                return (
+                  option.data.displayLabel
+                );
 
-          Meta Data
+              }}
 
-        </Divider>
+            />
 
-        {/* Meta Title */}
+          </Form.Item>
 
-        <Form.Item
+          {/* Publish */}
 
-          name="seo_title"
+          <Form.Item
 
-          label="Meta Title"
+            name="trangthai"
 
-        >
+            label="Publish"
 
-          <Input
-            placeholder="Enter meta title"
-          />
+            valuePropName="checked"
 
-        </Form.Item>
+          >
 
-        {/* Meta Description */}
+            <Switch />
 
-        <Form.Item
+          </Form.Item>
 
-          name="seo_description"
+          {/* Target */}
 
-          label="Meta Description"
+          <Form.Item
 
-        >
+            name="target"
 
-          <TextArea
+            label="Target Window"
 
-            rows={4}
+          >
 
-            placeholder="Enter meta description"
+            <Select
 
-          />
+              options={[
 
-        </Form.Item>
+                {
+                  label: "Same Window",
+                  value: "_self"
+                },
 
-        {/* Meta Keywords */}
+                {
+                  label: "New Window",
+                  value: "_blank"
+                }
 
-        <Form.Item
+              ]}
 
-          name="seo_keywords"
+            />
 
-          label="Meta Keywords"
+          </Form.Item>
 
-        >
+          {/* Image */}
 
-          <Input
-            placeholder="keyword1, keyword2"
-          />
+          <Form.Item
+            label="Image"
+          >
 
-        </Form.Item>
+            <Upload>
+
+              <Button
+                icon={
+                  <UploadOutlined />
+                }
+              >
+
+                Upload Image
+
+              </Button>
+
+            </Upload>
+
+          </Form.Item>
+
+          {/* META */}
+
+          <Divider orientation="left">
+
+            Meta Data
+
+          </Divider>
+
+          {/* Meta Title */}
+
+          <Form.Item
+
+            name="seo_title"
+
+            label="Meta Title"
+
+          >
+
+            <Input
+              placeholder="Enter meta title"
+            />
+
+          </Form.Item>
+
+          {/* Meta Description */}
+
+          <Form.Item
+
+            name="seo_description"
+
+            label="Meta Description"
+
+          >
+
+            <TextArea
+
+              rows={4}
+
+              placeholder="Enter meta description"
+
+            />
+
+          </Form.Item>
+
+          {/* Meta Keywords */}
+
+          <Form.Item
+
+            name="seo_keywords"
+
+            label="Meta Keywords"
+
+          >
+
+            <Input
+              placeholder="keyword1, keyword2"
+            />
+
+          </Form.Item>
         </div>
 
         {/* Submit */}
 
         <div
 
-  style={{
+          style={{
 
-    position: "sticky",
+            position: "sticky",
+            bottom: 0,
+            background: "#fff",
+            padding: "16px 0",
+            marginTop: 12,
+            zIndex: 10
+          }}
 
-    bottom: 0,
+        >
 
-    background: "#fff",
+          <Button
+            type="primary"
+            htmlType="submit"
+            block
+            style={{
+              padding: "20px 0"
+            }}
+          >
 
-    padding: "16px 0",
+            Save Menu
 
-    borderTop: "1px solid #f0f0f0",
+          </Button>
 
-    marginTop: 12,
-
-    zIndex: 10
-
-  }}
-
->
-
-  <Button
-    type="primary"
-    htmlType="submit"
-    block
-  >
-
-    Save Menu
-
-  </Button>
-
-</div>
+        </div>
 
       </Form>
 
