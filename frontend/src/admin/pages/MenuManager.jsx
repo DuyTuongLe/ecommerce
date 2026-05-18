@@ -340,6 +340,15 @@ export default function MenuManager() {
 
             minWidth: 0,
 
+            height:
+              "calc(100vh - 140px)",
+
+            overflowY: "auto",
+
+            scrollbarWidth: "none",
+
+            msOverflowStyle: "none"
+
           }}
         >
 

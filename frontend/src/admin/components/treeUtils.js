@@ -7,7 +7,9 @@ export function flattenTree(
 
   depth = 0,
 
-  parentId = null
+  parentId = null,
+
+  expandedIds = []
 
 ) {
 
@@ -25,7 +27,17 @@ export function flattenTree(
 
     });
 
-    if (item.children) {
+
+    const isExpanded =
+      expandedIds.includes(
+        item.id
+      );
+
+
+    if (
+      item.children?.length &&
+      isExpanded
+    ) {
 
       result = [
 
@@ -37,7 +49,9 @@ export function flattenTree(
 
           depth + 1,
 
-          item.id
+          item.id,
+
+          expandedIds
 
         )
 

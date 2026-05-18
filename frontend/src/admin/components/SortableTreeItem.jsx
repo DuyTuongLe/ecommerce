@@ -24,7 +24,8 @@ export default function
   SortableTreeItem({
 
     item,
-
+    expandedIds,
+    onToggleExpand,
     onIndent,
     onOutdent,
     onSelect,
@@ -43,7 +44,10 @@ export default function
 
   } = useSortable({
 
-    id: item.id
+    id: item.id,
+    transition: {
+    duration: 150
+  }
 
   });
 
@@ -62,9 +66,9 @@ export default function
     background:
       active
         ? "#e6f4ff" :
-      isDragging
-        ? "#f5f5f5"
-        : "#fff",
+        isDragging
+          ? "#f5f5f5"
+          : "#fff",
 
     border:
       active
@@ -90,52 +94,114 @@ export default function
       isDragging
         ? "0 4px 12px rgba(0,0,0,.1)"
         : active
-        ? "0 0 0 2px rgba(22,119,255,.15)"
-        : "none"
+          ? "0 0 0 2px rgba(22,119,255,.15)"
+          : "none"
 
   };
+
+  const hasChildren =
+    item.children?.length;
+
+  const expanded =
+    expandedIds?.includes(
+      item.id
+    );
 
   return (
 
     <div
 
-      ref={setNodeRef}
+  ref={setNodeRef}
 
-      style={style}
+  style={style}
 
-      onClick={() =>
-        onSelect?.(item)
-      }
-      
-      
+  {...attributes}
+  {...listeners}
 
+  onClick={() =>
+    onSelect?.(item)
+  }
 
-    >
+>
 
       {/* DRAG */}
 
       <div
+      onPointerDown={(e) => {
 
-        {...attributes}
-        {...listeners}
+  e.stopPropagation();
 
-        style={{
+}}
+
+  onClick={(e) => {
+
+    e.stopPropagation();
+
+    if (!hasChildren) {
+      return;
+    }
+
+    onToggleExpand(
+      item.id
+    );
+
+  }}
+
+  style={{
+
           cursor: "grab",
-          fontSize: 18
+
+          display: "flex",
+
+          alignItems: "center",
+
+          justifyContent: "center",
+
+          userSelect: "none",
+
+          transition:
+            "transform .2s ease",
+
+          transform:
+
+            expanded
+
+              ? "rotate(90deg)"
+
+              : "rotate(0deg)",
+
+          opacity:
+            hasChildren
+              ? 1
+              : .35
+
         }}
 
       >
 
-        ☰
+        ▶
 
       </div>
-
-      <div>
-
+      <div
+      
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8
+        }}
+      >
         <div
           style={{
-            fontWeight: 600
+
+            fontWeight: 600,
+
+            cursor:
+              hasChildren
+                ? "pointer"
+                : "default"
+
           }}
+
         >
 
           {
@@ -197,7 +263,15 @@ export default function
 
       {/* ACTIONS */}
 
-      <Space>
+      <Space
+
+  onPointerDown={(e) => {
+
+    e.stopPropagation();
+
+  }}
+
+>
 
         <Button
           size="small"

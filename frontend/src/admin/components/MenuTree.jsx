@@ -48,16 +48,34 @@ export default function
   const [treeItems, setTreeItems] =
     useState([]);
 
+  const [expandedIds, setExpandedIds] = useState([]);
+
+  useEffect(() => {
+    const rootIds = [];
+
+    items.forEach(item => {
+
+      if (item.children?.length) {
+
+        rootIds.push(item.id);
+
+      }
+
+    });
+
+    setExpandedIds(rootIds);
+
+  }, [items]);
+
   useEffect(() => {
 
-    const flat =
-      flattenTree(items);
+    const flat = flattenTree(items, 0, null, expandedIds);
 
     setTreeItems(flat);
 
     onChange?.(flat);
 
-  }, [items]);
+  }, [items, expandedIds]);
 
 
   function handleDragEnd(event) {
@@ -90,15 +108,15 @@ export default function
 
     const updated = arrayMove(
 
-    treeItems,
-    oldIndex,
-    newIndex
+      treeItems,
+      oldIndex,
+      newIndex
 
-  );
+    );
 
-  setTreeItems(updated);
+    setTreeItems(updated);
 
-  onChange?.(updated);
+    onChange?.(updated);
 
   }
 
@@ -198,6 +216,43 @@ export default function
   }
 
 
+  function toggleExpand(id) {
+
+  setExpandedIds(prev => {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Collapse
+    |--------------------------------------------------------------------------
+    */
+
+    if (prev.includes(id)) {
+
+      return prev.filter(
+        x => x !== id
+      );
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Expand
+    |--------------------------------------------------------------------------
+    */
+
+    return [
+
+      ...prev,
+
+      id
+
+    ];
+
+  });
+
+}
+
+
   return (
 
     <div>
@@ -241,6 +296,10 @@ export default function
                 key={item.id}
 
                 item={item}
+
+                expandedIds={expandedIds}
+
+                onToggleExpand={toggleExpand}
 
                 onIndent={
                   handleIndent

@@ -1,5 +1,3 @@
-//app/Services/SlugService.php
-
 <?php
 
 namespace App\Services;
