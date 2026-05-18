@@ -16,7 +16,9 @@ class Danduong extends Model
         'thumbnail',
         'thutu',
         'trangthai',
-        'macdinh'
+        'macdinh',
+        'target',
+        'external_url'
     ];
 
     public function ngonngus() {

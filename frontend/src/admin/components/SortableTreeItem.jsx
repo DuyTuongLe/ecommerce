@@ -26,7 +26,9 @@ export default function
     item,
 
     onIndent,
-    onOutdent
+    onOutdent,
+    onSelect,
+    active
 
   }) {
 
@@ -58,11 +60,16 @@ export default function
       item.depth * 40,
 
     background:
+      active
+        ? "#e6f4ff" :
       isDragging
         ? "#f5f5f5"
         : "#fff",
 
-    border: "1px solid #eee",
+    border:
+      active
+        ? "1px solid #1677ff"
+        : "1px solid #eee",
 
     borderRadius: 10,
 
@@ -82,6 +89,8 @@ export default function
     boxShadow:
       isDragging
         ? "0 4px 12px rgba(0,0,0,.1)"
+        : active
+        ? "0 0 0 2px rgba(22,119,255,.15)"
         : "none"
 
   };
@@ -93,6 +102,13 @@ export default function
       ref={setNodeRef}
 
       style={style}
+
+      onClick={() =>
+        onSelect?.(item)
+      }
+      
+      
+
 
     >
 

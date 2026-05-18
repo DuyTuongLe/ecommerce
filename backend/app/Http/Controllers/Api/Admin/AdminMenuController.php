@@ -56,4 +56,15 @@ class AdminMenuController extends Controller
             $this->menuService->getMenuGroups()
         );
     }
+
+    public function store(Request $request)
+    {
+        return response()->json(
+
+            $this->menuService->saveMenu(
+                $request->all()
+            )
+
+        );
+    }
 }

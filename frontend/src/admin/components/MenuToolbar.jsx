@@ -11,7 +11,8 @@ export default function MenuToolbar({
     onChangeMenuGroup,
     menuGroups,
     onSave,
-    onReload
+    onReload,
+    onAdd,
 }) {
     return (
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
@@ -56,12 +57,8 @@ export default function MenuToolbar({
                     Reload
                 </Button>
 
-                <Button type="primary">
+                <Button type="primary" onClick={onAdd}>
                     Add
-                </Button>
-
-                <Button>
-                    Edit
                 </Button>
 
                 <Button danger>

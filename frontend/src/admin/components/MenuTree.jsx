@@ -41,7 +41,7 @@ import {
 export default function
   MenuTree({
 
-    items, onChange
+    items, onChange, onSelect, selectedItem
 
   }) {
 
@@ -88,17 +88,17 @@ export default function
           item.id === over.id
       );
 
-    setTreeItems(
+    const updated = arrayMove(
 
-      arrayMove(
+    treeItems,
+    oldIndex,
+    newIndex
 
-        treeItems,
-        oldIndex,
-        newIndex
+  );
 
-      )
+  setTreeItems(updated);
 
-    );
+  onChange?.(updated);
 
   }
 
@@ -249,6 +249,10 @@ export default function
                 onOutdent={
                   handleOutdent
                 }
+
+                onSelect={onSelect}
+
+                active={selectedItem?.id === item.id}
 
               />
 

@@ -1,3 +1,5 @@
+//src/admin/pages/MenuManager.jsx
+
 import {
   useState,
   useEffect
@@ -25,7 +27,7 @@ import MenuTree from "../components/MenuTree";
 
 import { buildSortPayload } from "../components/treeUtils";
 
-import { sortMenus } from "../../shared/services/menuApi";
+import { sortMenus, saveMenu } from "../../shared/services/menuApi";
 
 import MenuForm from "../components/MenuForm";
 
@@ -42,6 +44,12 @@ export default function MenuManager() {
 
   const [language, setLanguage] =
     useState(null);
+
+  const [mode, setMode] = useState("add");
+
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const [formLanguage, setFormLanguage] = useState(null);
 
   const {
 
@@ -80,6 +88,17 @@ export default function MenuManager() {
     ) {
 
       setLanguage(
+        defaultLanguage.code
+      );
+
+    }
+
+    if (
+      defaultLanguage &&
+      !formLanguage
+    ) {
+
+      setFormLanguage(
         defaultLanguage.code
       );
 
@@ -152,6 +171,53 @@ export default function MenuManager() {
     );
   }
 
+  async function handleSubmit(values) {
+
+    try {
+
+      const payload = {
+
+        ...values,
+
+        goc_id:
+          values.parent_id,
+
+        ngonngu:
+
+          mode === "add"
+
+            ? formLanguage
+
+            : language,
+
+        id:
+          selectedItem?.id
+
+      };
+
+      await saveMenu(
+        payload
+      );
+
+      message.success(
+        "Saved successfully"
+      );
+
+      handleReload();
+
+    }
+    catch (error) {
+
+      console.error(error);
+
+      message.error(
+        "Save failed"
+      );
+
+    }
+
+  }
+
 
 
   return (
@@ -175,6 +241,16 @@ export default function MenuManager() {
         onSave={handleSave}
 
         onReload={handleReload}
+
+        onAdd={() => {
+
+          setMode("add");
+
+          setSelectedItem(null);
+
+          setFormLanguage(language);
+
+        }}
 
       />
 
@@ -216,6 +292,17 @@ export default function MenuManager() {
               setTreeItems
             }
 
+            onSelect={(item) => {
+
+              setSelectedItem(item);
+
+              setMode("edit");
+
+            }}
+
+            selectedItem={
+              selectedItem
+            }
           />
 
         </div>
@@ -230,7 +317,31 @@ export default function MenuManager() {
           }}
         >
 
-          <MenuForm />
+          <MenuForm
+
+            mode={mode}
+
+            language={language}
+
+            formLanguage={formLanguage}
+
+            setFormLanguage={
+              setFormLanguage
+            }
+
+            languages={languages}
+
+            selectedItem={selectedItem}
+
+            menus={menus}
+
+            menuGroups={menuGroups}
+
+            menuGroup={menuGroup}
+
+            onSubmit={handleSubmit}
+
+          />
 
         </div>
 

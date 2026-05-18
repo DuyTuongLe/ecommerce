@@ -13,9 +13,19 @@ Route::prefix('admin')->group(function () {
         [AdminMenuController::class, 'index']
     );
 
+    Route::post(
+        '/menus',
+        [AdminMenuController::class, 'store']
+    );
+
     Route::get(
         '/product-categories',
         [AdminMenuController::class, 'productCategories']
+    );
+
+    Route::post(
+        '/menus/sort',
+        [AdminMenuController::class, "sort"]
     );
 
     Route::get(
@@ -30,10 +40,7 @@ Route::prefix('admin')->group(function () {
 
 });
 
-Route::post(
-    '/admin/menus/sort',
-    [AdminMenuController::class, "sort"]
-);
+
 
 
 

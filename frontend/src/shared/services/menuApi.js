@@ -58,6 +58,14 @@ export async function sortMenus(items) {
   return res.data;
 }
 
+export async function saveMenu(data) {
+  const res = await api.post(
+    "/admin/menus",
+    data
+  );
+  return res.data;
+}
+
 /*
 |--------------------------------------------------------------------------
 | Frontend
