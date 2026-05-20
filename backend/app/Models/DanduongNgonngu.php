@@ -16,7 +16,8 @@ class DanduongNgonngu extends Model
         'seo_title',
         'seo_description',
         'seo_keywork',
-        'ngonngu'
+        'ngonngu',
+        'external_url'
     ];
 
     public function danduong()

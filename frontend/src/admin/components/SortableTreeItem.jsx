@@ -20,6 +20,12 @@ import {
 
 } from "antd";
 
+import {
+
+  CaretRightOutlined, MenuOutlined
+
+} from "@ant-design/icons";
+
 export default function
   SortableTreeItem({
 
@@ -46,8 +52,8 @@ export default function
 
     id: item.id,
     transition: {
-    duration: 150
-  }
+      duration: 150
+    }
 
   });
 
@@ -89,6 +95,7 @@ export default function
     alignItems: "center",
 
     gap: 12,
+    cursor: "pointer",
 
     boxShadow:
       isDragging
@@ -111,79 +118,122 @@ export default function
 
     <div
 
-  ref={setNodeRef}
+      ref={setNodeRef}
+      style={style}
+      onClick={() =>
+        onSelect?.(item)
+      }
 
-  style={style}
-
-  {...attributes}
-  {...listeners}
-
-  onClick={() =>
-    onSelect?.(item)
-  }
-
->
-
-      {/* DRAG */}
+    >
 
       <div
-      onPointerDown={(e) => {
-
-  e.stopPropagation();
-
-}}
-
-  onClick={(e) => {
-
-    e.stopPropagation();
-
-    if (!hasChildren) {
-      return;
-    }
-
-    onToggleExpand(
-      item.id
-    );
-
-  }}
-
-  style={{
-
-          cursor: "grab",
-
+        style={{
           display: "flex",
-
           alignItems: "center",
-
-          justifyContent: "center",
-
-          userSelect: "none",
-
-          transition:
-            "transform .2s ease",
-
-          transform:
-
-            expanded
-
-              ? "rotate(90deg)"
-
-              : "rotate(0deg)",
-
-          opacity:
-            hasChildren
-              ? 1
-              : .35
-
+          gap: 8
         }}
-
       >
 
-        ▶
+        {/* DRAG HANDLE */}
+
+        <div
+
+          {...attributes}
+          {...listeners}
+
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+
+          style={{
+
+            cursor: "grab",
+
+            display: "flex",
+
+            alignItems: "center",
+
+            justifyContent: "center",
+
+            userSelect: "none",
+
+            fontSize: 16,
+
+            color: "#999"
+
+          }}
+
+        >
+
+          <MenuOutlined />
+
+        </div>
+
+        {/* TOGGLE */}
+
+        <div
+
+          onPointerDown={(e) => {
+
+            e.stopPropagation();
+
+          }}
+
+          onClick={(e) => {
+
+            e.stopPropagation();
+
+            if (!hasChildren) {
+              return;
+            }
+
+            onToggleExpand(
+              item.id
+            );
+
+          }}
+
+          style={{
+
+            cursor:
+              hasChildren
+                ? "pointer" : "default",
+
+            display: "flex",
+
+            alignItems: "center",
+
+            justifyContent: "center",
+
+            userSelect: "none",
+
+            transition:
+              "transform .2s ease",
+
+            transform:
+
+              expanded
+
+                ? "rotate(90deg)"
+
+                : "rotate(0deg)",
+
+            opacity:
+              hasChildren
+                ? 1
+                : .35
+
+          }}
+
+        >
+
+          <CaretRightOutlined style={{ fontSize: "18px" }} />
+
+        </div>
 
       </div>
       <div
-      
+
         style={{
           display: "flex",
           alignItems: "center",
@@ -227,11 +277,7 @@ export default function
               </Tag>
             )
 
-            : (
-              <Tag>
-                No
-              </Tag>
-            )
+            : null
 
         }
 
@@ -265,13 +311,13 @@ export default function
 
       <Space
 
-  onPointerDown={(e) => {
+        onPointerDown={(e) => {
 
-    e.stopPropagation();
+          e.stopPropagation();
 
-  }}
+        }}
 
->
+      >
 
         <Button
           size="small"

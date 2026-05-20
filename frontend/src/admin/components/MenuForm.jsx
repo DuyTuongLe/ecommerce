@@ -1,7 +1,8 @@
 // src/admin/components/MenuForm.jsx
 
 import {
-  useEffect
+  useEffect,
+  useState
 } from "react";
 
 import {
@@ -18,7 +19,8 @@ import {
   DatePicker,
   Upload,
   Button,
-  Divider
+  Divider,
+  Space
 
 } from "antd";
 
@@ -29,6 +31,9 @@ import {
 } from "@ant-design/icons";
 
 import slugify from "slugify";
+
+import MediaPickerModal
+  from "./MediaPickerModal";
 
 const {
   TextArea
@@ -61,74 +66,110 @@ export default function MenuForm({
   const [form] =
     Form.useForm();
 
-    function handleTitleBlur() {
+  const [
 
-  /*
-  |--------------------------------------------------------------------------
-  | Only Add Mode
-  |--------------------------------------------------------------------------
-  */
+    mediaModalOpen,
 
-  if (mode !== "add") {
-    return;
-  }
+    setMediaModalOpen
 
-  /*
-  |--------------------------------------------------------------------------
-  | User Already Edited Slug
-  |--------------------------------------------------------------------------
-  */
+  ] = useState(false);
 
-  const currentSlug =
-    form.getFieldValue("slug");
+  const [
 
-  if (currentSlug) {
-    return;
-  }
+    selectedThumbnail,
 
-  /*
-  |--------------------------------------------------------------------------
-  | Get Title
-  |--------------------------------------------------------------------------
-  */
+    setSelectedThumbnail
 
-  const title =
-    form.getFieldValue(
-      "danduong_nn_ten"
+  ] = useState(null);
+
+  function handleTitleBlur() {
+
+    /*
+    |--------------------------------------------------------------------------
+    | Only Add Mode
+    |--------------------------------------------------------------------------
+    */
+
+    if (mode !== "add") {
+      return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Already Edited Slug
+    |--------------------------------------------------------------------------
+    */
+
+    const currentSlug =
+      form.getFieldValue("slug");
+
+    if (currentSlug) {
+      return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Get Title
+    |--------------------------------------------------------------------------
+    */
+
+    const title =
+      form.getFieldValue(
+        "danduong_nn_ten"
+      );
+
+    if (!title) {
+      return;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Generate Slug
+    |--------------------------------------------------------------------------
+    */
+
+    const slug = slugify(title, {
+
+      lower: true,
+
+      strict: true,
+
+      locale: "vi"
+
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Set Form
+    |--------------------------------------------------------------------------
+    */
+
+    form.setFieldValue(
+      "slug",
+      slug
     );
 
-  if (!title) {
-    return;
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | Generate Slug
-  |--------------------------------------------------------------------------
-  */
+  function handleSelectMedia(media) {
+    form.setFieldValue(
+      "thumbnail_id",
+      media.id
+    );
 
-  const slug = slugify(title, {
+    setSelectedThumbnail(media);
 
-    lower: true,
+    setMediaModalOpen(false);
+  }
 
-    strict: true,
+  function handleRemoveThumbnail() {
+    form.setFieldValue(
+      "thumbnail_id",
+      null
+    );
 
-    locale: "vi"
-
-  });
-
-  /*
-  |--------------------------------------------------------------------------
-  | Set Form
-  |--------------------------------------------------------------------------
-  */
-
-  form.setFieldValue(
-    "slug",
-    slug
-  );
-
-}
+    setSelectedThumbnail(null);
+  }
 
   const currentLanguage =
 
@@ -230,6 +271,9 @@ export default function MenuForm({
       trangthai:
         selectedItem.trangthai,
 
+      thumbnail_id:
+        selectedItem.thumbnail_id,
+
       parent_id:
         selectedItem.parentId,
 
@@ -252,9 +296,13 @@ export default function MenuForm({
         selectedItem.target,
 
       external_url:
-        selectedItem.external_url,
+        translation?.external_url || "",
 
     });
+
+    setSelectedThumbnail(
+      selectedItem.thumbnail || null
+    );
 
   }, [
 
@@ -613,23 +661,101 @@ export default function MenuForm({
           {/* Image */}
 
           <Form.Item
-            label="Image"
+            label="Thumbnail"
           >
 
-            <Upload>
+            <div
 
-              <Button
-                icon={
-                  <UploadOutlined />
+              style={{
+
+                display: "flex",
+
+                flexDirection: "column",
+
+                gap: 12
+
+              }}
+
+            >
+
+              {
+                selectedThumbnail && (
+
+                  <img
+
+                    src={
+                      selectedThumbnail.url
+                    }
+
+                    alt=""
+
+                    style={{
+
+                      width: "100%",
+
+                      maxWidth: 240,
+
+                      borderRadius: 12,
+
+                      border:
+                        "1px solid #f0f0f0"
+
+                    }}
+
+                  />
+
+                )
+              }
+
+              <Space>
+
+                <Button
+
+                  onClick={() => {
+
+                    setMediaModalOpen(
+                      true
+                    );
+
+                  }}
+
+                >
+
+                  Choose Image
+
+                </Button>
+
+                {
+                  selectedThumbnail && (
+
+                    <Button
+
+                      danger
+
+                      onClick={
+                        handleRemoveThumbnail
+                      }
+
+                    >
+
+                      Remove
+
+                    </Button>
+
+                  )
                 }
-              >
 
-                Upload Image
+              </Space>
 
-              </Button>
+            </div>
 
-            </Upload>
+          </Form.Item>
 
+          <Form.Item
+            name="thumbnail_id"
+            hidden
+          >
+            <Input />
           </Form.Item>
 
           {/* META */}
@@ -725,7 +851,19 @@ export default function MenuForm({
         </div>
 
       </Form>
+      <MediaPickerModal
 
+        open={mediaModalOpen}
+
+        onCancel={() => {
+
+          setMediaModalOpen(false);
+
+        }}
+
+        onSelect={handleSelectMedia}
+
+      />
     </Card>
 
   );

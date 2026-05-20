@@ -9,6 +9,7 @@ import AdminLayout from "../layouts/AdminLayout";
 
 import Dashboard from "../pages/Dashboard";
 import MenuManager from "../pages/MenuManager";
+import MediaManager from "../pages/MediaManager";
 
 export default function AdminRoutes() {
 
@@ -29,6 +30,11 @@ export default function AdminRoutes() {
         <Route
           path="menus"
           element={<MenuManager />}
+        />
+
+        <Route
+          path="media"
+          element={<MediaManager />}
         />
 
       </Route>

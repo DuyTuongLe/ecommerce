@@ -13,12 +13,11 @@ class Danduong extends Model
         'goc_id',
         'danduong_nhom_id',
         'type',
-        'thumbnail',
+        'thumbnail_id',
         'thutu',
         'trangthai',
         'macdinh',
-        'target',
-        'external_url'
+        'target'
     ];
 
     public function ngonngus() {
@@ -37,11 +36,15 @@ class Danduong extends Model
 
     public function children()
     {
-        return $this->hasMany(Danduong::class.'goc_id');
+        return $this->hasMany(Danduong::class,'goc_id');
     }
 
     public function group()
     {
         return $this->belongsTo(DanduongNhom::class, "danduong_nhom_id");
+    }
+
+    public function thumbnail() {
+        return $this->belongsTo(Media::class,"thumbnail_id");
     }
 }

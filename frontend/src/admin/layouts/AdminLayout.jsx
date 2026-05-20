@@ -22,7 +22,8 @@ import {
   MenuOutlined,
   ShoppingOutlined,
   MenuFoldOutlined,
-  MenuUnfoldOutlined
+  MenuUnfoldOutlined,
+  FolderOpenOutlined
 
 } from "@ant-design/icons";
 
@@ -83,17 +84,16 @@ export default function AdminLayout() {
                 </Link>
               )
             },
-
+            
             {
-              key: "products",
-              icon: <ShoppingOutlined />,
+              key: "media",
+              icon: <FolderOpenOutlined />,
               label: (
-                <Link to="/admin/products">
-                  Products
+                <Link to="/admin/media">
+                  File Manager
                 </Link>
               )
             }
-
           ]}
         />
 

@@ -20,6 +20,7 @@ class MenuService
         return Danduong::query()
             ->with([
                 'group',
+                'thumbnail',
                 'ngonngus' => function ($query) use ($lang) {
                     $query->where('ngonngu', $lang);
                 },
@@ -81,19 +82,11 @@ class MenuService
             ->get();
     }
 
-
-
     public function saveMenu($data)
     {
         DB::beginTransaction();
 
         try {
-
-            /*
-        |--------------------------------------------------------------------------
-        | MAIN MENU
-        |--------------------------------------------------------------------------
-        */
 
             if (!empty($data['id'])) {
 
@@ -111,11 +104,11 @@ class MenuService
                     'type' =>
                     $data['type'],
 
+                    'thumbnail_id' =>
+                    $data['thumbnail_id'] ?? null,
+
                     'target' =>
                     $data['target'] ?? '_self',
-
-                    'external_url' =>
-                    $data['external_url'] ?? null,
 
                     'trangthai' =>
                     $data['trangthai'] ?? 1,
@@ -143,11 +136,11 @@ class MenuService
                     'type' =>
                     $data['type'],
 
+                    'thumbnail_id' =>
+                    $data['thumbnail_id'] ?? null,
+
                     'target' =>
                     $data['target'] ?? '_self',
-
-                    'external_url' =>
-                    $data['external_url'] ?? null,
 
                     'trangthai' =>
                     $data['trangthai'] ?? 1,
@@ -156,43 +149,41 @@ class MenuService
 
                 ]);
             }
-/*
-|--------------------------------------------------------------------------
-| SLUG
-|--------------------------------------------------------------------------
-*/
 
-$slug = SlugService::generate([
+            if ($data['type'] !== 'external') {
 
-    'text' => $data['slug'],
+                $slug = SlugService::generate([
 
-    'entity_type' => 'danduong',
+                    'text' => $data['slug'],
 
-    'entity_id' => $menu->id,
+                    'entity_type' => 'danduong',
 
-    'ngonngu' => $data['ngonngu']
+                    'entity_id' => $menu->id,
 
-]);
+                    'ngonngu' => $data['ngonngu']
 
-Url::updateOrCreate(
+                ]);
 
-    [
+                Url::updateOrCreate(
 
-        'entity_type' => 'danduong',
+                    [
 
-        'entity_id' => $menu->id,
+                        'entity_type' => 'danduong',
 
-        'ngonngu' => $data['ngonngu']
+                        'entity_id' => $menu->id,
 
-    ],
+                        'ngonngu' => $data['ngonngu']
 
-    [
+                    ],
 
-        'slug' => $slug
+                    [
 
-    ]
+                        'slug' => $slug
 
-);
+                    ]
+
+                );
+            }
             /*
         |--------------------------------------------------------------------------
         | TRANSLATION
@@ -227,6 +218,9 @@ Url::updateOrCreate(
 
                     'seo_keywords' =>
                     $data['seo_keywords'] ?? null,
+
+                    'external_url' =>
+                    $data['external_url'] ?? null,
 
                 ]
 
