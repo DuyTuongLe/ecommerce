@@ -35,7 +35,8 @@ export default function
     onIndent,
     onOutdent,
     onSelect,
-    active
+    active,
+    language
 
   }) {
 
@@ -112,6 +113,14 @@ export default function
   const expanded =
     expandedIds?.includes(
       item.id
+    );
+
+  const translation =
+
+    item.ngonngus?.find(
+
+      x => x.ngonngu === language
+
     );
 
   return (
@@ -256,7 +265,7 @@ export default function
 
           {
 
-            item.ngonngus?.[0]
+            translation
               ?.danduong_nn_ten
 
           }

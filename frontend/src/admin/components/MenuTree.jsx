@@ -41,7 +41,7 @@ import {
 export default function
   MenuTree({
 
-    items, onChange, onSelect, selectedItem
+    items, onChange, onSelect, selectedItem, language
 
   }) {
 
@@ -312,6 +312,8 @@ export default function
                 onSelect={onSelect}
 
                 active={selectedItem?.id === item.id}
+
+                language={language}
 
               />
 

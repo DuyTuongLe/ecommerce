@@ -100,3 +100,17 @@ export async function deleteMedia(
   return res.data;
 
 }
+
+export async function updateMedia(
+  id,
+  data
+) {
+
+  const res = await api.put(
+    `/admin/media/${id}`,
+    data
+  );
+
+  return res.data;
+
+}

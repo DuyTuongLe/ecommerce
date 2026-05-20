@@ -66,14 +66,19 @@ Route::prefix('admin')->group(function () {
     );
 
     Route::post(
-    '/media/upload',
-    [MediaController::class,'upload']
-);
+        '/media/upload',
+        [MediaController::class, 'upload']
+    );
 
-Route::delete(
-    '/media/{id}',
-    [MediaController::class, 'destroyMedia']
-);
+    Route::put(
+        '/media/{id}',
+        [MediaController::class, 'update']
+    );
+
+    Route::delete(
+        '/media/{id}',
+        [MediaController::class, 'destroyMedia']
+    );
 });
 
 

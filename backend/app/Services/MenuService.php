@@ -12,6 +12,7 @@ use App\Models\Url;
 use App\Services\SlugService;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class MenuService
 {
@@ -21,9 +22,7 @@ class MenuService
             ->with([
                 'group',
                 'thumbnail',
-                'ngonngus' => function ($query) use ($lang) {
-                    $query->where('ngonngu', $lang);
-                },
+                'ngonngus',
 
                 'urls' => function ($query) use ($lang) {
                     $query->where('ngonngu', $lang);

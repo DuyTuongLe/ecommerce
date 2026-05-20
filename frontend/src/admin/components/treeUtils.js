@@ -65,6 +65,56 @@ export function flattenTree(
 
 }
 
+export function flattenAllTree(
+
+  items,
+
+  depth = 0,
+
+  parentId = null
+
+) {
+
+  let result = [];
+
+  items.forEach(item => {
+
+    result.push({
+
+      ...item,
+
+      depth,
+
+      parentId
+
+    });
+
+    if (item.children?.length) {
+
+      result = [
+
+        ...result,
+
+        ...flattenAllTree(
+
+          item.children,
+
+          depth + 1,
+
+          item.id
+
+        )
+
+      ];
+
+    }
+
+  });
+
+  return result;
+
+}
+
 export function buildSortPayload(
   items
 ) {

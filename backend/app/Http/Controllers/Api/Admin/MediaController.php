@@ -212,6 +212,43 @@ class MediaController extends Controller
         ]);
     }
 
+    public function update(
+
+    Request $request,
+
+    $id
+
+) {
+
+    $request->validate([
+
+        'alt' => [
+            'nullable',
+            'max:255'
+        ]
+
+    ]);
+
+    $media =
+        Media::findOrFail($id);
+
+    $media->update([
+
+        'alt' =>
+            $request->alt
+
+    ]);
+
+    return response()->json([
+
+        'success' => true,
+
+        'media' => $media
+
+    ]);
+
+}
+
     public function destroyFolder(
         $id
     ) {
@@ -305,6 +342,8 @@ class MediaController extends Controller
 
             );
 
+        $alt = $originalName;
+
         $extension =
             $file
             ->getClientOriginalExtension();
@@ -391,6 +430,8 @@ class MediaController extends Controller
                 $filename .
                     '.' .
                     $extension,
+
+                    'alt' => $alt,
 
                 'mime_type' =>
 

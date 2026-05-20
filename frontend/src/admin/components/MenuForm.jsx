@@ -6,7 +6,7 @@ import {
 } from "react";
 
 import {
-  flattenTree
+  flattenTree, flattenAllTree
 } from "./treeUtils";
 
 import {
@@ -33,7 +33,7 @@ import {
 import slugify from "slugify";
 
 import MediaPickerModal
-  from "./MediaPickerModal";
+  from "./media/MediaPickerModal";
 
 const {
   TextArea
@@ -181,7 +181,7 @@ export default function MenuForm({
 
   const flatMenus =
 
-    flattenTree(
+    flattenAllTree(
       menus || []
     );
 
@@ -255,6 +255,8 @@ export default function MenuForm({
         x =>
           x.ngonngu === language
       );
+
+    form.resetFields();
 
     form.setFieldsValue({
 
@@ -436,10 +438,43 @@ export default function MenuForm({
           </Form.Item>
 
           <Form.Item
-            name="slug"
-            label="Slug"
+
+            shouldUpdate
+
+            noStyle
+
           >
-            <Input />
+
+            {
+
+              ({ getFieldValue }) => {
+
+                const type =
+                  getFieldValue("type");
+
+                return (
+
+                  <Form.Item
+                    name="slug"
+                    label="Slug"
+                  >
+
+                    <Input
+
+                      disabled={
+                        type === "external"
+                      }
+
+                    />
+
+                  </Form.Item>
+
+                );
+
+              }
+
+            }
+
           </Form.Item>
 
           {/* Description */}
@@ -515,10 +550,6 @@ export default function MenuForm({
                 const type =
                   getFieldValue("type");
 
-                if (type !== "external") {
-                  return null;
-                }
-
                 return (
 
                   <Form.Item
@@ -530,9 +561,13 @@ export default function MenuForm({
                     rules={[
 
                       {
-                        required: true,
+
+                        required:
+                          type === "external",
+
                         message:
                           "Please enter external URL"
+
                       }
 
                     ]}
@@ -540,7 +575,13 @@ export default function MenuForm({
                   >
 
                     <Input
+
                       placeholder="https://example.com"
+
+                      disabled={
+                        type !== "external"
+                      }
+
                     />
 
                   </Form.Item>

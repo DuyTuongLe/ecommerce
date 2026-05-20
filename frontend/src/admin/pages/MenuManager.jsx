@@ -77,6 +77,67 @@ export default function MenuManager() {
 
   useEffect(() => {
 
+    if (!selectedItem) {
+      return;
+    }
+
+    function findItem(items, id) {
+
+      for (const item of items) {
+
+        if (item.id === id) {
+          return item;
+        }
+
+        if (item.children?.length) {
+
+          const found =
+            findItem(
+              item.children,
+              id
+            );
+
+          if (found) {
+            return found;
+          }
+
+        }
+
+      }
+
+      return null;
+
+    }
+
+    const updatedItem =
+      findItem(
+        menus,
+        selectedItem.id
+      );
+
+    if (!updatedItem) {
+      return;
+    }
+
+    setSelectedItem({
+
+      ...updatedItem,
+
+      parentId:
+        updatedItem.goc_id
+
+    });
+
+  }, [
+
+    menus,
+
+    language
+
+  ]);
+
+  useEffect(() => {
+
     if (!languages.length)
       return;
 
@@ -371,6 +432,8 @@ export default function MenuManager() {
             selectedItem={
               selectedItem
             }
+
+            language={language}
           />
 
         </div>
