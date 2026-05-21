@@ -1,56 +1,111 @@
 // src/admin/components/media/CreateFolderModal.jsx
 
 import {
+
     Modal,
-    Input
+    Input,
+    message
+
 } from "antd";
 
 import {
-    useEffect,
+
     useState
+
 } from "react";
 
 export default function CreateFolderModal({
+
     open,
+
     onCancel,
+
     onSubmit
+
 }) {
 
-    const [value, setValue] = useState("");
+    const [
 
-    useEffect(() => {
+        value,
 
-        if (open) {
-            setValue("");
+        setValue
+
+    ] = useState("");
+
+    function handleSubmit() {
+
+        const trimmed =
+            value.trim();
+
+        // EMPTY
+
+        if (!trimmed) {
+
+            return message.error(
+                "Folder name is required"
+            );
+
         }
 
-    }, [open]);
+        // SPECIAL CHARACTERS
+
+        const regex =
+            /^[\p{L}\p{N}\s\-_]+$/u;
+
+        if (!regex.test(trimmed)) {
+
+            return message.error(
+                "Folder name cannot contain special characters"
+            );
+
+        }
+
+        onSubmit(trimmed);
+
+        setValue("");
+
+    }
 
     return (
 
         <Modal
+
             open={open}
+
             title="Create Folder"
+
             destroyOnClose
+
             onCancel={onCancel}
-            onOk={() => {
-                onSubmit(value);
-            }}
+
+            onOk={handleSubmit}
+
         >
 
             <Input
+
                 autoFocus
+
                 placeholder="Folder name"
+
                 value={value}
-                onPressEnter={() => {
-                    onSubmit(value);
-                }}
+
+                onPressEnter={
+                    handleSubmit
+                }
+
                 onChange={(e) => {
-                    setValue(e.target.value);
+
+                    setValue(
+                        e.target.value
+                    );
+
                 }}
+
             />
 
         </Modal>
 
     );
+
 }

@@ -15,7 +15,7 @@ class DanduongNgonngu extends Model
         'mota',
         'seo_title',
         'seo_description',
-        'seo_keywork',
+        'seo_keywords',
         'ngonngu',
         'external_url'
     ];

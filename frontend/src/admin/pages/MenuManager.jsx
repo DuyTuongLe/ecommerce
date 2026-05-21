@@ -345,7 +345,11 @@ export default function MenuManager() {
 
   return (
 
-    <div>
+    <div
+      style={{
+        padding: 20,
+    }}
+    >
 
       <MenuToolbar
 
@@ -390,9 +394,6 @@ export default function MenuManager() {
             "1fr 400px",
 
           gap: 20,
-
-          minHeight:
-            "calc(100vh - 140px)"
         }}
       >
 
@@ -402,7 +403,7 @@ export default function MenuManager() {
             minWidth: 0,
 
             height:
-              "calc(100vh - 140px)",
+              "calc(-85px + 100vh);",
 
             overflowY: "auto",
 

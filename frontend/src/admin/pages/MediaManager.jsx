@@ -7,9 +7,18 @@ export default function MediaManager() {
 
     return (
 
-        <MediaExplorer
-            mode="manager"
-        />
+        <div
+            style={{
+                padding: 20,
+                height: "100%"
+            }}
+        >
+
+            <MediaExplorer
+                mode="manager"
+            />
+
+        </div>
 
     );
 

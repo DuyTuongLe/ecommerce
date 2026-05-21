@@ -79,6 +79,7 @@ class MediaController extends Controller
                 'required',
 
                 'max:255',
+                'regex:/^[\pL\pN\s\-_]+$/u',
 
                 Rule::unique(
                     'media_folders',
@@ -158,6 +159,7 @@ class MediaController extends Controller
                 'required',
 
                 'max:255',
+                'regex:/^[\pL\pN\s\-_]+$/u',
 
                 Rule::unique(
                     'media_folders',
@@ -192,7 +194,11 @@ class MediaController extends Controller
         ], [
 
             'name.unique' =>
-            'Folder already exists'
+            'Folder already exists',
+
+            'name.regex' =>
+
+            'Folder name cannot contain special characters'
 
         ]);
 
@@ -214,40 +220,54 @@ class MediaController extends Controller
 
     public function update(
 
-    Request $request,
+        Request $request,
 
-    $id
+        $id
 
-) {
+    ) {
 
-    $request->validate([
+        $request->validate([
 
-        'alt' => [
-            'nullable',
-            'max:255'
-        ]
+            'alt' => [
 
-    ]);
+                'required',
 
-    $media =
-        Media::findOrFail($id);
+                'max:255',
 
-    $media->update([
+                'regex:/^[\pL\pN\s\-_]+$/u'
 
-        'alt' =>
+            ]
+
+        ], [
+
+            'alt.required' =>
+
+            'Alt text is required',
+
+            'alt.regex' =>
+
+            'Alt text cannot contain special characters'
+
+        ]);
+
+        $media =
+            Media::findOrFail($id);
+
+        $media->update([
+
+            'alt' =>
             $request->alt
 
-    ]);
+        ]);
 
-    return response()->json([
+        return response()->json([
 
-        'success' => true,
+            'success' => true,
 
-        'media' => $media
+            'media' => $media
 
-    ]);
-
-}
+        ]);
+    }
 
     public function destroyFolder(
         $id
@@ -431,7 +451,7 @@ class MediaController extends Controller
                     '.' .
                     $extension,
 
-                    'alt' => $alt,
+                'alt' => $alt,
 
                 'mime_type' =>
 

@@ -1,16 +1,17 @@
 //src/admin/components/media/MediaExplorer.jsx
 
-
 import {
+
 
     useState,
     useEffect,
-    useRef,
     useMemo
+
 
 } from "react";
 
 import {
+
 
     Row,
     Col,
@@ -26,9 +27,11 @@ import {
     Popconfirm,
     message
 
+
 } from "antd";
 
 import {
+
 
     FolderFilled,
     ArrowLeftOutlined,
@@ -36,12 +39,13 @@ import {
     PlusOutlined,
     SearchOutlined,
     DeleteOutlined,
-    EyeOutlined,
     EditOutlined
+
 
 } from "@ant-design/icons";
 
 import {
+
 
     getMediaExplorer,
     createMediaFolder,
@@ -51,12 +55,17 @@ import {
     deleteMedia,
     updateMedia
 
+
 } from "../../../shared/services/mediaApi";
 
-import EditMediaModal from "./EditMediaModal";
-import CreateFolderModal from "./CreateFolderModal";
-import RenameFolderModal from "./RenameFolderModal";
+import EditMediaModal
+    from "./EditMediaModal";
 
+import CreateFolderModal
+    from "./CreateFolderModal";
+
+import RenameFolderModal
+    from "./RenameFolderModal";
 
 const { Dragger } =
     Upload;
@@ -66,17 +75,13 @@ const { Text } =
 
 export default function MediaExplorer({
 
+
     mode = "manager",
 
     onSelect = null
 
-}) {
 
-    /*
-    |--------------------------------------------------------------------------
-    | STATES
-    |--------------------------------------------------------------------------
-    */
+}) {
 
     const [
 
@@ -107,6 +112,14 @@ export default function MediaExplorer({
 
     const [media, setMedia] =
         useState([]);
+
+    const [
+
+        selectedMediaIds,
+
+        setSelectedMediaIds
+
+    ] = useState([]);
 
     const [
 
@@ -155,6 +168,7 @@ export default function MediaExplorer({
         setMediaModalOpen
 
     ] = useState(false);
+
     /*
     |--------------------------------------------------------------------------
     | FILTERED MEDIA
@@ -249,12 +263,6 @@ export default function MediaExplorer({
                 currentFolderId
             );
 
-            /*
-            |--------------------------------------------------------------------------
-            | Reset
-            |--------------------------------------------------------------------------
-            */
-
             setFolderModalOpen(
                 false
             );
@@ -267,31 +275,19 @@ export default function MediaExplorer({
 
             console.error(error);
 
-            if (
-
-                error?.response?.data
-                    ?.errors?.name?.[0]
-
-            ) {
-
-                message.error(
-
-                    error.response.data
-                        .errors.name[0]
-
-                );
-
-            } else {
-
-                message.error(
-                    "Create folder failed"
-                );
-
-            }
+            message.error(
+                "Create folder failed"
+            );
 
         }
 
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RENAME FOLDER
+    |--------------------------------------------------------------------------
+    */
 
     async function handleRenameFolder(value) {
 
@@ -302,9 +298,7 @@ export default function MediaExplorer({
                 editingFolder.id,
 
                 {
-
                     name: value
-
                 }
 
             );
@@ -329,31 +323,19 @@ export default function MediaExplorer({
 
             console.error(error);
 
-            if (
-
-                error?.response?.data
-                    ?.errors?.name?.[0]
-
-            ) {
-
-                message.error(
-
-                    error.response.data
-                        .errors.name[0]
-
-                );
-
-            } else {
-
-                message.error(
-                    "Rename failed"
-                );
-
-            }
+            message.error(
+                "Rename failed"
+            );
 
         }
 
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE FOLDER
+    |--------------------------------------------------------------------------
+    */
 
     async function handleDeleteFolder(
         folder
@@ -378,17 +360,21 @@ export default function MediaExplorer({
             console.error(error);
 
             message.error(
-
                 error?.response?.data
                     ?.message ||
 
                 "Delete failed"
-
             );
 
         }
 
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE MEDIA
+    |--------------------------------------------------------------------------
+    */
 
     async function handleDeleteMedia(
         media
@@ -420,6 +406,66 @@ export default function MediaExplorer({
 
     }
 
+    /*
+|--------------------------------------------------------------------------
+| BULK DELETE MEDIA
+|--------------------------------------------------------------------------
+*/
+
+    async function handleBulkDelete() {
+
+        try {
+
+            await Promise.all(
+
+                selectedMediaIds.map(id =>
+
+                    deleteMedia(id)
+
+                )
+
+            );
+
+            message.success(
+                "Selected media deleted"
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | CLEAR SELECT
+            |--------------------------------------------------------------------------
+            */
+
+            setSelectedMediaIds([]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | REFRESH
+            |--------------------------------------------------------------------------
+            */
+
+            fetchExplorer(
+                currentFolderId
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            message.error(
+                "Bulk delete failed"
+            );
+
+        }
+
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE MEDIA
+    |--------------------------------------------------------------------------
+    */
+
     async function handleUpdateMedia(
         value
     ) {
@@ -431,9 +477,7 @@ export default function MediaExplorer({
                 editingMedia.id,
 
                 {
-
                     alt: value
-
                 }
 
             );
@@ -445,11 +489,8 @@ export default function MediaExplorer({
                     item.id === editingMedia.id
 
                         ? {
-
                             ...item,
-
                             alt: value
-
                         }
 
                         : item
@@ -469,6 +510,7 @@ export default function MediaExplorer({
             setEditingMedia(
                 null
             );
+
         } catch (error) {
 
             console.error(error);
@@ -481,6 +523,12 @@ export default function MediaExplorer({
 
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | UPLOAD
+    |--------------------------------------------------------------------------
+    */
+
     async function handleUpload(
         options
     ) {
@@ -490,12 +538,6 @@ export default function MediaExplorer({
             const {
                 file
             } = options;
-
-            /*
-            |--------------------------------------------------------------------------
-            | Form Data
-            |--------------------------------------------------------------------------
-            */
 
             const formData =
                 new FormData();
@@ -510,30 +552,15 @@ export default function MediaExplorer({
             ) {
 
                 formData.append(
-
                     "folder_id",
-
                     currentFolderId
-
                 );
 
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Upload
-            |--------------------------------------------------------------------------
-            */
-
             await uploadMedia(
                 formData
             );
-
-            /*
-            |--------------------------------------------------------------------------
-            | Reload
-            |--------------------------------------------------------------------------
-            */
 
             fetchExplorer(
                 currentFolderId
@@ -552,6 +579,32 @@ export default function MediaExplorer({
             );
 
         }
+
+    }
+
+
+    function handleToggleSelectMedia(
+        mediaId
+    ) {
+
+        setSelectedMediaIds(prev => {
+
+            if (
+                prev.includes(mediaId)
+            ) {
+
+                return prev.filter(
+                    id => id !== mediaId
+                );
+
+            }
+
+            return [
+                ...prev,
+                mediaId
+            ];
+
+        });
 
     }
 
@@ -609,20 +662,26 @@ export default function MediaExplorer({
 
     /*
     |--------------------------------------------------------------------------
-    | RENDER
+    | STYLE
     |--------------------------------------------------------------------------
     */
+
     const folderHoverStyle = `
-        .folder-card:hover .folder-overlay{
-            opacity:1 !important;
-        }
-        .folder-card{
-            transition: all .25s ease;
-        }
-        .folder-card:hover{
-            transform: translateY(-4px);
-        }
-    `;
+
+    .folder-card:hover .folder-overlay{
+        opacity:1 !important;
+    }
+
+    .folder-card{
+        transition: all .25s ease;
+    }
+
+    .folder-card:hover{
+        transform: translateY(-4px);
+    }
+
+`;
+
     return (
 
         <>
@@ -739,7 +798,43 @@ export default function MediaExplorer({
                     {/* RIGHT */}
 
                     <Space>
+                        {
 
+                            selectedMediaIds.length > 0 && (
+
+                                <Popconfirm
+
+                                    title="Delete selected media?"
+
+                                    onConfirm={() => {
+
+                                        handleBulkDelete();
+
+                                    }}
+
+                                >
+
+                                    <Button
+
+                                        danger
+
+                                        icon={
+                                            <DeleteOutlined />
+                                        }
+
+                                    >
+
+                                        Delete (
+                                        {selectedMediaIds.length}
+                                        )
+
+                                    </Button>
+
+                                </Popconfirm>
+
+                            )
+
+                        }
                         <Button
 
                             type="primary"
@@ -747,10 +842,17 @@ export default function MediaExplorer({
                             icon={
                                 <PlusOutlined />
                             }
+
                             onClick={() => {
-                                setFolderModalOpen(true);
+
+                                setFolderModalOpen(
+                                    true
+                                );
+
                             }}
+
                         >
+
                             New Folder
 
                         </Button>
@@ -837,16 +939,23 @@ export default function MediaExplorer({
                 </Dragger>
 
                 {/* EXPLORER */}
+
                 <div
+
                     style={{
-                        height: "calc(100vh - 320px)",
+
+                        height:
+                            "calc(-260px + 100vh)",
+
                         overflowY: "auto",
+
                         overflowX: "hidden",
-                        paddingRight: 4,
+
+                        paddingRight: 4
 
                     }}
-                >
 
+                >
 
                     <Row gutter={[20, 20]}>
 
@@ -857,19 +966,19 @@ export default function MediaExplorer({
                             folders.map(folder => (
 
                                 <Col
-
                                     key={folder.id}
-
                                     xs={12}
                                     sm={8}
                                     md={6}
                                     lg={4}
-
                                 >
 
                                     <Card
+
                                         className="folder-card"
+
                                         hoverable
+
                                         bodyStyle={{
 
                                             padding: 12,
@@ -902,9 +1011,13 @@ export default function MediaExplorer({
                                             position:
                                                 "relative",
 
-                                            cursor: "pointer"
+                                            cursor: "pointer",
+
+                                            aspectRatio:
+                                                "1 / 1"
 
                                         }}
+
                                     >
 
                                         {/* OVERLAY */}
@@ -947,8 +1060,6 @@ export default function MediaExplorer({
 
                                         >
 
-                                            {/* NAME */}
-
                                             <div
 
                                                 style={{
@@ -971,15 +1082,7 @@ export default function MediaExplorer({
 
                                             </div>
 
-                                            {/* ACTIONS */}
-
-                                            <Space
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                }}
-                                            >
-
-                                                {/* EDIT */}
+                                            <Space>
 
                                                 <Button
 
@@ -1005,17 +1108,9 @@ export default function MediaExplorer({
 
                                                 />
 
-                                                {/* DELETE */}
-
                                                 <Popconfirm
 
                                                     title="Delete folder?"
-
-                                                    description="This action cannot be undone"
-
-                                                    okText="Delete"
-
-                                                    cancelText="Cancel"
 
                                                     onConfirm={(e) => {
 
@@ -1051,16 +1146,17 @@ export default function MediaExplorer({
 
                                             </Space>
 
-
                                         </div>
+
                                         {/* CONTENT */}
+
                                         <div
 
                                             style={{
 
                                                 textAlign: "center",
 
-                                                height: 180,
+                                                height: "100%",
 
                                                 display: "flex",
 
@@ -1073,271 +1169,353 @@ export default function MediaExplorer({
                                             }}
 
                                         >
+
                                             <FolderFilled
+
                                                 style={{
+
                                                     fontSize: 60,
+
                                                     color:
                                                         "#faad14"
+
                                                 }}
+
                                             />
+
                                             <div
                                                 style={{
                                                     marginTop: 10
                                                 }}
                                             >
+
                                                 <Text
                                                     strong
                                                     style={{
                                                         fontSize: 15
                                                     }}
                                                 >
+
                                                     {folder.name}
+
                                                 </Text>
+
                                             </div>
+
                                         </div>
+
                                     </Card>
+
                                 </Col>
+
                             ))
+
                         }
+
                         {/* MEDIA */}
+
                         {
-                            filteredMedia.map(item => (
-                                <Col
-                                    key={item.id}
-                                    xs={12}
-                                    sm={8}
-                                    md={6}
-                                    lg={4}
-                                >
-                                    <Card
-                                        hoverable
-                                        onClick={() => {
-                                            if (
-                                                mode === "picker" &&
-                                                onSelect
-                                            ) {
 
-                                                onSelect(item);
+                            filteredMedia.map(item => {
 
-                                                return;
+                                const isSelected =
+                                    selectedMediaIds.includes(
+                                        item.id
+                                    );
 
-                                            }
+                                return (
 
-                                        }}
-                                        style={{
-                                            borderRadius: 12,
-                                            overflow:
-                                                "hidden",
-                                            border:
-                                                "1px solid #f0f0f0",
-                                            boxShadow:
-                                                "0 2px 12px rgba(0,0,0,0.04)",
-                                            cursor:
-                                                mode === "picker"
-                                                    ? "pointer"
-                                                    : "default"
-                                        }}
-                                        bodyStyle={{
-                                            padding: 8
-                                        }}
+                                    <Col
+                                        key={item.id}
+                                        xs={12}
+                                        sm={8}
+                                        md={6}
+                                        lg={4}
                                     >
-                                        {/* IMAGE */}
-                                        <div
+
+                                        <Card
+
+                                            hoverable
+
                                             style={{
-                                                position:
-                                                    "relative"
+
+                                                borderRadius: 12,
+
+                                                overflow:
+                                                    "hidden",
+
+                                                border:
+
+                                                    isSelected
+
+                                                        ? "2px solid #1677ff"
+
+                                                        : "1px solid #f0f0f0",
+
+                                                boxShadow:
+                                                    "0 2px 12px rgba(0,0,0,0.04)",
+
+                                                aspectRatio:
+                                                    "1 / 1"
+
                                             }}
+
+                                            bodyStyle={{
+
+                                                padding: 0,
+
+                                                height: "100%"
+
+                                            }}
+
                                         >
-                                            <Image
-                                                src={item.url}
-                                                alt=""
-                                                preview={
-                                                    mode === "manager"
-                                                }
-                                                style={{
-                                                    width: "100%",
-                                                    height: 180,
-                                                    objectFit:
-                                                        "cover",
-                                                    borderRadius: 4
-                                                }}
-                                            />
-                                            {/* ACTIONS */}
+
+                                            {/* IMAGE */}
 
                                             <div
+
                                                 style={{
 
                                                     position:
-                                                        "absolute",
+                                                        "relative",
 
-                                                    top: 10,
+                                                    aspectRatio:
+                                                        "1 / 1",
 
-                                                    right: 10,
-
-                                                    display:
-                                                        "flex",
-
-                                                    gap: 8
+                                                    overflow:
+                                                        "hidden"
 
                                                 }}
+
                                             >
 
-                                                {/* PREVIEW */}
+                                                <Image
 
-                                                <Button
+                                                    src={item.url}
 
-                                                    shape="circle"
+                                                    alt=""
 
-                                                    size="small"
+                                                    preview
 
-                                                    icon={
-                                                        <EyeOutlined />
-                                                    }
+                                                    width="100%"
 
-                                                    onClick={(e) => {
+                                                    height="100%"
 
-                                                        e.stopPropagation();
+                                                    style={{
 
-                                                        setPreviewImage(
-                                                            item.url
-                                                        );
+                                                        objectFit:
+                                                            "cover"
 
                                                     }}
 
                                                 />
-                                                <Button
 
-                                                    shape="circle"
+                                                {/* ACTIONS */}
 
-                                                    size="small"
+                                                <div
 
-                                                    icon={
-                                                        <EditOutlined />
-                                                    }
+                                                    style={{
 
-                                                    onClick={(e) => {
+                                                        position:
+                                                            "absolute",
 
-                                                        e.stopPropagation();
+                                                        top: 10,
 
-                                                        setEditingMedia(
-                                                            item
-                                                        );
+                                                        right: 10,
 
-                                                        setMediaModalOpen(
-                                                            true
-                                                        );
+                                                        display:
+                                                            "flex",
 
-                                                    }}
+                                                        gap: 8,
 
-                                                />
-                                                {/* DELETE */}
-
-                                                <Popconfirm
-                                                    title="Delete media?"
-                                                    description="This action cannot be undone"
-                                                    okText="Delete"
-                                                    cancelText="Cancel"
-                                                    onConfirm={(e) => {
-
-                                                        e?.stopPropagation();
-
-                                                        handleDeleteMedia(
-                                                            item
-                                                        );
+                                                        zIndex: 2
 
                                                     }}
+
                                                 >
-
                                                     <Button
-                                                        danger
-                                                        size="small"
-                                                        shape="circle"
-                                                        icon={
-                                                            <DeleteOutlined />
+
+                                                        type={
+                                                            isSelected
+                                                                ? "primary"
+                                                                : "default"
                                                         }
+
+                                                        shape="circle"
+
+                                                        size="small"
+
                                                         onClick={(e) => {
 
                                                             e.stopPropagation();
 
+                                                            handleToggleSelectMedia(
+                                                                item.id
+                                                            );
+
                                                         }}
+
+                                                    >
+
+                                                        ✓
+
+                                                    </Button>
+
+                                                    <Button
+
+                                                        shape="circle"
+
+                                                        size="small"
+
+                                                        icon={
+                                                            <EditOutlined />
+                                                        }
+
+                                                        onClick={(e) => {
+
+                                                            e.stopPropagation();
+
+                                                            setEditingMedia(
+                                                                item
+                                                            );
+
+                                                            setMediaModalOpen(
+                                                                true
+                                                            );
+
+                                                        }}
+
                                                     />
 
-                                                </Popconfirm>
+                                                    <Popconfirm
 
+                                                        title="Delete media?"
+
+                                                        onConfirm={() => {
+
+                                                            handleDeleteMedia(
+                                                                item
+                                                            );
+
+                                                        }}
+
+                                                    >
+
+                                                        <Button
+
+                                                            danger
+
+                                                            size="small"
+
+                                                            shape="circle"
+
+                                                            icon={
+                                                                <DeleteOutlined />
+                                                            }
+
+                                                            onClick={(e) => {
+
+                                                                e.stopPropagation();
+
+                                                            }}
+
+                                                        />
+
+                                                    </Popconfirm>
+
+                                                </div>
+
+                                                {/* ALT OVERLAY */}
+
+                                                <div
+
+                                                    style={{
+
+                                                        position:
+                                                            "absolute",
+
+                                                        left: 0,
+
+                                                        right: 0,
+
+                                                        bottom: 0,
+
+                                                        padding:
+                                                            "8px 12px 4px",
+
+                                                        background:
+
+                                                            "linear-gradient(to top, rgba(0,0,0,.75), transparent)",
+
+                                                        color: "#fff"
+
+                                                    }}
+
+                                                >
+
+                                                    <Text
+
+                                                        ellipsis
+
+                                                        style={{
+                                                            color: "#fff"
+                                                        }}
+
+                                                        strong
+
+                                                    >
+
+                                                        {item.alt}
+
+                                                    </Text>
+
+                                                </div>
 
                                             </div>
-                                        </div>
-                                        {/* INFO */}
-                                        <div
-                                            style={{
-                                                marginTop: 12
-                                            }}
-                                        >
-                                            <Text
-                                                strong
-                                                ellipsis
-                                            >
-                                                {item.alt}
-                                            </Text>
-                                        </div>
-                                    </Card>
-                                </Col>
-                            ))
+
+                                        </Card>
+
+                                    </Col>
+
+                                )
+                            })
+
                         }
+
                     </Row>
+
                 </div>
+
+                {/* MODALS */}
+
                 <CreateFolderModal
-
                     open={folderModalOpen}
-
                     onCancel={() => {
                         setFolderModalOpen(false);
                     }}
-
-                    onSubmit={(value) => {
-                        handleCreateFolder(value);
-                    }}
-
+                    onSubmit={handleCreateFolder}
                 />
 
                 <RenameFolderModal
-
                     open={renameModalOpen}
-
                     folder={editingFolder}
-
                     onCancel={() => {
                         setRenameModalOpen(false);
                     }}
-
-                    onSubmit={(value) => {
-                        handleRenameFolder(value);
-                    }}
-
+                    onSubmit={handleRenameFolder}
                 />
+
                 <EditMediaModal
-
                     open={mediaModalOpen}
-
                     media={editingMedia}
-
                     onCancel={() => {
-
-                        setMediaModalOpen(
-                            false
-                        );
-
+                        setMediaModalOpen(false);
                     }}
-
-                    onSubmit={(value) => {
-
-                        handleUpdateMedia(
-                            value
-                        );
-
-                    }}
-
+                    onSubmit={handleUpdateMedia}
                 />
+
+                {/* PREVIEW */}
+
                 <Modal
 
                     open={!!previewImage}
@@ -1364,13 +1542,18 @@ export default function MediaExplorer({
 
                         style={{
                             width: "100%",
-                            padding: 50,
+                            padding: 50
                         }}
 
                     />
 
                 </Modal>
-            </div >
+
+            </div>
+
         </>
+
     );
+
+
 }

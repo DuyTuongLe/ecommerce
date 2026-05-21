@@ -20,11 +20,14 @@ import {
 
   DashboardOutlined,
   MenuOutlined,
-  ShoppingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   FolderOpenOutlined,
-  ShoppingCartOutlined
+  ShoppingOutlined,
+  ShoppingCartOutlined,
+  TagsOutlined,
+  ApartmentOutlined,
+  GiftOutlined
 
 } from "@ant-design/icons";
 
@@ -85,7 +88,7 @@ export default function AdminLayout() {
                 </Link>
               )
             },
-            
+
             {
               key: "media",
               icon: <FolderOpenOutlined />,
@@ -97,13 +100,91 @@ export default function AdminLayout() {
             },
 
             {
-              key: "product",
-              icon: <ShoppingCartOutlined />,
-              label: (
-                <Link to="/admin/product">
-                  Product
-                </Link>
-              )
+              key: "products",
+              icon: <ShoppingOutlined />,
+              label: "Products",
+
+              children: [
+
+                {
+                  key: "/admin/products",
+
+                  label: (
+
+                    <Link to="/admin/products">
+
+                      All Products
+
+                    </Link>
+
+                  )
+                },
+
+                {
+                  key: "/admin/brands",
+
+                  icon: <TagsOutlined />,
+
+                  label: (
+
+                    <Link to="/admin/brands">
+
+                      Brands
+
+                    </Link>
+
+                  )
+                },
+
+                {
+                  key: "/admin/attributes",
+
+                  icon: <ApartmentOutlined />,
+
+                  label: (
+
+                    <Link to="/admin/attributes">
+
+                      Attributes
+
+                    </Link>
+
+                  )
+                },
+
+                {
+                  key: "/admin/orders",
+
+                  icon: <ShoppingCartOutlined />,
+
+                  label: (
+
+                    <Link to="/admin/orders">
+
+                      Orders
+
+                    </Link>
+
+                  )
+                },
+
+                {
+                  key: "/admin/promotions",
+
+                  icon: <GiftOutlined />,
+
+                  label: (
+
+                    <Link to="/admin/promotions">
+
+                      Promotions
+
+                    </Link>
+
+                  )
+                }
+
+              ]
             }
 
           ]}
@@ -122,7 +203,6 @@ export default function AdminLayout() {
 
         <Content
           style={{
-            padding: 20,
             overflow: "hidden"
           }}
         >

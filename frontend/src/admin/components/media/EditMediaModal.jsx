@@ -1,10 +1,10 @@
 //src/admin/components/media/EditMediaModal.jsx
 
-
 import {
 
     Modal,
-    Input
+    Input,
+    message
 
 } from "antd";
 
@@ -43,6 +43,38 @@ export default function EditMediaModal({
 
     }, [media]);
 
+    function handleSubmit() {
+
+        const trimmed =
+            value.trim();
+
+        // EMPTY
+
+        if (!trimmed) {
+
+            return message.error(
+                "Alt text is required"
+            );
+
+        }
+
+        // SPECIAL CHARACTERS
+
+        const regex =
+            /^[\p{L}\p{N}\s\-_]+$/u;
+
+        if (!regex.test(trimmed)) {
+
+            return message.error(
+                "Alt text cannot contain special characters"
+            );
+
+        }
+
+        onSubmit(trimmed);
+
+    }
+
     return (
 
         <Modal
@@ -55,22 +87,21 @@ export default function EditMediaModal({
 
             onCancel={onCancel}
 
-            onOk={() => {
-
-                onSubmit(value);
-
-            }}
+            onOk={handleSubmit}
 
         >
 
             <Input
+
                 autoFocus
+
                 placeholder="Alt text"
+
                 value={value}
-        
-                onPressEnter={() => {
-                    onSubmit(value);
-                }}
+
+                onPressEnter={
+                    handleSubmit
+                }
 
                 onChange={(e) => {
 
