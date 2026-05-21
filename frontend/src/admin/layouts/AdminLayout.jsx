@@ -23,7 +23,8 @@ import {
   ShoppingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  FolderOpenOutlined
+  FolderOpenOutlined,
+  ShoppingCartOutlined
 
 } from "@ant-design/icons";
 
@@ -93,7 +94,18 @@ export default function AdminLayout() {
                   File Manager
                 </Link>
               )
+            },
+
+            {
+              key: "product",
+              icon: <ShoppingCartOutlined />,
+              label: (
+                <Link to="/admin/product">
+                  Product
+                </Link>
+              )
             }
+
           ]}
         />
 
@@ -107,21 +119,6 @@ export default function AdminLayout() {
           overflow: "hidden"
         }}
       >
-
-        {/* Header */}
-
-        <Header
-          style={{
-            background: "#fff",
-            paddingInline: 20
-          }}
-        >
-
-          Admin Panel
-
-        </Header>
-
-        {/* Content */}
 
         <Content
           style={{

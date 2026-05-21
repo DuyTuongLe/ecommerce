@@ -1,89 +1,57 @@
-//src/admin/components/media/EditMediaModal.jsx
-
+// src/admin/components/media/RenameFolderModal.jsx
 
 import {
-
     Modal,
     Input
-
 } from "antd";
 
 import {
-
     useEffect,
     useState
-
 } from "react";
 
-export default function EditMediaModal({
-
+export default function RenameFolderModal({
     open,
-
-    media,
-
+    folder,
     onCancel,
-
     onSubmit
-
 }) {
 
-    const [
-
-        value,
-
-        setValue
-
-    ] = useState("");
+    const [value, setValue] = useState("");
 
     useEffect(() => {
 
         setValue(
-            media?.alt || ""
+            folder?.name || ""
         );
 
-    }, [media]);
+    }, [folder]);
 
     return (
 
         <Modal
-
             open={open}
-
-            title="Edit Media"
-
+            title="Rename Folder"
             destroyOnClose
-
             onCancel={onCancel}
-
             onOk={() => {
-
                 onSubmit(value);
-
             }}
-
         >
 
             <Input
                 autoFocus
-                placeholder="Alt text"
+                placeholder="Folder name"
                 value={value}
-        
                 onPressEnter={() => {
                     onSubmit(value);
                 }}
-
                 onChange={(e) => {
-
-                    setValue(
-                        e.target.value
-                    );
-
+                    setValue(e.target.value);
                 }}
-
             />
 
         </Modal>
 
     );
-
 }

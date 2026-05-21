@@ -54,6 +54,9 @@ import {
 } from "../../../shared/services/mediaApi";
 
 import EditMediaModal from "./EditMediaModal";
+import CreateFolderModal from "./CreateFolderModal";
+import RenameFolderModal from "./RenameFolderModal";
+
 
 const { Dragger } =
     Upload;
@@ -115,20 +118,6 @@ export default function MediaExplorer({
 
     const [
 
-        folderName,
-
-        setFolderName
-
-    ] = useState("");
-
-    const createInputRef =
-        useRef(null);
-
-    const renameInputRef =
-        useRef(null);
-
-    const [
-
         previewImage,
 
         setPreviewImage
@@ -150,14 +139,6 @@ export default function MediaExplorer({
         setRenameModalOpen
 
     ] = useState(false);
-
-    const [
-
-        renameFolderName,
-
-        setRenameFolderName
-
-    ] = useState("");
 
     const [
 
@@ -184,7 +165,7 @@ export default function MediaExplorer({
 
         return media.filter(item => {
 
-            return item.filename
+            return item.alt
 
                 ?.toLowerCase()
 
@@ -251,13 +232,13 @@ export default function MediaExplorer({
     |--------------------------------------------------------------------------
     */
 
-    async function handleCreateFolder() {
+    async function handleCreateFolder(value) {
 
         try {
 
             await createMediaFolder({
 
-                name: folderName,
+                name: value,
 
                 parent_id:
                     currentFolderId
@@ -277,8 +258,6 @@ export default function MediaExplorer({
             setFolderModalOpen(
                 false
             );
-
-            setFolderName("");
 
             message.success(
                 "Folder created"
@@ -314,7 +293,7 @@ export default function MediaExplorer({
 
     }
 
-    async function handleRenameFolder() {
+    async function handleRenameFolder(value) {
 
         try {
 
@@ -324,8 +303,7 @@ export default function MediaExplorer({
 
                 {
 
-                    name:
-                        renameFolderName
+                    name: value
 
                 }
 
@@ -342,8 +320,6 @@ export default function MediaExplorer({
             setEditingFolder(
                 null
             );
-
-            setRenameFolderName("");
 
             fetchExplorer(
                 currentFolderId
@@ -771,24 +747,10 @@ export default function MediaExplorer({
                             icon={
                                 <PlusOutlined />
                             }
-
                             onClick={() => {
-
-                                setFolderModalOpen(
-                                    true
-                                );
-
-                                setTimeout(() => {
-
-                                    createInputRef.current
-                                        ?.focus();
-
-                                }, 100);
-
+                                setFolderModalOpen(true);
                             }}
-
                         >
-
                             New Folder
 
                         </Button>
@@ -1035,20 +997,9 @@ export default function MediaExplorer({
                                                             folder
                                                         );
 
-                                                        setRenameFolderName(
-                                                            folder.name
-                                                        );
-
                                                         setRenameModalOpen(
                                                             true
                                                         );
-
-                                                        setTimeout(() => {
-
-                                                            renameInputRef.current
-                                                                ?.focus();
-
-                                                        }, 100);
 
                                                     }}
 
@@ -1335,60 +1286,35 @@ export default function MediaExplorer({
                         }
                     </Row>
                 </div>
+                <CreateFolderModal
 
-                <Modal
                     open={folderModalOpen}
-                    title="Create Folder"
+
                     onCancel={() => {
-                        setFolderModalOpen(
-                            false
-                        );
+                        setFolderModalOpen(false);
                     }}
-                    onOk={handleCreateFolder}
-                >
 
-                    <Input
-                        ref={createInputRef}
-                        placeholder="Folder name"
-                        value={folderName}
-                        onPressEnter={
-                            handleCreateFolder
-                        }
-                        onChange={(e) => {
-                            setFolderName(
-                                e.target.value
-                            );
-                        }}
-                    />
+                    onSubmit={(value) => {
+                        handleCreateFolder(value);
+                    }}
 
-                </Modal>
+                />
 
-                <Modal
+                <RenameFolderModal
+
                     open={renameModalOpen}
-                    title="Rename Folder"
+
+                    folder={editingFolder}
+
                     onCancel={() => {
-                        setRenameModalOpen(
-                            false
-                        );
+                        setRenameModalOpen(false);
                     }}
-                    onOk={handleRenameFolder}
-                >
 
-                    <Input
-                        placeholder="Folder name"
-                        value={renameFolderName}
-                        onPressEnter={
-                            handleRenameFolder
-                        }
-                        onChange={(e) => {
-                            setRenameFolderName(
-                                e.target.value
-                            );
-                        }}
-                    />
+                    onSubmit={(value) => {
+                        handleRenameFolder(value);
+                    }}
 
-                </Modal>
-
+                />
                 <EditMediaModal
 
                     open={mediaModalOpen}

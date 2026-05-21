@@ -1,89 +1,56 @@
-//src/admin/components/media/EditMediaModal.jsx
-
+// src/admin/components/media/CreateFolderModal.jsx
 
 import {
-
     Modal,
     Input
-
 } from "antd";
 
 import {
-
     useEffect,
     useState
-
 } from "react";
 
-export default function EditMediaModal({
-
+export default function CreateFolderModal({
     open,
-
-    media,
-
     onCancel,
-
     onSubmit
-
 }) {
 
-    const [
-
-        value,
-
-        setValue
-
-    ] = useState("");
+    const [value, setValue] = useState("");
 
     useEffect(() => {
 
-        setValue(
-            media?.alt || ""
-        );
+        if (open) {
+            setValue("");
+        }
 
-    }, [media]);
+    }, [open]);
 
     return (
 
         <Modal
-
             open={open}
-
-            title="Edit Media"
-
+            title="Create Folder"
             destroyOnClose
-
             onCancel={onCancel}
-
             onOk={() => {
-
                 onSubmit(value);
-
             }}
-
         >
 
             <Input
                 autoFocus
-                placeholder="Alt text"
+                placeholder="Folder name"
                 value={value}
-        
                 onPressEnter={() => {
                     onSubmit(value);
                 }}
-
                 onChange={(e) => {
-
-                    setValue(
-                        e.target.value
-                    );
-
+                    setValue(e.target.value);
                 }}
-
             />
 
         </Modal>
 
     );
-
 }
