@@ -18,84 +18,83 @@ import {
 export default function ProductToolbar() {
 
     return (
-
         <div
 
             style={{
-
-                display: "flex",
-
-                justifyContent: "space-between",
-
-                alignItems: "center",
-
-                marginBottom: 20
-
+                padding: 10,
             }}
 
         >
 
-            {/* LEFT */}
+            <div className="admin-sidebar-header">
+                <h2>Products</h2>
+            </div>
+            <div
 
-            <Space>
+                style={{
 
-                <Input.Search
+                    display: "flex",
 
-                    placeholder="Search products..."
+                    justifyContent: "space-between",
 
-                    style={{
-                        width: 260
-                    }}
+                    alignItems: "center",
 
-                    allowClear
+                    marginBottom: 20
 
-                />
-
-                <Select
-
-                    defaultValue="all"
-
-                    style={{
-                        width: 180
-                    }}
-
-                    options={[
-
-                        {
-                            label: "All Status",
-                            value: "all"
-                        },
-
-                        {
-                            label: "Published",
-                            value: "published"
-                        },
-
-                        {
-                            label: "Draft",
-                            value: "draft"
-                        }
-
-                    ]}
-
-                />
-
-            </Space>
-
-            {/* RIGHT */}
-
-            <Button
-
-                type="primary"
-
-                icon={<PlusOutlined />}
+                }}
 
             >
 
-                Create Product
+                {/* LEFT */}
 
-            </Button>
+                <Space>
 
+                    <Select
+
+                        defaultValue="all"
+
+                        style={{
+                            width: 180
+                        }}
+
+                        options={[
+
+                            {
+                                label: "All Status",
+                                value: "all"
+                            },
+
+                            {
+                                label: "Published",
+                                value: "published"
+                            },
+
+                            {
+                                label: "Draft",
+                                value: "draft"
+                            }
+
+                        ]}
+
+                    />
+
+                </Space>
+
+                {/* RIGHT */}
+
+                <Button
+
+                    type="primary"
+
+                    icon={<PlusOutlined />}
+
+                >
+
+                    Create Product
+
+                </Button>
+
+            </div>
         </div>
 
     );

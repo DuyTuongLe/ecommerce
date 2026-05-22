@@ -114,3 +114,29 @@ export async function updateMedia(
   return res.data;
 
 }
+
+export async function moveMedia(
+  data
+) {
+
+  const res = await api.post(
+    "/admin/media/move",
+    data
+  );
+
+  return res.data;
+
+}
+
+export async function moveFolder(
+  data
+) {
+
+  const res = await api.post(
+    "/admin/media-folders/move",
+    data
+  );
+
+  return res.data;
+
+}

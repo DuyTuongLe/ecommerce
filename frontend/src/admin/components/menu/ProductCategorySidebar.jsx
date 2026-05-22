@@ -119,7 +119,7 @@ export default function ProductCategorySidebar() {
 
                 placeholder="Search products..."
 
-                size="large"
+                size="mall"
 
             />
 

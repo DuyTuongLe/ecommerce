@@ -45,31 +45,9 @@ export default function ProductManager() {
 
             <Splitter.Panel>
 
-                <div
-
-                    style={{
-                        padding: 20,
-                        height: "100%",
-                        overflow: "auto"
-                    }}
-
-                >
-
-                    <h2
-                        style={{
-                            marginTop: 0
-                        }}
-                    >
-
-                        Products
-
-                    </h2>
-
                     <ProductToolbar />
 
                     <ProductTable />
-
-                </div>
 
             </Splitter.Panel>
 
