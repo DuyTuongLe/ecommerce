@@ -79,6 +79,16 @@ Route::prefix('admin')->group(function () {
         '/media/{id}',
         [MediaController::class, 'destroyMedia']
     );
+
+    Route::post(
+        '/media/move',
+        [MediaController::class, 'moveMedia']
+    );
+
+    Route::post(
+    '/media-folders/move',
+    [MediaController::class, 'moveFolder']
+);
 });
 
 

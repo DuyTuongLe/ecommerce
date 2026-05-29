@@ -537,4 +537,90 @@ class MediaController extends Controller
 
         ]);
     }
+
+    public function moveMedia(Request $request)
+    {
+        $request->validate([
+
+            'media_ids' => ['required', 'array'],
+
+            'folder_id' => ['nullable', 'exists:media_folders,id']
+
+        ]);
+
+        Media::whereIn(
+
+            'id',
+
+            $request->media_ids
+
+        )->update([
+
+            'folder_id' => $request->folder_id
+
+        ]);
+
+        return response()->json([
+
+            'message' => 'Media moved successfully'
+
+        ]);
+    }
+
+    public function moveFolder(
+    Request $request
+) {
+
+    $request->validate([
+
+        'folder_id' => [
+            'required',
+            'exists:media_folders,id'
+        ],
+
+        'parent_id' => [
+            'nullable',
+            'exists:media_folders,id'
+        ]
+
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | PREVENT SELF PARENT
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        $request->folder_id ==
+        $request->parent_id
+    ) {
+
+        return response()->json([
+
+            'message' =>
+                'Invalid move'
+
+        ], 422);
+
+    }
+
+    $folder = MediaFolder::findOrFail(
+        $request->folder_id
+    );
+
+    $folder->update([
+
+        'parent_id' =>
+            $request->parent_id
+
+    ]);
+
+    return response()->json([
+
+        'message' =>
+            'Folder moved successfully'
+
+    ]);
+}
 }

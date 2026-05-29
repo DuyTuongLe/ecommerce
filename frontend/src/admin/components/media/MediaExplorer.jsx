@@ -1288,12 +1288,11 @@ export default function MediaExplorer({
 
                                                 }}
 
-                                                bodyStyle={{
-
-                                                    padding: 12,
-
-                                                    height: "100%"
-
+                                                styles={{
+                                                    body: {
+                                                        padding: 12,
+                                                        height: "100%"
+                                                    }
                                                 }}
 
                                             >
@@ -1380,12 +1379,11 @@ export default function MediaExplorer({
 
                                                 hoverable
 
-                                                bodyStyle={{
-
-                                                    padding: 12,
-
-                                                    height: "100%"
-
+                                                styles={{
+                                                    body: {
+                                                        padding: 12,
+                                                        height: "100%"
+                                                    }
                                                 }}
 
                                                 onClick={() => {
@@ -1669,12 +1667,11 @@ export default function MediaExplorer({
 
                                                         }}
 
-                                                        bodyStyle={{
-
-                                                            padding: 0,
-
-                                                            height: "100%"
-
+                                                        styles={{
+                                                            body: {
+                                                                padding: 0,
+                                                                height: "100%"
+                                                            }
                                                         }}
 
                                                     >
