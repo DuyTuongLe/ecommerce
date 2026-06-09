@@ -27,46 +27,45 @@ export function useMenus(
 
   useEffect(() => {
 
-    async function fetchMenus() {
+  if (!language || !groupId) {
+    return;
+  }
 
-      try {
+  async function fetchMenus() {
 
-        setLoading(true);
+    try {
 
-        const data =
-          await getAdminMenus(
+      setLoading(true);
 
-            language,
+      const data =
+        await getAdminMenus(
+          language,
+          groupId
+        );
 
-            groupId
+      setMenus(data);
 
-          );
+    }
+    catch (error) {
 
-        setMenus(data);
+      console.error(error);
 
-      }
-      catch (error) {
+    }
+    finally {
 
-        console.error(error);
-
-      }
-      finally {
-
-        setLoading(false);
-
-      }
+      setLoading(false);
 
     }
 
-    fetchMenus();
+  }
 
-  }, [
+  fetchMenus();
 
-    language,
-    groupId,
-    reloadKey
-
-  ]);
+}, [
+  language,
+  groupId,
+  reloadKey
+]);
 
   return {
 

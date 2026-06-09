@@ -1,13 +1,11 @@
 // src/admin/pages/ProductManager.jsx
 
-import {
+import { useEffect } from "react";
 
-    Splitter
-
-} from "antd";
+import { Splitter } from "antd";
 
 import ProductCategorySidebar
-    from "../components/menu/ProductCategorySidebar";
+    from "../components/product/ProductCategorySidebar";
 
 import ProductToolbar
     from "../components/product/ProductToolbar";
@@ -15,7 +13,24 @@ import ProductToolbar
 import ProductTable
     from "../components/product/ProductTable";
 
+import useProducts
+    from "../hooks/useProducts";
+
 export default function ProductManager() {
+
+    const {
+
+        products,
+        loading,
+        fetchProducts
+
+    } = useProducts();
+
+    useEffect(() => {
+
+        fetchProducts();
+
+    }, []);
 
     return (
 
@@ -25,29 +40,26 @@ export default function ProductManager() {
             }}
         >
 
-            {/* LEFT */}
-
             <Splitter.Panel
-
                 defaultSize={220}
-
                 min={180}
-
                 max={350}
-
             >
 
                 <ProductCategorySidebar />
 
             </Splitter.Panel>
 
-            {/* RIGHT */}
-
             <Splitter.Panel>
 
-                    <ProductToolbar />
+                <ProductToolbar />
 
-                    <ProductTable />
+                <ProductTable
+                    products={
+                        products?.data || []
+                    }
+                    loading={loading}
+                />
 
             </Splitter.Panel>
 

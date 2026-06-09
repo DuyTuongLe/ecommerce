@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Admin\AdminMenuController;
 use App\Http\Controllers\Api\Frontend\MenuController;
 use App\Http\Controllers\Api\Admin\LanguageController;
 use App\Http\Controllers\Api\Admin\MediaController;
+use App\Http\Controllers\Api\Admin\ProductController;
 
 Route::prefix('admin')->group(function () {
 
@@ -86,9 +87,14 @@ Route::prefix('admin')->group(function () {
     );
 
     Route::post(
-    '/media-folders/move',
-    [MediaController::class, 'moveFolder']
-);
+        '/media-folders/move',
+        [MediaController::class, 'moveFolder']
+    );
+
+    Route::get(
+        '/products',
+        [ProductController::class, 'index']
+    );
 });
 
 

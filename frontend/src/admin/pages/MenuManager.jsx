@@ -18,7 +18,7 @@ import {
 } from "../hooks/useLanguages";
 
 import {
-  message, Modal
+  message, Modal, Spin
 } from "antd";
 
 import MenuToolbar from "../components/MenuToolbar";
@@ -342,13 +342,11 @@ export default function MenuManager() {
   }
 
 
-
   return (
-
     <div
       style={{
         padding: 20,
-    }}
+      }}
     >
 
       <MenuToolbar
@@ -402,8 +400,7 @@ export default function MenuManager() {
 
             minWidth: 0,
 
-            height:
-              "calc(-85px + 100vh);",
+            height: "calc(100vh - 85px)",
 
             overflowY: "auto",
 
@@ -414,28 +411,33 @@ export default function MenuManager() {
           }}
         >
 
-          <MenuTree
+          <Spin spinning={loading}>
 
-            items={menus}
+            <MenuTree
 
-            onChange={
-              setTreeItems
-            }
+              items={menus}
 
-            onSelect={(item) => {
+              onChange={
+                setTreeItems
+              }
 
-              setSelectedItem(item);
+              onSelect={(item) => {
 
-              setMode("edit");
+                setSelectedItem(item);
 
-            }}
+                setMode("edit");
 
-            selectedItem={
-              selectedItem
-            }
+              }}
 
-            language={language}
-          />
+              selectedItem={
+                selectedItem
+              }
+
+              language={language}
+
+            />
+
+          </Spin>
 
         </div>
 
@@ -468,5 +470,4 @@ export default function MenuManager() {
     </div>
 
   );
-
 }

@@ -25,7 +25,8 @@ import {
     Image,
     Modal,
     Popconfirm,
-    message
+    message,
+    Spin
 
 
 } from "antd";
@@ -147,6 +148,9 @@ export default function MediaExplorer({
     const [media, setMedia] =
         useState([]);
 
+    const [loading, setLoading] =
+        useState(false);
+
     const [
 
         selectedMediaIds,
@@ -252,6 +256,8 @@ export default function MediaExplorer({
 
         try {
 
+            setLoading(true);
+
             const data =
                 await getMediaExplorer(
                     folderId
@@ -276,6 +282,10 @@ export default function MediaExplorer({
             message.error(
                 "Load explorer failed"
             );
+
+        } finally {
+
+            setLoading(false);
 
         }
 
@@ -1205,256 +1215,99 @@ export default function MediaExplorer({
                     </Dragger>
 
                     {/* EXPLORER */}
-
-                    <div
-                        className="media-explorer-container"
-                        onClick={(e) => {
-
-                            /*
-                            |--------------------------------------------------------------------------
-                            | CLICK EMPTY AREA
-                            |--------------------------------------------------------------------------
-                            */
-
-                            if (
-
-                                !e.target.closest(
-                                    ".media-item"
-                                )
-
-                            ) {
-
-                                setSelectedMediaIds([]);
-
-                            }
-
-                        }}
-                        style={{
-
-                            height:
-                                "calc(-260px + 100vh)",
-
-                            overflowY: "auto",
-
-                            overflowX: "hidden",
-
-                            paddingRight: 4
-
-                        }}
-
+                    <Spin
+                        spinning={loading}
+                        size="large"
+                        tip="Loading media..."
+                        delay={200}
                     >
+                        <div
+                            className="media-explorer-container"
+                            onClick={(e) => {
 
-                        <Row gutter={[20, 20]}>
+                                /*
+                                |--------------------------------------------------------------------------
+                                | CLICK EMPTY AREA
+                                |--------------------------------------------------------------------------
+                                */
 
-                            {/* FOLDERS */}
-                            {
+                                if (
 
-                                currentFolder && (
+                                    !e.target.closest(
+                                        ".media-item"
+                                    )
 
-                                    <Col
-                                        xs={12}
-                                        sm={8}
-                                        md={6}
-                                        lg={4}
-                                    >
+                                ) {
 
-                                        <DroppableFolderCard
-                                            id="back-folder"
+                                    setSelectedMediaIds([]);
+
+                                }
+
+                            }}
+                            style={{
+
+                                height:
+                                    "calc(-260px + 100vh)",
+
+                                overflowY: "auto",
+
+                                overflowX: "hidden",
+
+                                paddingRight: 4
+
+                            }}
+
+                        >
+
+                            <Row gutter={[20, 20]}>
+
+                                {/* FOLDERS */}
+                                {
+
+                                    currentFolder && (
+
+                                        <Col
+                                            xs={12}
+                                            sm={8}
+                                            md={6}
+                                            lg={4}
                                         >
 
-                                            <Card
-                                                className="media-item"
-                                                hoverable
-
-                                                onClick={handleBack}
-
-                                                style={{
-
-                                                    borderRadius: 12,
-
-                                                    border:
-                                                        "1px solid #f0f0f0",
-
-                                                    overflow:
-                                                        "hidden",
-
-                                                    boxShadow:
-                                                        "0 2px 12px rgba(0,0,0,0.04)",
-
-                                                    cursor: "pointer",
-
-                                                    aspectRatio:
-                                                        "1 / 1"
-
-                                                }}
-
-                                                styles={{
-                                                    body: {
-                                                        padding: 12,
-                                                        height: "100%"
-                                                    }
-                                                }}
-
+                                            <DroppableFolderCard
+                                                id="back-folder"
                                             >
 
-                                                <div
+                                                <Card
+                                                    className="media-item"
+                                                    hoverable
+
+                                                    onClick={handleBack}
 
                                                     style={{
 
-                                                        textAlign: "center",
+                                                        borderRadius: 12,
 
-                                                        height: "100%",
+                                                        border:
+                                                            "1px solid #f0f0f0",
 
-                                                        display: "flex",
+                                                        overflow:
+                                                            "hidden",
 
-                                                        flexDirection:
-                                                            "column",
+                                                        boxShadow:
+                                                            "0 2px 12px rgba(0,0,0,0.04)",
 
-                                                        alignItems:
-                                                            "center",
+                                                        cursor: "pointer",
 
-                                                        justifyContent:
-                                                            "center"
+                                                        aspectRatio:
+                                                            "1 / 1"
 
                                                     }}
 
-                                                >
-
-                                                    <ArrowLeftOutlined
-
-                                                        style={{
-
-                                                            fontSize: 52,
-
-                                                            color: "#1677ff"
-
-                                                        }}
-
-                                                    />
-
-                                                    <div
-                                                        style={{
-                                                            marginTop: 12
-                                                        }}
-                                                    >
-
-                                                        <Text
-                                                            strong
-                                                        >
-
-                                                            Back
-
-                                                        </Text>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </Card>
-
-                                        </DroppableFolderCard>
-
-                                    </Col>
-
-                                )
-
-                            }
-                            {
-
-                                folders.map(folder => (
-
-                                    <Col
-                                        key={folder.id}
-                                        xs={12}
-                                        sm={8}
-                                        md={6}
-                                        lg={4}
-                                    >
-                                        <DroppableFolderCard
-                                            id={folder.id}
-                                        >
-                                            <Card
-
-                                                className="folder-card media-item"
-
-                                                hoverable
-
-                                                styles={{
-                                                    body: {
-                                                        padding: 12,
-                                                        height: "100%"
-                                                    }
-                                                }}
-
-                                                onClick={() => {
-
-                                                    handleOpenFolder(
-                                                        folder
-                                                    );
-
-                                                }}
-
-                                                style={{
-
-                                                    borderRadius: 12,
-
-                                                    border:
-                                                        "1px solid #f0f0f0",
-
-                                                    overflow:
-                                                        "hidden",
-
-                                                    boxShadow:
-                                                        "0 2px 12px rgba(0,0,0,0.04)",
-
-                                                    position:
-                                                        "relative",
-
-                                                    cursor: "pointer",
-
-                                                    aspectRatio:
-                                                        "1 / 1"
-
-                                                }}
-
-                                            >
-
-                                                {/* OVERLAY */}
-
-                                                <div
-
-                                                    className="folder-overlay"
-
-                                                    style={{
-
-                                                        position:
-                                                            "absolute",
-
-                                                        inset: 0,
-
-                                                        background:
-                                                            "rgba(0,0,0,.55)",
-
-                                                        display: "flex",
-
-                                                        flexDirection:
-                                                            "column",
-
-                                                        alignItems:
-                                                            "center",
-
-                                                        justifyContent:
-                                                            "center",
-
-                                                        gap: 14,
-
-                                                        opacity: 0,
-
-                                                        transition:
-                                                            ".25s ease",
-
-                                                        zIndex: 2
-
+                                                    styles={{
+                                                        body: {
+                                                            padding: 12,
+                                                            height: "100%"
+                                                        }
                                                     }}
 
                                                 >
@@ -1462,440 +1315,602 @@ export default function MediaExplorer({
                                                     <div
 
                                                         style={{
-
-                                                            color: "#fff",
-
-                                                            fontWeight: 700,
-
-                                                            fontSize: 18,
 
                                                             textAlign: "center",
 
-                                                            paddingInline: 10
+                                                            height: "100%",
+
+                                                            display: "flex",
+
+                                                            flexDirection:
+                                                                "column",
+
+                                                            alignItems:
+                                                                "center",
+
+                                                            justifyContent:
+                                                                "center"
 
                                                         }}
 
                                                     >
 
-                                                        {folder.name}
+                                                        <ArrowLeftOutlined
 
-                                                    </div>
+                                                            style={{
 
-                                                    <Space>
+                                                                fontSize: 52,
 
-                                                        <Button
-
-                                                            shape="circle"
-
-                                                            icon={
-                                                                <EditOutlined />
-                                                            }
-
-                                                            onClick={(e) => {
-
-                                                                e.stopPropagation();
-
-                                                                setEditingFolder(
-                                                                    folder
-                                                                );
-
-                                                                setRenameModalOpen(
-                                                                    true
-                                                                );
+                                                                color: "#1677ff"
 
                                                             }}
 
                                                         />
 
-                                                        <Popconfirm
+                                                        <div
+                                                            style={{
+                                                                marginTop: 12
+                                                            }}
+                                                        >
 
-                                                            title="Delete folder?"
+                                                            <Text
+                                                                strong
+                                                            >
 
-                                                            onConfirm={(e) => {
+                                                                Back
 
-                                                                e?.stopPropagation();
+                                                            </Text>
 
-                                                                handleDeleteFolder(
-                                                                    folder
-                                                                );
+                                                        </div>
+
+                                                    </div>
+
+                                                </Card>
+
+                                            </DroppableFolderCard>
+
+                                        </Col>
+
+                                    )
+
+                                }
+                                {
+
+                                    folders.map(folder => (
+
+                                        <Col
+                                            key={folder.id}
+                                            xs={12}
+                                            sm={8}
+                                            md={6}
+                                            lg={4}
+                                        >
+                                            <DroppableFolderCard
+                                                id={folder.id}
+                                            >
+                                                <Card
+
+                                                    className="folder-card media-item"
+
+                                                    hoverable
+
+                                                    styles={{
+                                                        body: {
+                                                            padding: 12,
+                                                            height: "100%"
+                                                        }
+                                                    }}
+
+                                                    onClick={() => {
+
+                                                        handleOpenFolder(
+                                                            folder
+                                                        );
+
+                                                    }}
+
+                                                    style={{
+
+                                                        borderRadius: 12,
+
+                                                        border:
+                                                            "1px solid #f0f0f0",
+
+                                                        overflow:
+                                                            "hidden",
+
+                                                        boxShadow:
+                                                            "0 2px 12px rgba(0,0,0,0.04)",
+
+                                                        position:
+                                                            "relative",
+
+                                                        cursor: "pointer",
+
+                                                        aspectRatio:
+                                                            "1 / 1"
+
+                                                    }}
+
+                                                >
+
+                                                    {/* OVERLAY */}
+
+                                                    <div
+
+                                                        className="folder-overlay"
+
+                                                        style={{
+
+                                                            position:
+                                                                "absolute",
+
+                                                            inset: 0,
+
+                                                            background:
+                                                                "rgba(0,0,0,.55)",
+
+                                                            display: "flex",
+
+                                                            flexDirection:
+                                                                "column",
+
+                                                            alignItems:
+                                                                "center",
+
+                                                            justifyContent:
+                                                                "center",
+
+                                                            gap: 14,
+
+                                                            opacity: 0,
+
+                                                            transition:
+                                                                ".25s ease",
+
+                                                            zIndex: 2
+
+                                                        }}
+
+                                                    >
+
+                                                        <div
+
+                                                            style={{
+
+                                                                color: "#fff",
+
+                                                                fontWeight: 700,
+
+                                                                fontSize: 18,
+
+                                                                textAlign: "center",
+
+                                                                paddingInline: 10
 
                                                             }}
 
                                                         >
 
-                                                            <Button
+                                                            {folder.name}
 
-                                                                danger
+                                                        </div>
+
+                                                        <Space>
+
+                                                            <Button
 
                                                                 shape="circle"
 
                                                                 icon={
-                                                                    <DeleteOutlined />
+                                                                    <EditOutlined />
                                                                 }
 
                                                                 onClick={(e) => {
 
                                                                     e.stopPropagation();
 
-                                                                }}
-
-                                                            />
-
-                                                        </Popconfirm>
-
-                                                    </Space>
-
-                                                </div>
-
-                                                {/* CONTENT */}
-
-                                                <div
-
-                                                    style={{
-
-                                                        textAlign: "center",
-
-                                                        height: "100%",
-
-                                                        display: "flex",
-
-                                                        flexDirection: "column",
-
-                                                        alignItems: "center",
-
-                                                        justifyContent: "center"
-
-                                                    }}
-
-                                                >
-
-                                                    <FolderFilled
-
-                                                        style={{
-
-                                                            fontSize: 60,
-
-                                                            color:
-                                                                "#faad14"
-
-                                                        }}
-
-                                                    />
-
-                                                    <div
-                                                        style={{
-                                                            marginTop: 10
-                                                        }}
-                                                    >
-
-                                                        <Text
-                                                            strong
-                                                            style={{
-                                                                fontSize: 15
-                                                            }}
-                                                        >
-
-                                                            {folder.name}
-
-                                                        </Text>
-
-                                                    </div>
-
-                                                </div>
-
-                                            </Card>
-                                        </DroppableFolderCard>
-                                    </Col>
-
-                                ))
-
-                            }
-
-                            {/* MEDIA */}
-
-                            {
-
-                                filteredMedia.map(item => {
-
-                                    const isSelected =
-                                        selectedMediaIds.includes(
-                                            item.id
-                                        );
-
-                                    return (
-
-                                        <Col
-                                            key={item.id}
-                                            xs={12}
-                                            sm={8}
-                                            md={6}
-                                            lg={4}
-                                        >
-                                            <DraggableMediaCard
-                                                id={item.id}
-                                            >
-                                                {({
-                                                    listeners,
-                                                    attributes
-                                                }) => (
-
-                                                    <Card
-
-                                                        hoverable
-
-                                                        style={{
-
-                                                            borderRadius: 12,
-
-                                                            overflow:
-                                                                "hidden",
-                                                            touchAction: "none",
-
-                                                            border:
-
-                                                                isSelected
-
-                                                                    ? "2px solid #1677ff"
-
-                                                                    : "1px solid #f0f0f0",
-
-                                                            boxShadow:
-                                                                "0 2px 12px rgba(0,0,0,0.04)",
-
-                                                            aspectRatio:
-                                                                "1 / 1"
-
-                                                        }}
-
-                                                        styles={{
-                                                            body: {
-                                                                padding: 0,
-                                                                height: "100%"
-                                                            }
-                                                        }}
-
-                                                    >
-
-                                                        {/* IMAGE */}
-
-                                                        <div
-                                                            {...listeners}
-
-                                                            {...attributes}
-                                                            style={{
-
-                                                                position:
-                                                                    "relative",
-
-                                                                aspectRatio:
-                                                                    "1 / 1",
-
-                                                                overflow:
-                                                                    "hidden"
-
-                                                            }}
-
-                                                        >
-
-                                                            <Image
-
-                                                                src={item.url}
-
-                                                                alt=""
-
-                                                                preview
-
-                                                                width="100%"
-
-                                                                height="100%"
-
-                                                                style={{
-
-                                                                    objectFit:
-                                                                        "cover"
+                                                                    setEditingFolder(
+                                                                        folder
+                                                                    );
+
+                                                                    setRenameModalOpen(
+                                                                        true
+                                                                    );
 
                                                                 }}
 
                                                             />
 
-                                                            {/* ACTIONS */}
+                                                            <Popconfirm
 
-                                                            <div
+                                                                title="Delete folder?"
 
-                                                                style={{
+                                                                onConfirm={(e) => {
 
-                                                                    position:
-                                                                        "absolute",
+                                                                    e?.stopPropagation();
 
-                                                                    top: 10,
-
-                                                                    right: 10,
-
-                                                                    display:
-                                                                        "flex",
-
-                                                                    gap: 8,
-
-                                                                    zIndex: 2
+                                                                    handleDeleteFolder(
+                                                                        folder
+                                                                    );
 
                                                                 }}
 
                                                             >
-                                                                <Button
-
-                                                                    type={
-                                                                        isSelected
-                                                                            ? "primary"
-                                                                            : "default"
-                                                                    }
-
-                                                                    shape="circle"
-
-                                                                    size="small"
-
-                                                                    onClick={(e) => {
-
-                                                                        e.stopPropagation();
-
-                                                                        handleToggleSelectMedia(
-                                                                            item.id
-                                                                        );
-
-                                                                    }}
-
-                                                                >
-
-                                                                    ✓
-
-                                                                </Button>
 
                                                                 <Button
 
-                                                                    shape="circle"
+                                                                    danger
 
-                                                                    size="small"
+                                                                    shape="circle"
 
                                                                     icon={
-                                                                        <EditOutlined />
+                                                                        <DeleteOutlined />
                                                                     }
 
                                                                     onClick={(e) => {
 
                                                                         e.stopPropagation();
-
-                                                                        setEditingMedia(
-                                                                            item
-                                                                        );
-
-                                                                        setMediaModalOpen(
-                                                                            true
-                                                                        );
 
                                                                     }}
 
                                                                 />
 
-                                                                <Popconfirm
+                                                            </Popconfirm>
 
-                                                                    title="Delete media?"
+                                                        </Space>
 
-                                                                    onConfirm={() => {
+                                                    </div>
 
-                                                                        handleDeleteMedia(
-                                                                            item
-                                                                        );
+                                                    {/* CONTENT */}
+
+                                                    <div
+
+                                                        style={{
+
+                                                            textAlign: "center",
+
+                                                            height: "100%",
+
+                                                            display: "flex",
+
+                                                            flexDirection: "column",
+
+                                                            alignItems: "center",
+
+                                                            justifyContent: "center"
+
+                                                        }}
+
+                                                    >
+
+                                                        <FolderFilled
+
+                                                            style={{
+
+                                                                fontSize: 60,
+
+                                                                color:
+                                                                    "#faad14"
+
+                                                            }}
+
+                                                        />
+
+                                                        <div
+                                                            style={{
+                                                                marginTop: 10
+                                                            }}
+                                                        >
+
+                                                            <Text
+                                                                strong
+                                                                style={{
+                                                                    fontSize: 15
+                                                                }}
+                                                            >
+
+                                                                {folder.name}
+
+                                                            </Text>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </Card>
+                                            </DroppableFolderCard>
+                                        </Col>
+
+                                    ))
+
+                                }
+
+                                {/* MEDIA */}
+
+                                {
+
+                                    filteredMedia.map(item => {
+
+                                        const isSelected =
+                                            selectedMediaIds.includes(
+                                                item.id
+                                            );
+
+                                        return (
+
+                                            <Col
+                                                key={item.id}
+                                                xs={12}
+                                                sm={8}
+                                                md={6}
+                                                lg={4}
+                                            >
+                                                <DraggableMediaCard
+                                                    id={item.id}
+                                                >
+                                                    {({
+                                                        listeners,
+                                                        attributes
+                                                    }) => (
+
+                                                        <Card
+
+                                                            hoverable
+
+                                                            style={{
+
+                                                                borderRadius: 12,
+
+                                                                overflow:
+                                                                    "hidden",
+                                                                touchAction: "none",
+
+                                                                border:
+
+                                                                    isSelected
+
+                                                                        ? "2px solid #1677ff"
+
+                                                                        : "1px solid #f0f0f0",
+
+                                                                boxShadow:
+                                                                    "0 2px 12px rgba(0,0,0,0.04)",
+
+                                                                aspectRatio:
+                                                                    "1 / 1"
+
+                                                            }}
+
+                                                            styles={{
+                                                                body: {
+                                                                    padding: 0,
+                                                                    height: "100%"
+                                                                }
+                                                            }}
+
+                                                        >
+
+                                                            {/* IMAGE */}
+
+                                                            <div
+                                                                {...listeners}
+
+                                                                {...attributes}
+                                                                style={{
+
+                                                                    position:
+                                                                        "relative",
+
+                                                                    aspectRatio:
+                                                                        "1 / 1",
+
+                                                                    overflow:
+                                                                        "hidden"
+
+                                                                }}
+
+                                                            >
+
+                                                                <Image
+
+                                                                    src={item.url}
+
+                                                                    alt=""
+
+                                                                    preview
+
+                                                                    width="100%"
+
+                                                                    height="100%"
+
+                                                                    style={{
+
+                                                                        objectFit:
+                                                                            "cover"
+
+                                                                    }}
+
+                                                                />
+
+                                                                {/* ACTIONS */}
+
+                                                                <div
+
+                                                                    style={{
+
+                                                                        position:
+                                                                            "absolute",
+
+                                                                        top: 10,
+
+                                                                        right: 10,
+
+                                                                        display:
+                                                                            "flex",
+
+                                                                        gap: 8,
+
+                                                                        zIndex: 2
 
                                                                     }}
 
                                                                 >
-
                                                                     <Button
 
-                                                                        danger
-
-                                                                        size="small"
+                                                                        type={
+                                                                            isSelected
+                                                                                ? "primary"
+                                                                                : "default"
+                                                                        }
 
                                                                         shape="circle"
 
+                                                                        size="small"
+
+                                                                        onClick={(e) => {
+
+                                                                            e.stopPropagation();
+
+                                                                            handleToggleSelectMedia(
+                                                                                item.id
+                                                                            );
+
+                                                                        }}
+
+                                                                    >
+
+                                                                        ✓
+
+                                                                    </Button>
+
+                                                                    <Button
+
+                                                                        shape="circle"
+
+                                                                        size="small"
+
                                                                         icon={
-                                                                            <DeleteOutlined />
+                                                                            <EditOutlined />
                                                                         }
 
                                                                         onClick={(e) => {
 
                                                                             e.stopPropagation();
 
+                                                                            setEditingMedia(
+                                                                                item
+                                                                            );
+
+                                                                            setMediaModalOpen(
+                                                                                true
+                                                                            );
+
                                                                         }}
 
                                                                     />
 
-                                                                </Popconfirm>
+                                                                    <Popconfirm
 
-                                                            </div>
+                                                                        title="Delete media?"
 
-                                                            {/* ALT OVERLAY */}
+                                                                        onConfirm={() => {
 
-                                                            <div
+                                                                            handleDeleteMedia(
+                                                                                item
+                                                                            );
 
-                                                                style={{
+                                                                        }}
 
-                                                                    position:
-                                                                        "absolute",
+                                                                    >
 
-                                                                    left: 0,
+                                                                        <Button
 
-                                                                    right: 0,
+                                                                            danger
 
-                                                                    bottom: 0,
+                                                                            size="small"
 
-                                                                    padding:
-                                                                        "8px 12px 4px",
+                                                                            shape="circle"
 
-                                                                    background:
+                                                                            icon={
+                                                                                <DeleteOutlined />
+                                                                            }
 
-                                                                        "linear-gradient(to top, rgba(0,0,0,.75), transparent)",
+                                                                            onClick={(e) => {
 
-                                                                    color: "#fff"
+                                                                                e.stopPropagation();
 
-                                                                }}
+                                                                            }}
 
-                                                            >
+                                                                        />
 
-                                                                <Text
+                                                                    </Popconfirm>
 
-                                                                    ellipsis
+                                                                </div>
+
+                                                                {/* ALT OVERLAY */}
+
+                                                                <div
 
                                                                     style={{
-                                                                        color: "#fff"
-                                                                    }}
 
-                                                                    strong
+                                                                        position:
+                                                                            "absolute",
+
+                                                                        left: 0,
+
+                                                                        right: 0,
+
+                                                                        bottom: 0,
+
+                                                                        padding:
+                                                                            "8px 12px 4px",
+
+                                                                        background:
+
+                                                                            "linear-gradient(to top, rgba(0,0,0,.75), transparent)",
+
+                                                                        color: "#fff"
+
+                                                                    }}
 
                                                                 >
 
-                                                                    {item.alt}
+                                                                    <Text
 
-                                                                </Text>
+                                                                        ellipsis
+
+                                                                        style={{
+                                                                            color: "#fff"
+                                                                        }}
+
+                                                                        strong
+
+                                                                    >
+
+                                                                        {item.alt}
+
+                                                                    </Text>
+
+                                                                </div>
 
                                                             </div>
 
-                                                        </div>
+                                                        </Card>
 
-                                                    </Card>
+                                                    )}
+                                                </DraggableMediaCard>
+                                            </Col>
 
-                                                )}
-                                            </DraggableMediaCard>
-                                        </Col>
+                                        )
+                                    })
 
-                                    )
-                                })
+                                }
 
-                            }
+                            </Row>
 
-                        </Row>
-
-                    </div>
-
+                        </div>
+                    </Spin>
                     {/* MODALS */}
 
                     <CreateFolderModal
