@@ -1,51 +1,12 @@
-// src/admin/components/menu/ProductCategorySidebar.jsx
+// src/admin/components/product/ProductCategorySidebar.jsx
 
-import {
-    Input
-} from "antd";
-
-const categories = [
-
-    {
-        id: 1,
-        name: "All Products"
-    },
-
-    {
-        id: 2,
-        name: "Laptop",
-
-        children: [
-
-            {
-                id: 3,
-                name: "Gaming Laptop"
-            },
-
-            {
-                id: 4,
-                name: "Ultrabook"
-            }
-
-        ]
-    },
-
-    {
-        id: 5,
-        name: "Điện thoại"
-    },
-
-    {
-        id: 6,
-        name: "Tablet"
-    }
-
-];
+import { Input } from "antd";
 
 function CategoryItem({
 
     item,
-    level = 0
+    level = 0,
+    onSelect
 
 }) {
 
@@ -55,8 +16,14 @@ function CategoryItem({
 
             <div
 
+                onClick={() =>
+                    onSelect?.(item)
+                }
+
                 style={{
-                    paddingLeft: level * 16
+                    paddingLeft: 16,
+                    cursor: "pointer",
+                    marginLeft: level * 16,
                 }}
 
                 className="admin-category-item"
@@ -69,19 +36,27 @@ function CategoryItem({
 
             {
 
-                item.children?.map(child => (
+                item.children?.map(
+                    child => (
 
-                    <CategoryItem
+                        <CategoryItem
 
-                        key={child.id}
+                            key={child.id}
 
-                        item={child}
+                            item={child}
 
-                        level={level + 1}
+                            level={
+                                level + 1
+                            }
 
-                    />
+                            onSelect={
+                                onSelect
+                            }
 
-                ))
+                        />
+
+                    )
+                )
 
             }
 
@@ -91,7 +66,13 @@ function CategoryItem({
 
 }
 
-export default function ProductCategorySidebar() {
+export default function ProductCategorySidebar({
+
+    categories = [],
+
+    onSelect
+
+}) {
 
     return (
 
@@ -99,31 +80,19 @@ export default function ProductCategorySidebar() {
             className="admin-product-sidebar"
         >
 
-            {/* TITLE */}
-
             <div
                 className="admin-sidebar-header"
             >
 
                 <h2>
-
                     Category / Menu
-
                 </h2>
 
             </div>
 
-            {/* SEARCH */}
-
             <Input
-
                 placeholder="Search products..."
-
-                size="mall"
-
             />
-
-            {/* TREE */}
 
             <div
                 className="admin-category-tree"
@@ -131,17 +100,21 @@ export default function ProductCategorySidebar() {
 
                 {
 
-                    categories.map(item => (
+                    categories.map(
+                        item => (
 
-                        <CategoryItem
+                            <CategoryItem
 
-                            key={item.id}
+                                key={item.id}
 
-                            item={item}
+                                item={item}
 
-                        />
+                                onSelect={onSelect}
 
-                    ))
+                            />
+
+                        )
+                    )
 
                 }
 

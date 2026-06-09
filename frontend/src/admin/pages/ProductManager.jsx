@@ -1,6 +1,6 @@
 // src/admin/pages/ProductManager.jsx
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { Splitter } from "antd";
 
@@ -21,16 +21,36 @@ export default function ProductManager() {
     const {
 
         products,
+        categories,
+
         loading,
-        fetchProducts
+
+        fetchProducts,
+        fetchCategories
 
     } = useProducts();
 
+    const [
+        selectedCategory,
+        setSelectedCategory
+    ] = useState(null);
+
     useEffect(() => {
 
-        fetchProducts();
+        fetchCategories();
 
     }, []);
+
+    useEffect(() => {
+
+        fetchProducts({
+
+            categoryId:
+                selectedCategory
+
+        });
+
+    }, [selectedCategory]);
 
     return (
 
@@ -46,7 +66,19 @@ export default function ProductManager() {
                 max={350}
             >
 
-                <ProductCategorySidebar />
+                <ProductCategorySidebar
+
+                    categories={categories}
+
+                    onSelect={(item) => {
+
+                        setSelectedCategory(
+                            item.id
+                        );
+
+                    }}
+
+                />
 
             </Splitter.Panel>
 

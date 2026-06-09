@@ -69,16 +69,95 @@ class MenuService
         }
     }
 
-    public function getProductCategories($lang = 'vi')
+    public function getProductCategories(
+        $lang = 'vi'
+    )
     {
-        return $this->baseQuery($lang)
-            ->whereIn('type', [
-                'menu_group',
-                'product_category'
+        $items = Danduong::query()
+
+            ->leftJoin(
+                'danduong_ngonngu',
+                function ($join) use ($lang) {
+
+                    $join
+                        ->on(
+                            'danduong.id',
+                            '=',
+                            'danduong_ngonngu.danduong_id'
+                        )
+                        ->where(
+                            'danduong_ngonngu.ngonngu',
+                            $lang
+                        );
+
+                }
+            )
+
+            ->whereIn(
+                'danduong.type',
+                [
+                    'menu_group',
+                    'product_category'
+                ]
+            )
+
+            ->select([
+                'danduong.id',
+                'danduong.goc_id',
+                'danduong.type',
+
+                'danduong_ngonngu.danduong_nn_ten as name'
             ])
-            ->orderBy('goc_id')
-            ->orderBy('thutu')
+
+            ->orderBy('danduong.goc_id')
+            ->orderBy('danduong.thutu')
+
             ->get();
+
+        return $this->buildTree(
+            $items
+        );
+    }
+
+    public function getDescendantIds($categoryId)
+    {
+        $allCategories = Danduong::query()
+            ->select(
+                'id',
+                'goc_id'
+            )
+            ->get();
+
+        return $this->collectDescendantIds(
+            $categoryId,
+            $allCategories
+        );
+    }
+
+    private function collectDescendantIds(
+        $categoryId,
+        $allCategories
+    ) {
+        $ids = [$categoryId];
+
+        $children = $allCategories
+            ->where(
+                'goc_id',
+                $categoryId
+            );
+
+        foreach ($children as $child) {
+
+            $ids = array_merge(
+                $ids,
+                $this->collectDescendantIds(
+                    $child->id,
+                    $allCategories
+                )
+            );
+        }
+
+        return $ids;
     }
 
     public function saveMenu($data)

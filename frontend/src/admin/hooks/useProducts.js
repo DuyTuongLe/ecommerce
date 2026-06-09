@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 import {
-    getProducts
+    getProducts,
+    getProductCategories
 } from "../../shared/services/productApi";
 
 export default function useProducts() {
@@ -11,25 +12,42 @@ export default function useProducts() {
     const [products, setProducts] =
         useState([]);
 
+    const [categories, setCategories] =
+        useState([]);
+
     const [loading, setLoading] =
         useState(false);
 
-    const fetchProducts = async (
+    const fetchProducts = async ({
+
         page = 1,
-        lang = "vi"
-    ) => {
+
+        lang = "vi",
+
+        categoryId = null
+
+    } = {}) => {
 
         setLoading(true);
 
         try {
 
             const data =
-                await getProducts(
+                await getProducts({
+
                     page,
-                    lang
-                );
+
+                    lang,
+
+                    categoryId
+
+                });
 
             setProducts(data);
+
+        } catch (error) {
+
+            console.error(error);
 
         } finally {
 
@@ -39,9 +57,37 @@ export default function useProducts() {
 
     };
 
-    return {
-        products,
-        loading,
-        fetchProducts
+    const fetchCategories = async (
+        lang = "vi"
+    ) => {
+
+        try {
+
+            const data =
+                await getProductCategories(
+                    lang
+                );
+
+            setCategories(data);
+
+        } catch (error) {
+
+            console.error(error);
+
+        }
+
     };
+
+    return {
+
+        products,
+        categories,
+
+        loading,
+
+        fetchProducts,
+        fetchCategories
+
+    };
+
 }

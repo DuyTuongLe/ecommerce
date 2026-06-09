@@ -6,8 +6,6 @@ import {
     Image
 } from "antd";
 
-const API_URL =
-    import.meta.env.VITE_STORAGE_URL;
 
 export default function ProductTable({
     products = [],
