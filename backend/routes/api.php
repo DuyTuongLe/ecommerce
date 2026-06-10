@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Frontend\MenuController;
 use App\Http\Controllers\Api\Admin\LanguageController;
 use App\Http\Controllers\Api\Admin\MediaController;
 use App\Http\Controllers\Api\Admin\ProductController;
+use App\Http\Controllers\Api\Admin\BrandController;
 
 Route::prefix('admin')->group(function () {
 
@@ -94,6 +95,26 @@ Route::prefix('admin')->group(function () {
     Route::get(
         '/products',
         [ProductController::class, 'index']
+    );
+
+    Route::get(
+        '/brands',
+        [BrandController::class, 'index']
+    );
+
+    Route::post(
+        '/brands',
+        [BrandController::class, 'store']
+    );
+
+    Route::post(
+    '/brands/bulk-delete',
+    [BrandController::class, 'bulkDelete']
+);
+
+    Route::post(
+        '/brands/bulk-save',
+        [BrandController::class, 'bulkSave']
     );
 });
 
