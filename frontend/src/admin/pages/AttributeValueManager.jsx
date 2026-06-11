@@ -1,38 +1,48 @@
-// src/admin/pages/BrandManager.jsx
+// src/admin/pages/AttributeValueManager.jsx
 
-import { useEffect, useState } from "react";
+import {
 
-import BrandToolbar
-    from "../components/brand/BrandToolbar";
+    useEffect,
+    useState
 
-import BrandTable
-    from "../components/brand/BrandTable";
+} from "react";
 
-import useBrands
-    from "../hooks/useBrands";
+import {
 
-import MediaPickerModal
-    from "../components/media/MediaPickerModal";
+    Modal
 
-import { message, Modal } from "antd";
+} from "antd";
 
-export default function BrandManager() {
+import useAttributeValues
+    from "../hooks/useAttributeValues";
+
+import AttributeValueToolbar
+    from "../components/attributeValue/AttributeValueToolbar";
+
+import AttributeValueTable
+    from "../components/attributeValue/AttributeValueTable";
+
+export default function AttributeValueManager() {
 
     const {
 
-        brands,
+        attributeValues,
+
+        attributes,
 
         loading,
 
-        fetchBrands,
+        fetchAttributeValues,
 
-        saveBrandChanges,
+        fetchAttributes,
 
-        createBrand,
+        saveAttributeValueChanges,
 
-        deleteBrands
+        createAttributeValue,
 
-    } = useBrands();
+        deleteAttributeValues
+
+    } = useAttributeValues();
 
     const [
 
@@ -52,72 +62,25 @@ export default function BrandManager() {
 
     const [
 
-        mediaModalOpen,
+        newAttributeValueId,
 
-        setMediaModalOpen
+        setNewAttributeValueId
 
-    ] = useState(false);
-
-    const [
-
-        selectedBrand,
-
-        setSelectedBrand
-
-    ] = useState(null);
-
-    const [
-        newBrandId,
-        setNewBrandId
     ] = useState(null);
 
     useEffect(() => {
 
-        fetchBrands();
+        fetchAttributeValues();
+
+        fetchAttributes();
 
     }, []);
-
-    useEffect(() => {
-
-        console.log(
-            "editedRows changed",
-            editedRows
-        );
-
-    }, [editedRows]);
-
-    function handleSelectLogo(media) {
-
-        if (!selectedBrand) {
-            return;
-        }
-
-        setEditedRows(prev => ({
-
-            ...prev,
-
-            [selectedBrand.id]: {
-
-                ...selectedBrand,
-
-                ...prev[selectedBrand.id],
-
-                logo_id: media.id,
-
-                logo: media.url
-
-            }
-
-        }));
-
-        setMediaModalOpen(false);
-    }
 
     return (
 
         <div>
 
-            <BrandToolbar
+            <AttributeValueToolbar
 
                 editedRows={
                     editedRows
@@ -133,7 +96,9 @@ export default function BrandManager() {
 
                     setSelectedRowKeys([]);
 
-                    setNewBrandId(null);
+                    setNewAttributeValueId(null);
+
+                    fetchAttributeValues();
 
                     fetchAttributes();
 
@@ -142,13 +107,14 @@ export default function BrandManager() {
                 onCreate={async () => {
 
                     const result =
-                        await createBrand();
+
+                        await createAttributeValue();
 
                     if (
                         result?.id
                     ) {
 
-                        setNewBrandId(
+                        setNewAttributeValueId(
                             result.id
                         );
 
@@ -167,12 +133,14 @@ export default function BrandManager() {
                     if (
                         rows.length === 0
                     ) {
-                        return;
+
+                        return null;
+
                     }
 
                     const success =
 
-                        await saveBrandChanges(
+                        await saveAttributeValueChanges(
                             rows
                         );
 
@@ -180,9 +148,15 @@ export default function BrandManager() {
 
                         setEditedRows({});
 
-                        fetchBrands();
+                        await fetchAttributeValues();
+
+                        await fetchAttributes();
+
+                        return true;
 
                     }
+
+                    return false;
 
                 }}
 
@@ -191,12 +165,14 @@ export default function BrandManager() {
                     if (
                         selectedRowKeys.length === 0
                     ) {
+
                         return;
+
                     }
 
                     const result =
 
-                        await deleteBrands(
+                        await deleteAttributeValues(
                             selectedRowKeys
                         );
 
@@ -207,7 +183,7 @@ export default function BrandManager() {
                         Modal.warning({
 
                             title:
-                                "Không thể xóa brand!",
+                                "Không thể xóa giá trị thuộc tính",
 
                             content: (
 
@@ -226,9 +202,7 @@ export default function BrandManager() {
                                                 >
 
                                                     {
-
                                                         item.name
-
                                                     }
 
                                                     {" "}
@@ -236,9 +210,7 @@ export default function BrandManager() {
                                                     (
 
                                                     {
-
                                                         item.product_count
-
                                                     }
 
                                                     {" products)"}
@@ -263,11 +235,11 @@ export default function BrandManager() {
                         result?.success
                     ) {
 
-                        setSelectedRowKeys(
-                            []
-                        );
+                        setSelectedRowKeys([]);
 
-                        fetchBrands();
+                        fetchAttributeValues();
+
+                        fetchAttributes();
 
                     }
 
@@ -275,11 +247,19 @@ export default function BrandManager() {
 
             />
 
-            <BrandTable
+            <AttributeValueTable
 
-                brands={brands}
+                attributeValues={
+                    attributeValues
+                }
 
-                loading={loading}
+                attributes={
+                    attributes
+                }
+
+                loading={
+                    loading
+                }
 
                 selectedRowKeys={
                     selectedRowKeys
@@ -297,38 +277,8 @@ export default function BrandManager() {
                     setEditedRows
                 }
 
-                onSelectLogo={(brand) => {
-
-                    setSelectedBrand(
-                        brand
-                    );
-
-                    setMediaModalOpen(
-                        true
-                    );
-
-                }}
-
-                newBrandId={
-                    newBrandId
-                }
-
-            />
-
-            <MediaPickerModal
-
-                open={mediaModalOpen}
-
-                onCancel={() => {
-
-                    setMediaModalOpen(
-                        false
-                    );
-
-                }}
-
-                onSelect={
-                    handleSelectLogo
+                newAttributeValueId={
+                    newAttributeValueId
                 }
 
             />

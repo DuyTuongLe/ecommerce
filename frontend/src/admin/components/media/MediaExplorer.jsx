@@ -1718,7 +1718,9 @@ export default function MediaExplorer({
 
                                                                     alt=""
 
-                                                                    preview
+                                                                    preview={
+                                                                        mode !== "picker"
+                                                                    }
 
                                                                     width="100%"
 
@@ -1726,8 +1728,26 @@ export default function MediaExplorer({
 
                                                                     style={{
 
-                                                                        objectFit:
-                                                                            "cover"
+                                                                        objectFit: "cover",
+
+                                                                        cursor:
+                                                                            mode === "picker"
+                                                                                ? "pointer"
+                                                                                : "default"
+
+                                                                    }}
+
+                                                                    onClick={() => {
+
+                                                                        if (
+                                                                            mode === "picker"
+                                                                        ) {
+
+                                                                            onSelect?.(
+                                                                                item
+                                                                            );
+
+                                                                        }
 
                                                                     }}
 

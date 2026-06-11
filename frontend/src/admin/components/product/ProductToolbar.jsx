@@ -2,7 +2,6 @@
 
 import {
 
-    Input,
     Button,
     Select,
     Space
@@ -11,90 +10,131 @@ import {
 
 import {
 
-    PlusOutlined
+    PlusOutlined,
+    ReloadOutlined,
+    EditOutlined,
+    DeleteOutlined,
+    CheckCircleOutlined,
+    StopOutlined
 
 } from "@ant-design/icons";
 
 export default function ProductToolbar() {
 
     return (
-        <div
 
-            style={{
-                padding: 10,
-            }}
-
-        >
+        <div>
 
             <div className="admin-sidebar-header">
-                <h2>Products</h2>
+
+                <h2>
+                    Products
+                </h2>
+
             </div>
+
             <div
 
                 style={{
 
                     display: "flex",
 
-                    justifyContent: "space-between",
+                    justifyContent:
+                        "space-between",
 
-                    alignItems: "center",
+                    alignItems:
+                        "center",
 
-                    marginBottom: 20
+                    padding: "16px"
 
                 }}
 
             >
 
-                {/* LEFT */}
+                <div
 
-                <Space>
+                    style={{
+
+                        display: "flex",
+
+                        flexWrap: "wrap",
+
+                        gap: 8
+
+                    }}
+
+                >
+
+                    <Button
+                        icon={<ReloadOutlined />}
+                    >
+                        Reload
+                    </Button>
+
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                    >
+                        Create
+                    </Button>
+
+                    <Button
+                        icon={<EditOutlined />}
+                    >
+                        Edit
+                    </Button>
+
+                    <Button
+                        icon={<CheckCircleOutlined style={{
+                            color: "#52c41a"
+                        }}
+                        />}
+                    >
+                        Publish
+                    </Button>
+
+                    <Button
+                        icon={<StopOutlined 
+                            style={{
+                            color: "#ff4d4f"
+                        }}
+                        />}
+                    >
+                        Unpublish
+                    </Button>
+
+                    <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                    >
+                        Delete
+                    </Button>
 
                     <Select
-
                         defaultValue="all"
-
                         style={{
-                            width: 180
+                            width: 140
                         }}
-
                         options={[
-
                             {
                                 label: "All Status",
                                 value: "all"
                             },
-
                             {
                                 label: "Published",
                                 value: "published"
                             },
-
                             {
                                 label: "Draft",
                                 value: "draft"
                             }
-
                         ]}
-
                     />
 
-                </Space>
-
-                {/* RIGHT */}
-
-                <Button
-
-                    type="primary"
-
-                    icon={<PlusOutlined />}
-
-                >
-
-                    Create Product
-
-                </Button>
+                </div>
 
             </div>
+
         </div>
 
     );

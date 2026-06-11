@@ -90,9 +90,11 @@ export default function ProductCategorySidebar({
 
             </div>
 
-            <Input
-                placeholder="Search products..."
-            />
+            <div className="admin-sidebar-input">
+                <Input
+                    placeholder="Search products..."
+                />
+            </div>
 
             <div
                 className="admin-category-tree"

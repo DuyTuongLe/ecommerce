@@ -153,6 +153,22 @@ export default function AdminLayout() {
                 },
 
                 {
+                  key: "/admin/attributevalues",
+
+                  icon: <ApartmentOutlined />,
+
+                  label: (
+
+                    <Link to="/admin/attributevalues">
+
+                      Attributes Value
+
+                    </Link>
+
+                  )
+                },
+
+                {
                   key: "/admin/orders",
 
                   icon: <ShoppingCartOutlined />,

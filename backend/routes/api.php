@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\Admin\LanguageController;
 use App\Http\Controllers\Api\Admin\MediaController;
 use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\BrandController;
+use App\Http\Controllers\Api\Admin\AttributeController;
+use App\Http\Controllers\Api\Admin\AttributeValueController;
 
 Route::prefix('admin')->group(function () {
 
@@ -108,13 +110,53 @@ Route::prefix('admin')->group(function () {
     );
 
     Route::post(
-    '/brands/bulk-delete',
-    [BrandController::class, 'bulkDelete']
-);
+        '/brands/bulk-delete',
+        [BrandController::class, 'bulkDelete']
+    );
 
     Route::post(
         '/brands/bulk-save',
         [BrandController::class, 'bulkSave']
+    );
+
+    Route::get(
+        '/attributes',
+        [AttributeController::class, 'index']
+    );
+
+    Route::get(
+        '/attributevalues',
+        [AttributeValueController::class, 'index']
+    );
+
+    Route::post(
+        '/attributes',
+        [AttributeController::class, 'store']
+    );
+
+    Route::post(
+        '/attributes/bulk-save',
+        [AttributeController::class, 'bulkSave']
+    );
+
+    Route::post(
+        '/attributes/bulk-delete',
+        [AttributeController::class, 'bulkDelete']
+    );
+
+    Route::post(
+        '/attributevalues',
+        [AttributeValueController::class, 'store']
+    );
+
+    Route::post(
+        '/attributevalues/bulk-save',
+        [AttributeValueController::class, 'bulkSave']
+    );
+
+    Route::post(
+        '/attributevalues/bulk-delete',
+        [AttributeValueController::class, 'bulkDelete']
     );
 });
 

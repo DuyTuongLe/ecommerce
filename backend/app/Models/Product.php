@@ -25,4 +25,15 @@ class Product extends Model
             'thumbnail_id'
         );
     }
+
+    public function attributeValues()
+    {
+        return $this->hasMany(
+
+            ProductAttributeValue::class,
+
+            'product_id'
+
+        );
+    }
 }

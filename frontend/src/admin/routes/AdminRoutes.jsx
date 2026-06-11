@@ -15,6 +15,7 @@ import BrandManager from "../pages/BrandManager";
 import AttributeManager from "../pages/AttributeManager";
 import OrderManager from "../pages/OrderManager";
 import PromotionManager from "../pages/PromotionManager";
+import AttributeValueManager from "../pages/AttributeValueManager";
 
 export default function AdminRoutes() {
 
@@ -58,10 +59,15 @@ export default function AdminRoutes() {
         />
 
         <Route
+          path="attributevalues"
+          element={<AttributeValueManager />}
+        />
+
+        <Route
           path="orders"
           element={<OrderManager />}
         />
-        
+
         <Route
           path="promotions"
           element={<PromotionManager />}
