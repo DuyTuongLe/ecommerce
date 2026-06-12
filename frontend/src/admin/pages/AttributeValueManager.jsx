@@ -22,6 +22,8 @@ import AttributeValueToolbar
 import AttributeValueTable
     from "../components/attributeValue/AttributeValueTable";
 
+import { useLanguages } from "../hooks/useLanguages";
+
 export default function AttributeValueManager() {
 
     const {
@@ -68,19 +70,47 @@ export default function AttributeValueManager() {
 
     ] = useState(null);
 
+    const languages =
+        useLanguages();
+
+    const [
+
+        lang,
+
+        setLang
+
+    ] = useState("vi");
+
     useEffect(() => {
 
-        fetchAttributeValues();
+        fetchAttributeValues(
+            lang
+        );
 
-        fetchAttributes();
+        fetchAttributes(
+            lang
+        );
 
-    }, []);
+    }, [lang]);
 
     return (
 
-        <div>
+        <div
+            style={{
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: 0
+            }}
+        >
 
             <AttributeValueToolbar
+
+                languages={languages}
+
+                lang={lang}
+
+                onLangChange={setLang}
 
                 editedRows={
                     editedRows
@@ -98,9 +128,9 @@ export default function AttributeValueManager() {
 
                     setNewAttributeValueId(null);
 
-                    fetchAttributeValues();
+                    fetchAttributeValues(lang);
 
-                    fetchAttributes();
+                    fetchAttributes(lang);
 
                 }}
 
@@ -108,7 +138,7 @@ export default function AttributeValueManager() {
 
                     const result =
 
-                        await createAttributeValue();
+                        await createAttributeValue(lang);
 
                     if (
                         result?.id
@@ -141,16 +171,17 @@ export default function AttributeValueManager() {
                     const success =
 
                         await saveAttributeValueChanges(
-                            rows
+                            rows,
+                            lang
                         );
 
                     if (success) {
 
                         setEditedRows({});
 
-                        await fetchAttributeValues();
+                        await fetchAttributeValues(lang);
 
-                        await fetchAttributes();
+                        await fetchAttributes(lang);
 
                         return true;
 
@@ -173,7 +204,8 @@ export default function AttributeValueManager() {
                     const result =
 
                         await deleteAttributeValues(
-                            selectedRowKeys
+                            selectedRowKeys,
+                            lang
                         );
 
                     if (
@@ -237,9 +269,9 @@ export default function AttributeValueManager() {
 
                         setSelectedRowKeys([]);
 
-                        fetchAttributeValues();
+                        fetchAttributeValues(lang);
 
-                        fetchAttributes();
+                        fetchAttributes(lang);
 
                     }
 
@@ -247,41 +279,51 @@ export default function AttributeValueManager() {
 
             />
 
-            <AttributeValueTable
+            <div
+                style={{
+                    flex: 1,
+                    minHeight: 0,
+                    overflow: "scroll"
 
-                attributeValues={
-                    attributeValues
-                }
+                }}
+            >
+                <AttributeValueTable
 
-                attributes={
-                    attributes
-                }
+                    attributeValues={
+                        attributeValues
+                    }
 
-                loading={
-                    loading
-                }
+                    attributes={
+                        attributes
+                    }
 
-                selectedRowKeys={
-                    selectedRowKeys
-                }
+                    loading={
+                        loading
+                    }
 
-                setSelectedRowKeys={
-                    setSelectedRowKeys
-                }
+                    selectedRowKeys={
+                        selectedRowKeys
+                    }
 
-                editedRows={
-                    editedRows
-                }
+                    setSelectedRowKeys={
+                        setSelectedRowKeys
+                    }
 
-                setEditedRows={
-                    setEditedRows
-                }
+                    editedRows={
+                        editedRows
+                    }
 
-                newAttributeValueId={
-                    newAttributeValueId
-                }
+                    setEditedRows={
+                        setEditedRows
+                    }
 
-            />
+                    newAttributeValueId={
+                        newAttributeValueId
+                    }
+
+                />
+            </div>
+
 
         </div>
 

@@ -56,19 +56,13 @@ class ProductController extends Controller
                 'media.id'
             );
 
-        /*
-        |--------------------------------------------------------------------------
-        | CATEGORY FILTER
-        |--------------------------------------------------------------------------
-        */
-
         if ($categoryId) {
 
             $categoryIds =
                 $this->menuService
-                    ->getDescendantIds(
-                        $categoryId
-                    );
+                ->getDescendantIds(
+                    $categoryId
+                );
 
             $query
 
@@ -118,7 +112,7 @@ class ProductController extends Controller
 
                     ? asset(
                         'storage/' .
-                        $item->thumbnail
+                            $item->thumbnail
                     )
 
                     : null;
@@ -130,6 +124,27 @@ class ProductController extends Controller
 
         return response()->json(
             $products
+        );
+    }
+
+    public function show($id)
+    {
+        $product = Product::with([
+
+            'translations',
+
+            'thumbnail',
+
+            'categories',
+
+            'gallery',
+
+            'attributeValues'
+
+        ])->findOrFail($id);
+
+        return response()->json(
+            $product
         );
     }
 }

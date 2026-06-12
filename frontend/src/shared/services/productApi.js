@@ -93,10 +93,18 @@ export async function saveBrands(
 
 }
 
-export async function createBrand() {
+export async function createBrand(
+    lang = "vi"
+) {
 
     const { data } = await api.post(
-        "/admin/brands"
+
+        "/admin/brands",
+
+        {
+            lang
+        }
+
     );
 
     return data;
@@ -180,10 +188,18 @@ export async function saveAttributes(
 
 }
 
-export async function createAttribute() {
+export async function createAttribute(
+    lang = "vi"
+) {
 
     const { data } = await api.post(
-        "/admin/attributes"
+
+        "/admin/attributes",
+
+        {
+            lang
+        }
+
     );
 
     return data;
@@ -206,10 +222,19 @@ export async function deleteAttributes(ids) {
 
 }
 
-export async function createAttributeValue() {
+
+export async function createAttributeValue(
+    lang = "vi"
+) {
 
     const { data } = await api.post(
-        "/admin/attributevalues"
+
+        "/admin/attributevalues",
+
+        {
+            lang
+        }
+
     );
 
     return data;

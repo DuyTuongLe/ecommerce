@@ -160,7 +160,7 @@ body,
     overflow: auto;
 }
 .admin-sidebar-header {
-  padding: 2px 16px;
+  padding: 10px 16px 0px;
 }
 .ant-table-cell.brand-image img {
     height: unset !important;
@@ -168,4 +168,22 @@ body,
 
 .new-brand-row td {
     background: #fffbe6 !important;
+}
+
+.admin-sidebar-header-language {
+  padding: 10px 10px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+}
+
+.admin-sidebar-header-language .ant-select {
+    flex:1;
+}
+
+.admin-sidebar-header-language .language-label {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 2px;
 }

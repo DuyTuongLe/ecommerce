@@ -4,6 +4,7 @@ import {
 
     Button,
     Space,
+    Select,
     message
 
 } from "antd";
@@ -18,6 +19,12 @@ import {
 } from "@ant-design/icons";
 
 export default function AttributeToolbar({
+
+    languages = [],
+
+    lang,
+
+    onLangChange,
 
     editedRows = {},
 
@@ -59,6 +66,28 @@ export default function AttributeToolbar({
             >
 
                 <Space wrap>
+
+                    <Select
+
+                        value={lang}
+
+                        onChange={onLangChange}
+
+                        style={{
+                            width: 140
+                        }}
+
+                        options={
+                            languages.map(item => ({
+
+                                label: item.name,
+
+                                value: item.code
+
+                            }))
+                        }
+
+                    />
 
                     <Button
 
@@ -108,27 +137,27 @@ export default function AttributeToolbar({
 
                         onClick={async () => {
 
-    const success =
+                            const success =
 
-        await onSave?.();
+                                await onSave?.();
 
-    if (success === true) {
+                            if (success === true) {
 
-        message.success(
-            "Saved successfully"
-        );
+                                message.success(
+                                    "Saved successfully"
+                                );
 
-    }
+                            }
 
-    if (success === false) {
+                            if (success === false) {
 
-        message.error(
-            "Save failed"
-        );
+                                message.error(
+                                    "Save failed"
+                                );
 
-    }
+                            }
 
-}}
+                        }}
 
                     >
 

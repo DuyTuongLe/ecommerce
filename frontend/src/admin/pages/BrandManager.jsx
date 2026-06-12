@@ -14,6 +14,10 @@ import useBrands
 import MediaPickerModal
     from "../components/media/MediaPickerModal";
 
+import {
+    useLanguages
+} from "../hooks/useLanguages";
+
 import { message, Modal } from "antd";
 
 export default function BrandManager() {
@@ -33,6 +37,8 @@ export default function BrandManager() {
         deleteBrands
 
     } = useBrands();
+
+    const languages = useLanguages();
 
     const [
 
@@ -71,11 +77,19 @@ export default function BrandManager() {
         setNewBrandId
     ] = useState(null);
 
+    const [
+
+        lang,
+
+        setLang
+
+    ] = useState("vi");
+
     useEffect(() => {
 
-        fetchBrands();
+        fetchBrands(lang);
 
-    }, []);
+    }, [lang]);
 
     useEffect(() => {
 
@@ -115,9 +129,28 @@ export default function BrandManager() {
 
     return (
 
-        <div>
+        <div
+            style={{
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                minHeight: 0
+            }}
+        >
 
             <BrandToolbar
+
+                languages={
+                    languages
+                }
+
+                lang={
+                    lang
+                }
+
+                onLangChange={
+                    setLang
+                }
 
                 editedRows={
                     editedRows
@@ -135,14 +168,13 @@ export default function BrandManager() {
 
                     setNewBrandId(null);
 
-                    fetchAttributes();
+                    fetchBrands(lang);
 
                 }}
 
                 onCreate={async () => {
 
-                    const result =
-                        await createBrand();
+                    const result = await createBrand(lang);
 
                     if (
                         result?.id
@@ -173,14 +205,18 @@ export default function BrandManager() {
                     const success =
 
                         await saveBrandChanges(
-                            rows
+
+                            rows,
+
+                            lang
+
                         );
 
                     if (success) {
 
                         setEditedRows({});
 
-                        fetchBrands();
+                        fetchBrands(lang);
 
                     }
 
@@ -197,7 +233,11 @@ export default function BrandManager() {
                     const result =
 
                         await deleteBrands(
-                            selectedRowKeys
+
+                            selectedRowKeys,
+
+                            lang
+
                         );
 
                     if (
@@ -263,11 +303,13 @@ export default function BrandManager() {
                         result?.success
                     ) {
 
-                        setSelectedRowKeys(
-                            []
+                        message.success(
+                            "Deleted successfully"
                         );
 
-                        fetchBrands();
+                        setSelectedRowKeys([]);
+
+                        fetchBrands(lang);
 
                     }
 
@@ -275,45 +317,58 @@ export default function BrandManager() {
 
             />
 
-            <BrandTable
-
-                brands={brands}
-
-                loading={loading}
-
-                selectedRowKeys={
-                    selectedRowKeys
-                }
-
-                setSelectedRowKeys={
-                    setSelectedRowKeys
-                }
-
-                editedRows={
-                    editedRows
-                }
-
-                setEditedRows={
-                    setEditedRows
-                }
-
-                onSelectLogo={(brand) => {
-
-                    setSelectedBrand(
-                        brand
-                    );
-
-                    setMediaModalOpen(
-                        true
-                    );
+            <div
+                style={{
+                    flex: 1,
+                    minHeight: 0,
+                    overflow: "scroll"
 
                 }}
+            >
 
-                newBrandId={
-                    newBrandId
-                }
+                <BrandTable
 
-            />
+                    brands={brands}
+
+                    loading={loading}
+
+                    selectedRowKeys={
+                        selectedRowKeys
+                    }
+
+                    setSelectedRowKeys={
+                        setSelectedRowKeys
+                    }
+
+                    editedRows={
+                        editedRows
+                    }
+
+                    setEditedRows={
+                        setEditedRows
+                    }
+
+                    onSelectLogo={(brand) => {
+
+                        setSelectedBrand(
+                            brand
+                        );
+
+                        setMediaModalOpen(
+                            true
+                        );
+
+                    }}
+
+                    newBrandId={
+                        newBrandId
+                    }
+
+                />
+
+            </div>
+
+
 
             <MediaPickerModal
 

@@ -36,7 +36,7 @@ export default function AttributeValueTable({
 
             dataIndex: "id",
 
-            width: 40
+            width: 60
 
         },
 
@@ -102,7 +102,7 @@ export default function AttributeValueTable({
                                     ...record,
 
                                     ...prev[
-                                        record.id
+                                    record.id
                                     ],
 
                                     attribute_id
@@ -168,7 +168,7 @@ export default function AttributeValueTable({
                                     ...record,
 
                                     ...prev[
-                                        record.id
+                                    record.id
                                     ],
 
                                     name:
@@ -253,7 +253,7 @@ export default function AttributeValueTable({
                                     ...record,
 
                                     ...prev[
-                                        record.id
+                                    record.id
                                     ],
 
                                     color_code:
@@ -314,7 +314,7 @@ export default function AttributeValueTable({
                                     ...record,
 
                                     ...prev[
-                                        record.id
+                                    record.id
                                     ],
 
                                     thutu:
@@ -401,7 +401,7 @@ export default function AttributeValueTable({
                                     ...record,
 
                                     ...prev[
-                                        record.id
+                                    record.id
                                     ],
 
                                     status
@@ -436,7 +436,7 @@ export default function AttributeValueTable({
             pagination={false}
 
             columns={columns}
-
+            
             rowSelection={{
 
                 selectedRowKeys,

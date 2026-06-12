@@ -84,12 +84,9 @@ export default function useBrands() {
 
         try {
 
-            const data =
-                await createBrandApi();
+            const data = await createBrandApi(lang);
 
-            await fetchBrands(
-                lang
-            );
+            await fetchBrands(lang);
 
             return data;
 

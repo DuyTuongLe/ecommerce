@@ -103,7 +103,9 @@ export default function useAttributes() {
 
             const data =
 
-                await createAttribute();
+                await createAttribute(
+                    lang
+                );
 
             await fetchAttributes(
                 lang

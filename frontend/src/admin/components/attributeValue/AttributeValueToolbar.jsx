@@ -4,6 +4,7 @@ import {
 
     Button,
     Space,
+    Select,
     message
 
 } from "antd";
@@ -18,6 +19,12 @@ import {
 } from "@ant-design/icons";
 
 export default function AttributeValueToolbar({
+
+    languages = [],
+
+    lang,
+
+    onLangChange,
 
     editedRows = {},
 
@@ -59,6 +66,28 @@ export default function AttributeValueToolbar({
             >
 
                 <Space wrap>
+
+                    <Select
+
+                        value={lang}
+
+                        onChange={onLangChange}
+
+                        style={{
+                            width: 140
+                        }}
+
+                        options={
+                            languages.map(item => ({
+
+                                label: item.name,
+
+                                value: item.code
+
+                            }))
+                        }
+
+                    />
 
                     <Button
 

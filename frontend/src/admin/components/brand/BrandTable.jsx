@@ -257,6 +257,8 @@ export default function BrandTable({
 
             columns={columns}
 
+            pagination={false}
+
             rowSelection={{
 
                 selectedRowKeys,

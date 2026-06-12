@@ -36,4 +36,24 @@ class Product extends Model
 
         );
     }
+
+    public function categories()
+    {
+        return $this->belongsToMany(
+            DanDuong::class,
+            'product_danduong',
+            'product_id',
+            'danduong_id'
+        );
+    }
+
+    public function gallery()
+    {
+        return $this->belongsToMany(
+            Media::class,
+            'product_media',
+            'product_id',
+            'media_id'
+        );
+    }
 }

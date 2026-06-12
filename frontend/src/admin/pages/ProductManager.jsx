@@ -16,6 +16,8 @@ import ProductTable
 import useProducts
     from "../hooks/useProducts";
 
+import {useLanguages} from "../hooks/useLanguages";
+
 export default function ProductManager() {
 
     const {
@@ -35,22 +37,39 @@ export default function ProductManager() {
         setSelectedCategory
     ] = useState(null);
 
+    const [
+
+        lang,
+
+        setLang
+
+    ] = useState("vi");
+
+    const languages =
+        useLanguages();
+
     useEffect(() => {
 
-        fetchCategories();
-
-    }, []);
-
-    useEffect(() => {
+        fetchCategories(
+            lang
+        );
 
         fetchProducts({
+
+            lang,
 
             categoryId:
                 selectedCategory
 
         });
 
-    }, [selectedCategory]);
+    }, [
+
+        lang,
+
+        selectedCategory
+
+    ]);
 
     return (
 
@@ -68,7 +87,21 @@ export default function ProductManager() {
 
                 <ProductCategorySidebar
 
-                    categories={categories}
+                    categories={
+                        categories
+                    }
+
+                    languages={
+                        languages
+                    }
+
+                    lang={
+                        lang
+                    }
+
+                    onLangChange={
+                        setLang
+                    }
 
                     onSelect={(item) => {
 

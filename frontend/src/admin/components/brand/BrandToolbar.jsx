@@ -4,6 +4,7 @@ import {
 
     Button,
     Space,
+    Select,
     message
 
 } from "antd";
@@ -19,6 +20,12 @@ import {
 
 export default function BrandToolbar({
 
+    languages = [],
+
+    lang,
+
+    onLangChange,
+
     editedRows = {},
 
     selectedRowKeys = [],
@@ -29,7 +36,7 @@ export default function BrandToolbar({
 
     onCreate,
 
-    onDelete
+    onDelete,
 
 }) {
 
@@ -59,6 +66,28 @@ export default function BrandToolbar({
             >
 
                 <Space wrap>
+
+                    <Select
+
+                        value={lang}
+
+                        onChange={onLangChange}
+
+                        style={{
+                            width: 140
+                        }}
+
+                        options={
+                            languages.map(item => ({
+
+                                label: item.name,
+
+                                value: item.code
+
+                            }))
+                        }
+
+                    />
 
                     <Button
 

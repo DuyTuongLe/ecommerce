@@ -1,6 +1,6 @@
 // src/admin/components/product/ProductCategorySidebar.jsx
 
-import { Input } from "antd";
+import { Input, Select } from "antd";
 
 function CategoryItem({
 
@@ -70,6 +70,12 @@ export default function ProductCategorySidebar({
 
     categories = [],
 
+    languages = [],
+
+    lang,
+
+    onLangChange,
+
     onSelect
 
 }) {
@@ -80,13 +86,29 @@ export default function ProductCategorySidebar({
             className="admin-product-sidebar"
         >
 
-            <div
-                className="admin-sidebar-header"
-            >
+            <div className="admin-sidebar-header-language">
+                
+                <span className="language-label">🌐 Language</span>
 
-                <h2>
-                    Category / Menu
-                </h2>
+                <Select
+
+                    value={lang}
+
+                    onChange={onLangChange}
+
+                    options={
+                        languages.map(item => ({
+
+                            label:
+                                item.name,
+
+                            value:
+                                item.code
+
+                        }))
+                    }
+
+                />
 
             </div>
 

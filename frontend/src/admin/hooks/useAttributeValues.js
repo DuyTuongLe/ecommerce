@@ -107,7 +107,7 @@ export default function useAttributeValues() {
 
                 const data =
 
-                    await createAttributeValue();
+                    await createAttributeValue(lang);
 
                 await fetchAttributeValues(
                     lang
@@ -144,6 +144,12 @@ export default function useAttributeValues() {
 
                 );
 
+                await fetchAttributeValues(
+                    lang
+                );
+
+                return true;
+
                 return true;
 
             } catch (error) {
@@ -159,15 +165,25 @@ export default function useAttributeValues() {
     const deleteSelectedAttributeValues =
         async (
 
-            ids
+            ids,
+
+            lang = "vi"
 
         ) => {
 
             try {
 
-                return await deleteAttributeValues(
-                    ids
+                const data =
+
+                    await deleteAttributeValues(
+                        ids
+                    );
+
+                await fetchAttributeValues(
+                    lang
                 );
+
+                return data;
 
             } catch (error) {
 

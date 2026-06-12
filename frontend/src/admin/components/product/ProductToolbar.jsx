@@ -15,7 +15,8 @@ import {
     EditOutlined,
     DeleteOutlined,
     CheckCircleOutlined,
-    StopOutlined
+    StopOutlined,
+    AppstoreOutlined
 
 } from "@ant-design/icons";
 
@@ -25,14 +26,26 @@ export default function ProductToolbar() {
 
         <div>
 
-            <div className="admin-sidebar-header">
+            <div
+                className="admin-sidebar-header"
+            >
 
-                <h2>
+                <h2
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        margin: 0
+                    }}
+                >
+
+                    <AppstoreOutlined />
+
                     Products
+
                 </h2>
 
             </div>
-
             <div
 
                 style={{
@@ -45,7 +58,7 @@ export default function ProductToolbar() {
                     alignItems:
                         "center",
 
-                    padding: "16px"
+                    padding: "10px 16px 16px"
 
                 }}
 
@@ -94,10 +107,10 @@ export default function ProductToolbar() {
                     </Button>
 
                     <Button
-                        icon={<StopOutlined 
+                        icon={<StopOutlined
                             style={{
-                            color: "#ff4d4f"
-                        }}
+                                color: "#ff4d4f"
+                            }}
                         />}
                     >
                         Unpublish
