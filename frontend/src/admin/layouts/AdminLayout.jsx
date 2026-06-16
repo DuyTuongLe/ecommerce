@@ -217,11 +217,7 @@ export default function AdminLayout() {
         }}
       >
 
-        <Content
-          style={{
-            overflow: "hidden"
-          }}
-        >
+        <Content>
 
           <Outlet />
 

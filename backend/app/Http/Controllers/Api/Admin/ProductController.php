@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Services\MenuService;
+use App\Http\Resources\ProductEditResource;
 
 class ProductController extends Controller
 {
@@ -135,15 +136,15 @@ class ProductController extends Controller
 
             'thumbnail',
 
-            'categories',
-
             'gallery',
 
-            'attributeValues'
+            'categories',
+
+            'attributeValues.attribute'
 
         ])->findOrFail($id);
 
-        return response()->json(
+        return new ProductEditResource(
             $product
         );
     }

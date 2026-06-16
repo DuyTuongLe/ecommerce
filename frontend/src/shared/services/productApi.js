@@ -31,6 +31,45 @@ export async function getProducts({
     return res.data;
 }
 
+export async function getProduct(
+    id,
+    lang = "vi"
+) {
+
+    const { data } = await api.get(
+
+        `/admin/products/${id}`,
+
+        {
+            params: {
+                lang
+            }
+        }
+
+    );
+
+    return data;
+}
+
+export async function getProductFormOptions(
+    lang = "vi"
+) {
+
+    const { data } = await api.get(
+
+        "/admin/product-form-options",
+
+        {
+            params: {
+                lang
+            }
+        }
+
+    );
+
+    return data;
+}
+
 export async function getProductCategories(
     lang = "vi"
 ) {

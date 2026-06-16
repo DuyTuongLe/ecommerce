@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\BrandController;
 use App\Http\Controllers\Api\Admin\AttributeController;
 use App\Http\Controllers\Api\Admin\AttributeValueController;
+use App\Http\Controllers\Api\Admin\ProductFormOptionsController;
 
 Route::prefix('admin')->group(function () {
 
@@ -100,6 +101,11 @@ Route::prefix('admin')->group(function () {
     );
 
     Route::get(
+        '/products/{id}',
+        [ProductController::class, 'show']
+    );
+
+    Route::get(
         '/brands',
         [BrandController::class, 'index']
     );
@@ -157,6 +163,11 @@ Route::prefix('admin')->group(function () {
     Route::post(
         '/attributevalues/bulk-delete',
         [AttributeValueController::class, 'bulkDelete']
+    );
+
+    Route::get(
+        '/product-form-options',
+        [ProductFormOptionsController::class, 'index']
     );
 });
 

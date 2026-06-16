@@ -20,7 +20,14 @@ import {
 
 } from "@ant-design/icons";
 
-export default function ProductToolbar() {
+import { useNavigate } from "react-router-dom";
+
+export default function ProductToolbar({
+    lang = "vi",
+    selectedRowKeys = []
+}) {
+
+    const navigate = useNavigate();
 
     return (
 
@@ -92,9 +99,27 @@ export default function ProductToolbar() {
                     </Button>
 
                     <Button
+
                         icon={<EditOutlined />}
+
+                        disabled={
+                            selectedRowKeys.length !== 1
+                        }
+
+                        onClick={() => {
+
+                            navigate(
+
+                                `/admin/products/${selectedRowKeys[0]}/edit?lang=${lang}`
+
+                            );
+
+                        }}
+
                     >
+
                         Edit
+
                     </Button>
 
                     <Button

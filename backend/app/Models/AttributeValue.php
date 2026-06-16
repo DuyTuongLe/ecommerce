@@ -24,7 +24,7 @@ class AttributeValue extends Model
 
     ];
 
-    public function attribure()
+    public function attribute()
     {
         return $this->belongsTo(
             Attribute::class,

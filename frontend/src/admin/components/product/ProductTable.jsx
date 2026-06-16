@@ -8,10 +8,25 @@ import {
 
 
 export default function ProductTable({
-    products = [],
-    loading = false
-}) {
 
+    products = [],
+
+    loading = false,
+
+    selectedRowKeys = [],
+
+    onSelectionChange
+
+}) {
+    const rowSelection = {
+
+        selectedRowKeys,
+
+        onChange:
+
+            onSelectionChange
+
+    };
     const columns = [
 
         {
@@ -120,11 +135,21 @@ export default function ProductTable({
     return (
 
         <Table
+
             rowKey="id"
+
+            rowSelection={
+                rowSelection
+            }
+
             columns={columns}
+
             dataSource={products}
+
             loading={loading}
+
             pagination={false}
+
         />
 
     );

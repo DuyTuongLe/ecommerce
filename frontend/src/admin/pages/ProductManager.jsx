@@ -16,7 +16,7 @@ import ProductTable
 import useProducts
     from "../hooks/useProducts";
 
-import {useLanguages} from "../hooks/useLanguages";
+import { useLanguages } from "../hooks/useLanguages";
 
 export default function ProductManager() {
 
@@ -45,8 +45,15 @@ export default function ProductManager() {
 
     ] = useState("vi");
 
-    const languages =
-        useLanguages();
+    const languages = useLanguages();
+
+    const [
+
+        selectedRowKeys,
+
+        setSelectedRowKeys
+
+    ] = useState([]);
 
     useEffect(() => {
 
@@ -117,13 +124,27 @@ export default function ProductManager() {
 
             <Splitter.Panel>
 
-                <ProductToolbar />
+                <ProductToolbar
+                    lang={lang}
+                    selectedRowKeys={
+                        selectedRowKeys
+                    }
+                />
 
                 <ProductTable
                     products={
                         products?.data || []
                     }
+
                     loading={loading}
+
+                    selectedRowKeys={
+                        selectedRowKeys
+                    }
+
+                    onSelectionChange={
+                        setSelectedRowKeys
+                    }
                 />
 
             </Splitter.Panel>
