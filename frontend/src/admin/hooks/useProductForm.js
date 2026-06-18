@@ -9,7 +9,9 @@ import {
 
     getProduct,
 
-    getProductFormOptions
+    getProductFormOptions,
+
+    updateProduct
 
 } from "../../shared/services/productApi";
 
@@ -36,6 +38,17 @@ export default function useProductForm({
         setOptions
 
     ] = useState(null);
+
+    const saveProduct = async (
+        values
+    ) => {
+
+        return updateProduct(
+            productId,
+            values
+        );
+
+    };
 
     const [
 
@@ -110,7 +123,9 @@ export default function useProductForm({
 
         options,
 
-        loading
+        loading,
+
+        saveProduct
 
     };
 

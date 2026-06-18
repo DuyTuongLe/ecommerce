@@ -4,7 +4,9 @@ import {
     Input
 } from "antd";
 
-export default function SeoTab() {
+export default function SeoTab({
+    lang
+}) {
 
     return (
 
@@ -12,7 +14,11 @@ export default function SeoTab() {
 
             <Form.Item
                 label="SEO Title"
-                name="seo_title"
+                name={[
+                    "translations",
+                    lang,
+                    "seo_title"
+                ]}
             >
 
                 <Input />
@@ -21,7 +27,11 @@ export default function SeoTab() {
 
             <Form.Item
                 label="SEO Description"
-                name="seo_description"
+                name={[
+                    "translations",
+                    lang,
+                    "seo_description"
+                ]}
             >
 
                 <Input.TextArea
@@ -32,7 +42,11 @@ export default function SeoTab() {
 
             <Form.Item
                 label="SEO Keywords"
-                name="seo_keywords"
+                name={[
+                    "translations",
+                    lang,
+                    "seo_keywords"
+                ]}
             >
 
                 <Input />

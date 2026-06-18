@@ -96,16 +96,6 @@ Route::prefix('admin')->group(function () {
     );
 
     Route::get(
-        '/products',
-        [ProductController::class, 'index']
-    );
-
-    Route::get(
-        '/products/{id}',
-        [ProductController::class, 'show']
-    );
-
-    Route::get(
         '/brands',
         [BrandController::class, 'index']
     );
@@ -168,6 +158,21 @@ Route::prefix('admin')->group(function () {
     Route::get(
         '/product-form-options',
         [ProductFormOptionsController::class, 'index']
+    );
+
+    Route::put(
+        '/products/{product}',
+        [ProductController::class, 'update']
+    );
+
+    Route::get(
+        '/products',
+        [ProductController::class, 'index']
+    );
+
+    Route::get(
+        '/products/{id}',
+        [ProductController::class, 'show']
     );
 });
 

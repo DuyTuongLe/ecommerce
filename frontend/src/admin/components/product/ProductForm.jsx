@@ -5,7 +5,8 @@ import {
     Form,
     Tabs,
     Button,
-    Space
+    Space,
+    Select
 
 } from "antd";
 
@@ -36,13 +37,17 @@ import SeoTab
 import useProductForm
     from "../../hooks/useProductForm";
 
+import dayjs from "dayjs";
+
 export default function ProductForm({
 
     mode = "create",
 
     productId,
 
-    lang = "vi"
+    lang = "vi",
+
+    languages = []
 
 }) {
 
@@ -54,7 +59,9 @@ export default function ProductForm({
 
         options,
 
-        loading
+        loading,
+
+        saveProduct
 
     } = useProductForm({
 
@@ -74,6 +81,16 @@ export default function ProductForm({
         "general"
     );
 
+    const [
+
+        activeLocale,
+
+        setActiveLocale
+
+    ] = useState(
+        lang
+    );
+
     const navigate = useNavigate();
 
     const handleCancel = () => {
@@ -84,102 +101,60 @@ export default function ProductForm({
 
     const handleSubmit = async () => {
 
-    const values =
-        form.getFieldsValue(true);
+        const values =
+            form.getFieldsValue(true);
 
-    console.log(values);
+        const payload = {
 
-};
+            ...values,
+
+            published_at:
+
+                values.published_at
+
+                    ? values.published_at.format(
+                        "YYYY-MM-DD HH:mm:ss"
+                    )
+
+                    : null
+
+        };
+
+        console.log(payload);
+
+        const result =
+            await saveProduct(
+                payload
+            );
+
+        console.log(result);
+
+    };
 
     useEffect(() => {
 
-        if (
-            !product
-        ) return;
-
-        const translation =
-
-            product
-                .translations?.[
-            lang
-            ]
-
-            ||
-
-            {};
+        if (!product) {
+            return;
+        }
 
         form.setFieldsValue({
 
-            sku:
-                product.sku,
+            ...product,
 
-            barcode:
-                product.barcode,
+            published_at:
+                product.published_at
 
-            brand_id:
-                product.brand_id,
+                    ? dayjs(
+                        product.published_at
+                    )
 
-            categories:
-                product.category_ids,
-
-            product_type:
-                product.product_type,
-
-            status:
-                !!product.status,
-
-            featured:
-                !!product.featured,
-
-            is_new:
-                !!product.is_new,
-
-            price:
-                product.price,
-
-            sale_price:
-                product.sale_price,
-
-            cost_price:
-                product.cost_price,
-
-            stock:
-                product.stock,
-
-            manage_stock:
-                !!product.manage_stock,
-
-            stock_status:
-                product.stock_status,
-
-            name:
-                translation.name,
-
-            short_description:
-                translation.short_description,
-
-            content:
-                translation.content,
-
-            seo_title:
-                translation.seo_title,
-
-            seo_description:
-                translation.seo_description,
-
-            seo_keywords:
-                translation.seo_keywords,
-
-            attributes:
-                product.attributes
+                    : null
 
         });
 
     }, [
 
         product,
-
-        lang,
 
         form
 
@@ -255,29 +230,58 @@ export default function ProductForm({
                             }}
                         >
 
-                            {
-
-                                mode ===
-                                    "edit"
-
-                                    ? "Edit Product"
-
-                                    : "Create Product"
-
-                            }
-
                         </h2>
 
                         <Space>
 
-                            <Button onClick={handleCancel}>
+                            <Select
+
+                                value={
+                                    activeLocale
+                                }
+
+                                onChange={
+                                    setActiveLocale
+                                }
+
+                                style={{
+                                    width: 140
+                                }}
+
+                                options={
+
+                                    languages.map(
+                                        item => ({
+
+                                            label:
+                                                item.name,
+
+                                            value:
+                                                item.code
+
+                                        })
+                                    )
+
+                                }
+
+                            />
+
+                            <Button
+                                onClick={handleCancel}
+                            >
+
                                 Cancel
+
                             </Button>
 
                             <Button
-                                onClick={() => form.submit()}
+                                onClick={() =>
+                                    form.submit()
+                                }
                             >
+
                                 Save
+
                             </Button>
 
                             <Button
@@ -377,6 +381,8 @@ export default function ProductForm({
 
                         <GeneralTab
 
+                            lang={activeLocale}
+
                             brands={
                                 options?.brands || []
                             }
@@ -425,7 +431,9 @@ export default function ProductForm({
                         activeTab ===
                         "seo" &&
 
-                        <SeoTab />
+                        <SeoTab
+                            lang={activeLocale}
+                        />
 
                     }
 

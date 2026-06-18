@@ -10,6 +10,10 @@ import {
 import ProductForm
     from "../components/product/ProductForm";
 
+import {
+    useLanguages
+} from "../hooks/useLanguages";
+
 export default function ProductEditPage() {
 
     const { id } =
@@ -20,6 +24,8 @@ export default function ProductEditPage() {
         searchParams
 
     ] = useSearchParams();
+
+    const languages = useLanguages();
 
     const lang =
         searchParams.get("lang")
@@ -41,6 +47,7 @@ export default function ProductEditPage() {
 
                 lang={lang}
 
+                languages={languages}
             />
 
         </div>

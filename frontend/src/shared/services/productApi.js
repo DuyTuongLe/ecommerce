@@ -51,6 +51,23 @@ export async function getProduct(
     return data;
 }
 
+export async function updateProduct(
+    id,
+    data
+) {
+
+    const res = await api.put(
+
+        `/admin/products/${id}`,
+
+        data
+
+    );
+
+    return res.data;
+
+}
+
 export async function getProductFormOptions(
     lang = "vi"
 ) {

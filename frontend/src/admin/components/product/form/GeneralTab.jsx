@@ -1,7 +1,6 @@
 // src/admin/components/product/form/GeneralTab.jsx
 
 import {
-
     Card,
     Row,
     Col,
@@ -10,12 +9,12 @@ import {
     Select,
     Checkbox,
     TreeSelect,
-    DatePicker,
-    Segmented
-
+    DatePicker
 } from "antd";
 
 export default function GeneralTab({
+
+    lang,
 
     brands = [],
 
@@ -36,13 +35,13 @@ export default function GeneralTab({
                 <Card title="Content">
 
                     <Form.Item
-    label="Product Name"
-    name={[
-        "translations",
-        lang,
-        "name"
-    ]}
->
+                        label="Product Name"
+                        name={[
+                            "translations",
+                            lang,
+                            "name"
+                        ]}
+                    >
 
                         <Input />
 
@@ -51,10 +50,10 @@ export default function GeneralTab({
                     <Form.Item
                         label="Short Description"
                         name={[
-    "translations",
-    lang,
-    "short_description"
-]}
+                            "translations",
+                            lang,
+                            "short_description"
+                        ]}
                     >
 
                         <Input.TextArea
@@ -66,10 +65,10 @@ export default function GeneralTab({
                     <Form.Item
                         label="Content"
                         name={[
-    "translations",
-    lang,
-    "content"
-]}
+                            "translations",
+                            lang,
+                            "content"
+                        ]}
                     >
 
                         <Input.TextArea
@@ -85,8 +84,6 @@ export default function GeneralTab({
             {/* RIGHT */}
 
             <Col span={8}>
-
-                {/* Information */}
 
                 <Card
 
@@ -117,30 +114,19 @@ export default function GeneralTab({
                     </Form.Item>
 
                     <Form.Item
-                        label="Slug"
-                        name="slug"
-                    >
-
-                        <Input />
-
-                    </Form.Item>
-
-                    <Form.Item
                         label="Brand"
                         name="brand_id"
                     >
 
                         <Select
-
                             options={brands}
-
                         />
 
                     </Form.Item>
 
                     <Form.Item
                         label="Category"
-                        name="categories"
+                        name="category_ids"
                     >
 
                         <TreeSelect
