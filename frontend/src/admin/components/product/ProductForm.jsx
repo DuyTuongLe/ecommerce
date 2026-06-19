@@ -6,7 +6,8 @@ import {
     Tabs,
     Button,
     Space,
-    Select
+    Select,
+    message
 
 } from "antd";
 
@@ -99,35 +100,59 @@ export default function ProductForm({
         );
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (
+        closeAfterSave = false
+    ) => {
 
-        const values =
-            form.getFieldsValue(true);
+        try {
 
-        const payload = {
+            const values =
+                form.getFieldsValue(true);
 
-            ...values,
+            const payload = {
 
-            published_at:
+                ...values,
 
-                values.published_at
+                published_at:
 
-                    ? values.published_at.format(
-                        "YYYY-MM-DD HH:mm:ss"
-                    )
+                    values.published_at
 
-                    : null
+                        ? values.published_at.format(
+                            "YYYY-MM-DD HH:mm:ss"
+                        )
 
-        };
+                        : null
 
-        console.log(payload);
+            };
 
-        const result =
             await saveProduct(
                 payload
             );
 
-        console.log(result);
+            message.success(
+                "Product saved successfully"
+            );
+
+            if (
+                closeAfterSave
+            ) {
+
+                navigate(
+                    `/admin/products?lang=${lang}`
+                );
+
+            }
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            message.error(
+                "Save failed"
+            );
+
+        }
 
     };
 
@@ -141,16 +166,21 @@ export default function ProductForm({
 
             ...product,
 
+            thumbnail_id:
+                product.thumbnail?.id || null,
+
+            gallery_ids:
+                product.gallery?.map(
+                    item => item.id
+                ) || [],
+
             published_at:
                 product.published_at
-
-                    ? dayjs(
-                        product.published_at
-                    )
-
+                    ? dayjs(product.published_at)
                     : null
 
         });
+
 
     }, [
 
@@ -276,20 +306,19 @@ export default function ProductForm({
 
                             <Button
                                 onClick={() =>
-                                    form.submit()
+                                    handleSubmit(false)
                                 }
                             >
-
                                 Save
-
                             </Button>
 
                             <Button
                                 type="primary"
+                                onClick={() =>
+                                    handleSubmit(true)
+                                }
                             >
-
                                 Save & Close
-
                             </Button>
 
                         </Space>
@@ -404,7 +433,11 @@ export default function ProductForm({
                         activeTab ===
                         "images" &&
 
-                        <ImagesTab />
+                        <ImagesTab
+                            product={product}
+
+                            form={form}
+                        />
 
                     }
 

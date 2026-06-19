@@ -23,7 +23,15 @@ class ProductEditResource extends JsonResource
 
             'brand_id' => $this->brand_id,
 
-            'thumbnail_id' => $this->thumbnail_id,
+            'thumbnail' => $this->thumbnail
+                ? [
+                    'id'   => $this->thumbnail->id,
+                    'url'  => asset(
+                        'storage/' .
+                            $this->thumbnail->path
+                    )
+                ]
+                : null,
 
             'published_at' => $this->published_at,
 
@@ -53,72 +61,85 @@ class ProductEditResource extends JsonResource
 
             'category_ids' =>
 
-                $this->categories
-                    ->pluck('id')
-                    ->values(),
+            $this->categories
+                ->pluck('id')
+                ->values(),
 
             // Gallery
 
-            'gallery_ids' =>
+            'gallery' =>
 
-                $this->gallery
-                    ->pluck('id')
-                    ->values(),
+            $this->gallery
+
+                ->map(function ($item) {
+
+                    return [
+
+                        'id' => $item->id,
+
+                        'url' => asset(
+                            'storage/' .
+                                $item->path
+                        )
+
+                    ];
+                })
+                ->values(),
 
             // Translations
 
             'translations' =>
 
-                $this->translations
+            $this->translations
 
-                    ->keyBy('ngonngu')
+                ->keyBy('ngonngu')
 
-                    ->map(function ($item) {
+                ->map(function ($item) {
 
-                        return [
+                    return [
 
-                            'name' =>
-                                $item->ten,
+                        'name' =>
+                        $item->ten,
 
-                            'short_description' =>
-                                $item->mota_ngan,
+                        'short_description' =>
+                        $item->mota_ngan,
 
-                            'content' =>
-                                $item->noidung,
+                        'content' =>
+                        $item->noidung,
 
-                            'seo_title' =>
-                                $item->seo_title,
+                        'seo_title' =>
+                        $item->seo_title,
 
-                            'seo_description' =>
-                                $item->seo_description,
+                        'seo_description' =>
+                        $item->seo_description,
 
-                            'seo_keywords' =>
-                                $item->seo_keywords
+                        'seo_keywords' =>
+                        $item->seo_keywords
 
-                        ];
-                    }),
+                    ];
+                }),
 
             // Attributes
 
             'attributes' =>
 
-                $this->attributeValues
+            $this->attributeValues
 
-                    ->mapWithKeys(function ($item) {
+                ->mapWithKeys(function ($item) {
 
-                        return [
+                    return [
 
-                            $item
-                                ->attribute
-                                ->code
+                        $item
+                            ->attribute
+                            ->code
 
-                            =>
+                        =>
 
-                            $item
-                                ->attribute_value_id
+                        $item
+                            ->attribute_value_id
 
-                        ];
-                    })
+                    ];
+                })
 
         ];
     }
