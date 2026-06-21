@@ -28,9 +28,24 @@ export default function ProductManager() {
         loading,
 
         fetchProducts,
-        fetchCategories
+        fetchCategories,
+
+        publishProducts,
+        unpublishProducts,
+
+        removeProducts
 
     } = useProducts();
+
+    console.log(
+        "publishProducts =",
+        publishProducts
+    );
+
+    console.log(
+        "unpublishProducts =",
+        unpublishProducts
+    );
 
     const [
         selectedCategory,
@@ -129,6 +144,48 @@ export default function ProductManager() {
                     selectedRowKeys={
                         selectedRowKeys
                     }
+                    onReload={() => {
+
+                        fetchProducts();
+
+                        setSelectedRowKeys([]);
+
+                    }}
+                    onPublish={async () => {
+
+                        await publishProducts(
+                            selectedRowKeys
+                        );
+
+                        fetchProducts();
+
+                    }}
+
+                    onUnpublish={async () => {
+
+                        await unpublishProducts(
+                            selectedRowKeys
+                        );
+
+                        fetchProducts();
+
+                    }}
+
+                    onDelete={async () => {
+
+                        await removeProducts(
+                            selectedRowKeys
+                        );
+
+                        setSelectedRowKeys([]);
+
+                        fetchProducts({
+                            lang,
+                            categoryId:
+                                selectedCategory
+                        });
+
+                    }}
                 />
 
                 <ProductTable

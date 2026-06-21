@@ -4,7 +4,9 @@ import { useState } from "react";
 
 import {
     getProducts,
-    getProductCategories
+    getProductCategories,
+    updateProductsStatus,
+    deleteProducts
 } from "../../shared/services/productApi";
 
 export default function useProducts() {
@@ -78,6 +80,48 @@ export default function useProducts() {
 
     };
 
+    const publishProducts = (
+
+        ids
+
+    ) => {
+
+        return updateProductsStatus(
+
+            ids,
+
+            1
+
+        );
+
+    };
+
+    const unpublishProducts = (
+
+        ids
+
+    ) => {
+
+        return updateProductsStatus(
+
+            ids,
+
+            0
+
+        );
+
+    };
+
+    const removeProducts = (
+        ids
+    ) => {
+
+        return deleteProducts(
+            ids
+        );
+
+    };
+
     return {
 
         products,
@@ -86,7 +130,12 @@ export default function useProducts() {
         loading,
 
         fetchProducts,
-        fetchCategories
+        fetchCategories,
+
+        publishProducts,
+        unpublishProducts,
+
+        removeProducts
 
     };
 

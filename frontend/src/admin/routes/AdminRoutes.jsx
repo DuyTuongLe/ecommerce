@@ -84,6 +84,7 @@ export default function AdminRoutes() {
           path="products/:id/edit"
           element={<ProductEditPage />}
         />
+        
       </Route>
 
     </Routes>

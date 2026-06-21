@@ -165,6 +165,11 @@ Route::prefix('admin')->group(function () {
         [ProductController::class, 'update']
     );
 
+    Route::post(
+        '/products',
+        [ProductController::class, 'store']
+    );
+
     Route::get(
         '/products',
         [ProductController::class, 'index']
@@ -174,6 +179,17 @@ Route::prefix('admin')->group(function () {
         '/products/{id}',
         [ProductController::class, 'show']
     );
+
+    Route::post(
+        '/products/bulk-status',
+        [ProductController::class, 'bulkStatus']
+    );
+
+    Route::post(
+        '/products/bulk-delete',
+        [ProductController::class, 'bulkDelete']
+    );
+
 });
 
 

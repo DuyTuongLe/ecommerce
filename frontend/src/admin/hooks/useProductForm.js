@@ -8,18 +8,14 @@ import {
 import {
 
     getProduct,
-
-    getProductFormOptions,
-
-    updateProduct
+    updateProduct,
+    createProduct
 
 } from "../../shared/services/productApi";
 
 export default function useProductForm({
 
-    productId,
-
-    lang
+    productId
 
 }) {
 
@@ -33,30 +29,30 @@ export default function useProductForm({
 
     const [
 
-        options,
-
-        setOptions
-
-    ] = useState(null);
-
-    const saveProduct = async (
-        values
-    ) => {
-
-        return updateProduct(
-            productId,
-            values
-        );
-
-    };
-
-    const [
-
         loading,
 
         setLoading
 
     ] = useState(false);
+
+    const saveProduct = async (
+        values
+    ) => {
+
+        if (productId) {
+
+            return updateProduct(
+                productId,
+                values
+            );
+
+        }
+
+        return createProduct(
+            values
+        );
+
+    };
 
     useEffect(() => {
 
@@ -66,31 +62,14 @@ export default function useProductForm({
 
             try {
 
-                const [
+                const productRes =
 
-                    productRes,
-
-                    optionsRes
-
-                ] = await Promise.all([
-
-                    getProduct(
-                        productId,
-                        lang
-                    ),
-
-                    getProductFormOptions(
-                        lang
-                    )
-
-                ]);
+                    await getProduct(
+                        productId
+                    );
 
                 setProduct(
                     productRes.data
-                );
-
-                setOptions(
-                    optionsRes
                 );
 
             } finally {
@@ -101,27 +80,21 @@ export default function useProductForm({
 
         }
 
-        if (
-            productId
-        ) {
+        if (productId) {
 
             load();
 
+        } else {
+
+            setProduct(null);
+
         }
 
-    }, [
-
-        productId,
-
-        lang
-
-    ]);
+    }, [productId]);
 
     return {
 
         product,
-
-        options,
 
         loading,
 

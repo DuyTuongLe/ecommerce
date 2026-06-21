@@ -68,6 +68,66 @@ export async function updateProduct(
 
 }
 
+export async function createProduct(
+    data
+) {
+
+    const res = await api.post(
+
+        "/admin/products",
+
+        data
+
+    );
+
+    return res.data;
+
+}
+
+export async function deleteProducts(
+    ids
+) {
+
+    const { data } = await api.post(
+
+        "/admin/products/bulk-delete",
+
+        {
+            ids
+        }
+
+    );
+
+    return data;
+
+}
+
+export async function updateProductsStatus(
+
+    ids,
+
+    status
+
+) {
+
+    const { data } = await api.post(
+
+        "/admin/products/bulk-status",
+
+        {
+
+            ids,
+
+            status
+
+        }
+
+    );
+
+    return data;
+
+}
+
 export async function getProductFormOptions(
     lang = "vi"
 ) {

@@ -4,7 +4,8 @@ import {
 
     Button,
     Select,
-    Space
+    Space,
+    Modal
 
 } from "antd";
 
@@ -24,7 +25,11 @@ import { useNavigate } from "react-router-dom";
 
 export default function ProductToolbar({
     lang = "vi",
-    selectedRowKeys = []
+    selectedRowKeys = [],
+    onReload,
+    onPublish,
+    onUnpublish,
+    onDelete
 }) {
 
     const navigate = useNavigate();
@@ -86,16 +91,31 @@ export default function ProductToolbar({
                 >
 
                     <Button
+
                         icon={<ReloadOutlined />}
+
+                        onClick={onReload}
+
                     >
+
                         Reload
+
                     </Button>
 
                     <Button
                         type="primary"
                         icon={<PlusOutlined />}
+                        onClick={() => {
+
+                            navigate(
+                                `/admin/products/create?lang=${lang}`
+                            );
+
+                        }}
                     >
+
                         Create
+
                     </Button>
 
                     <Button
@@ -123,29 +143,88 @@ export default function ProductToolbar({
                     </Button>
 
                     <Button
-                        icon={<CheckCircleOutlined style={{
-                            color: "#52c41a"
-                        }}
-                        />}
+
+                        disabled={
+                            selectedRowKeys.length === 0
+                        }
+
+                        icon={
+
+                            <CheckCircleOutlined
+                                style={{
+                                    color: "#52c41a"
+                                }}
+                            />
+
+                        }
+
+                        onClick={onPublish}
+
                     >
+
                         Publish
+
                     </Button>
 
                     <Button
-                        icon={<StopOutlined
-                            style={{
-                                color: "#ff4d4f"
-                            }}
-                        />}
+
+                        disabled={
+                            selectedRowKeys.length === 0
+                        }
+
+                        icon={
+
+                            <StopOutlined
+                                style={{
+                                    color: "#ff4d4f"
+                                }}
+                            />
+
+                        }
+
+                        onClick={onUnpublish}
+
                     >
+
                         Unpublish
+
                     </Button>
 
                     <Button
+
                         danger
+
+                        disabled={
+                            selectedRowKeys.length === 0
+                        }
+
                         icon={<DeleteOutlined />}
+
+                        onClick={() => {
+
+                            Modal.confirm({
+
+                                title:
+                                    "Delete products?",
+
+                                content:
+
+                                    `Delete ${selectedRowKeys.length} selected products?`,
+
+                                okType:
+                                    "danger",
+
+                                onOk:
+                                    onDelete
+
+                            });
+
+                        }}
+
                     >
+
                         Delete
+
                     </Button>
 
                     <Select

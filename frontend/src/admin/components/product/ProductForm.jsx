@@ -38,6 +38,9 @@ import SeoTab
 import useProductForm
     from "../../hooks/useProductForm";
 
+import useProductOptions
+    from "../../hooks/useProductOptions";
+
 import dayjs from "dayjs";
 
 export default function ProductForm({
@@ -58,17 +61,13 @@ export default function ProductForm({
 
         product,
 
-        options,
-
         loading,
 
         saveProduct
 
     } = useProductForm({
 
-        productId,
-
-        lang
+        productId
 
     });
 
@@ -91,6 +90,11 @@ export default function ProductForm({
     ] = useState(
         lang
     );
+
+    const options =
+        useProductOptions(
+            activeLocale
+        );
 
     const navigate = useNavigate();
 
@@ -115,27 +119,40 @@ export default function ProductForm({
 
                 published_at:
 
-                    values.published_at
+                    values.published_at?.format
 
                         ? values.published_at.format(
                             "YYYY-MM-DD HH:mm:ss"
                         )
 
-                        : null
+                        : values.published_at
 
             };
 
-            await saveProduct(
+            const result = await saveProduct(
                 payload
             );
 
             message.success(
-                "Product saved successfully"
+                result.message
+                || "Product saved successfully"
             );
 
-            if (
-                closeAfterSave
-            ) {
+            // CREATE
+
+            if (!productId) {
+
+                navigate(
+                    `/admin/products/${result.id}/edit?lang=${lang}`
+                );
+
+                return;
+
+            }
+
+            // UPDATE
+
+            if (closeAfterSave) {
 
                 navigate(
                     `/admin/products?lang=${lang}`
@@ -155,6 +172,14 @@ export default function ProductForm({
         }
 
     };
+
+    useEffect(() => {
+
+        setActiveLocale(
+            lang
+        );
+
+    }, [lang]);
 
     useEffect(() => {
 
@@ -189,6 +214,16 @@ export default function ProductForm({
         form
 
     ]);
+
+    if (loading) {
+
+        return (
+            <div>
+                Loading...
+            </div>
+        );
+
+    }
 
     return (
 
@@ -413,15 +448,15 @@ export default function ProductForm({
                             lang={activeLocale}
 
                             brands={
-                                options?.brands || []
+                                options.brands
                             }
 
                             categories={
-                                options?.categories || []
+                                options.categories
                             }
 
                             attributes={
-                                options?.attributes || []
+                                options.attributes
                             }
 
                         />
