@@ -2,35 +2,6 @@
 
 import api from "./api";
 
-export async function getProducts({
-
-    page = 1,
-
-    lang = "vi",
-
-    categoryId = null
-
-} = {}) {
-
-    const res = await api.get(
-        "/admin/products",
-        {
-            params: {
-
-                page,
-
-                lang,
-
-                category_id:
-                    categoryId
-
-            }
-        }
-    );
-
-    return res.data;
-}
-
 export async function getProduct(
     id,
     lang = "vi"
@@ -49,6 +20,30 @@ export async function getProduct(
     );
 
     return data;
+}
+
+export async function getProducts({
+    page = 1,
+    lang = "vi",
+    categoryId,
+    status,
+    search
+}) {
+
+    const response = await api.get(
+        "/admin/products",
+        {
+            params: {
+                page,
+                lang,
+                category_id: categoryId,
+                status,
+                search
+            }
+        }
+    );
+
+    return response.data;
 }
 
 export async function updateProduct(

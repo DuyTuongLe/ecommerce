@@ -65,11 +65,6 @@ class SlugService
                 $language
             )
 
-            ->where(
-                'entity_type',
-                $entityType
-            )
-
             ->when(
 
                 $entityId,

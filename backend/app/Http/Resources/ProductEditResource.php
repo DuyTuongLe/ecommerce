@@ -119,6 +119,17 @@ class ProductEditResource extends JsonResource
                     ];
                 }),
 
+            // Slugs
+
+            'slugs' =>
+
+            $this->urls
+
+                ->pluck(
+                    'slug',
+                    'ngonngu'
+                ),
+
             // Attributes
 
             'attributes' =>

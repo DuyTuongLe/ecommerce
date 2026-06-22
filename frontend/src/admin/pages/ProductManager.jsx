@@ -37,19 +37,14 @@ export default function ProductManager() {
 
     } = useProducts();
 
-    console.log(
-        "publishProducts =",
-        publishProducts
-    );
-
-    console.log(
-        "unpublishProducts =",
-        unpublishProducts
-    );
-
     const [
         selectedCategory,
         setSelectedCategory
+    ] = useState(null);
+
+    const [
+        status,
+        setStatus
     ] = useState(null);
 
     const [
@@ -60,6 +55,11 @@ export default function ProductManager() {
 
     ] = useState("vi");
 
+    const [
+        search,
+        setSearch
+    ] = useState("");
+
     const languages = useLanguages();
 
     const [
@@ -69,6 +69,14 @@ export default function ProductManager() {
         setSelectedRowKeys
 
     ] = useState([]);
+
+    const handleSearch = (value) => {
+
+        setSelectedCategory(null);
+
+        setSearch(value);
+
+    };
 
     useEffect(() => {
 
@@ -81,7 +89,11 @@ export default function ProductManager() {
             lang,
 
             categoryId:
-                selectedCategory
+                selectedCategory,
+
+            status,
+
+            search
 
         });
 
@@ -89,7 +101,11 @@ export default function ProductManager() {
 
         lang,
 
-        selectedCategory
+        selectedCategory,
+
+        status,
+
+        search
 
     ]);
 
@@ -109,21 +125,13 @@ export default function ProductManager() {
 
                 <ProductCategorySidebar
 
-                    categories={
-                        categories
-                    }
+                    categories={categories}
 
-                    languages={
-                        languages
-                    }
+                    languages={languages}
 
-                    lang={
-                        lang
-                    }
+                    lang={lang}
 
-                    onLangChange={
-                        setLang
-                    }
+                    onLangChange={setLang}
 
                     onSelect={(item) => {
 
@@ -131,7 +139,13 @@ export default function ProductManager() {
                             item.id
                         );
 
+                        setSearch("");
+
                     }}
+
+                    searchKeyword={search}
+
+                    onSearch={handleSearch}
 
                 />
 
@@ -141,12 +155,31 @@ export default function ProductManager() {
 
                 <ProductToolbar
                     lang={lang}
+
+                    status={status}
+
+                    onStatusChange={
+                        setStatus
+                    }
+
                     selectedRowKeys={
                         selectedRowKeys
                     }
+
                     onReload={() => {
 
-                        fetchProducts();
+                        fetchProducts({
+
+                            lang,
+
+                            categoryId:
+                                selectedCategory,
+
+                            status,
+
+                            search
+
+                        });
 
                         setSelectedRowKeys([]);
 
@@ -157,7 +190,20 @@ export default function ProductManager() {
                             selectedRowKeys
                         );
 
-                        fetchProducts();
+                        fetchProducts({
+
+                            lang,
+
+                            categoryId:
+                                selectedCategory,
+
+                            status,
+
+                            search
+
+                        });
+
+                        setSelectedRowKeys([]);
 
                     }}
 
@@ -167,7 +213,20 @@ export default function ProductManager() {
                             selectedRowKeys
                         );
 
-                        fetchProducts();
+                        fetchProducts({
+
+                            lang,
+
+                            categoryId:
+                                selectedCategory,
+
+                            status,
+
+                            search
+
+                        });
+
+                        setSelectedRowKeys([]);
 
                     }}
 
@@ -180,9 +239,16 @@ export default function ProductManager() {
                         setSelectedRowKeys([]);
 
                         fetchProducts({
+
                             lang,
+
                             categoryId:
-                                selectedCategory
+                                selectedCategory,
+
+                            status,
+
+                            search
+
                         });
 
                     }}

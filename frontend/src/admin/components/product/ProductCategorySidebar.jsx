@@ -76,7 +76,11 @@ export default function ProductCategorySidebar({
 
     onLangChange,
 
-    onSelect
+    onSelect,
+
+    searchKeyword,
+
+    onSearch
 
 }) {
 
@@ -114,8 +118,18 @@ export default function ProductCategorySidebar({
 
             <div className="admin-sidebar-input">
                 <Input
-                    placeholder="Search products..."
-                />
+
+    value={searchKeyword}
+
+    onChange={(e) =>
+        onSearch(
+            e.target.value
+        )
+    }
+
+    placeholder="Search products..."
+
+/>
             </div>
 
             <div

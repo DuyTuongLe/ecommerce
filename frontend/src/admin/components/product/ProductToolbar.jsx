@@ -24,12 +24,23 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export default function ProductToolbar({
+
     lang = "vi",
+
+    status,
+
+    onStatusChange,
+
     selectedRowKeys = [],
+
     onReload,
+
     onPublish,
+
     onUnpublish,
+
     onDelete
+
 }) {
 
     const navigate = useNavigate();
@@ -228,24 +239,34 @@ export default function ProductToolbar({
                     </Button>
 
                     <Select
-                        defaultValue="all"
+
+                        value={status}
+
+                        onChange={onStatusChange}
+
                         style={{
                             width: 140
                         }}
+
                         options={[
+
                             {
                                 label: "All Status",
-                                value: "all"
+                                value: null
                             },
+
                             {
                                 label: "Published",
-                                value: "published"
+                                value: 1
                             },
+
                             {
                                 label: "Draft",
-                                value: "draft"
+                                value: 0
                             }
+
                         ]}
+
                     />
 
                 </div>

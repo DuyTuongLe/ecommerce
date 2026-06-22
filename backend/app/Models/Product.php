@@ -64,4 +64,15 @@ class Product extends Model
             'brand_id'
         );
     }
+
+    public function urls()
+    {
+        return $this->hasMany(
+            Url::class,
+            'entity_id'
+        )->where(
+            'entity_type',
+            'product'
+        );
+    }
 }

@@ -71,8 +71,7 @@ class MenuService
 
     public function getProductCategories(
         $lang = 'vi'
-    )
-    {
+    ) {
         $items = Danduong::query()
 
             ->leftJoin(
@@ -89,7 +88,6 @@ class MenuService
                             'danduong_ngonngu.ngonngu',
                             $lang
                         );
-
                 }
             )
 

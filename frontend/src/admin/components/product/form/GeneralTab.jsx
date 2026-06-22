@@ -41,6 +41,28 @@ export default function GeneralTab({
                             lang,
                             "name"
                         ]}
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please enter product name"
+                            }
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+
+                        label="Slug"
+
+                        name={[
+
+                            "slugs",
+
+                            lang
+
+                        ]}
+
                     >
 
                         <Input />
@@ -98,10 +120,14 @@ export default function GeneralTab({
                     <Form.Item
                         label="SKU"
                         name="sku"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Please enter SKU"
+                            }
+                        ]}
                     >
-
                         <Input />
-
                     </Form.Item>
 
                     <Form.Item

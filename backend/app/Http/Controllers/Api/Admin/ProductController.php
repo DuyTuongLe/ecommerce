@@ -12,6 +12,8 @@ use App\Http\Resources\ProductEditResource;
 use App\Models\Attribute;
 use App\Models\ProductNgonngu;
 use App\Models\ProductAttributeValue;
+use App\Models\Url;
+use App\Services\SlugService;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
@@ -34,6 +36,14 @@ class ProductController extends Controller
         $categoryId = $request->get(
             'category_id'
         );
+
+        $status = $request->get(
+            'status'
+        );
+
+        $search = $request->get(
+    'search'
+);
 
         $query = Product::query()
 
@@ -83,6 +93,28 @@ class ProductController extends Controller
                     $categoryIds
                 );
         }
+
+        if ($request->filled('status')) {
+
+            $query->where(
+                'products.status',
+                $status
+            );
+        }
+
+        if (!empty($search)) {
+
+    $query->where(
+
+        'product_ngonngu.ten',
+
+        'like',
+
+        '%' . $search . '%'
+
+    );
+
+}
 
         $products = $query
 
@@ -144,7 +176,9 @@ class ProductController extends Controller
 
             'categories',
 
-            'attributeValues.attribute'
+            'attributeValues.attribute',
+
+            'urls'
 
         ])->findOrFail($id);
 
@@ -152,11 +186,10 @@ class ProductController extends Controller
             $product
         );
     }
-    
+
     public function store(
         Request $request
-    )
-    {
+    ) {
         $product = DB::transaction(
             function () use ($request) {
 
@@ -182,8 +215,7 @@ class ProductController extends Controller
 
     public function bulkDelete(
         Request $request
-    )
-    {
+    ) {
         $ids = $request->ids ?? [];
 
         DB::transaction(function () use (
@@ -214,11 +246,23 @@ class ProductController extends Controller
                 $ids
             )->delete();
 
+            DB::table('url')
+                ->where(
+                    'entity_type',
+                    'product'
+                )
+
+                ->whereIn(
+                    'entity_id',
+                    $ids
+                )
+
+                ->delete();
+
             Product::whereIn(
                 'id',
                 $ids
             )->delete();
-
         });
 
         return response()->json([
@@ -231,8 +275,7 @@ class ProductController extends Controller
 
     public function bulkStatus(
         Request $request
-    )
-    {
+    ) {
         Product::whereIn(
 
             'id',
@@ -257,8 +300,7 @@ class ProductController extends Controller
     public function update(
         Request $request,
         Product $product
-    )
-    {
+    ) {
         DB::transaction(function () use (
             $product,
             $request
@@ -268,7 +310,6 @@ class ProductController extends Controller
                 $product,
                 $request->all()
             );
-
         });
 
         return response()->json([
@@ -281,8 +322,7 @@ class ProductController extends Controller
     private function saveProductData(
         Product $product,
         array $data
-    )
-    {
+    ) {
         // Product
 
         $product->update([
@@ -378,6 +418,62 @@ class ProductController extends Controller
                 ]
 
             );
+
+            if (!empty($translation['name'])) {
+
+                $slugText =
+
+                    trim(
+                        $data['slugs'][$lang]
+                            ?? ''
+                    );
+
+                if (empty($slugText)) {
+
+                    $slugText =
+                        $translation['name'];
+                }
+
+                $slug = SlugService::generate([
+
+                    'text' =>
+                    $slugText,
+
+                    'entity_type' =>
+                    'product',
+
+                    'entity_id' =>
+                    $product->id,
+
+                    'ngonngu' =>
+                    $lang
+
+                ]);
+
+                Url::updateOrCreate(
+
+                    [
+
+                        'entity_type' =>
+                        'product',
+
+                        'entity_id' =>
+                        $product->id,
+
+                        'ngonngu' =>
+                        $lang
+
+                    ],
+
+                    [
+
+                        'slug' =>
+                        $slug
+
+                    ]
+
+                );
+            }
         }
 
         // Attributes

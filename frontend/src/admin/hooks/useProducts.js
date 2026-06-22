@@ -26,7 +26,11 @@ export default function useProducts() {
 
         lang = "vi",
 
-        categoryId = null
+        categoryId = null,
+
+        status,
+
+        search
 
     } = {}) => {
 
@@ -41,7 +45,11 @@ export default function useProducts() {
 
                     lang,
 
-                    categoryId
+                    categoryId,
+
+                    status,
+
+                    search
 
                 });
 

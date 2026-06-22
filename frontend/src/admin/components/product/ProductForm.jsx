@@ -7,7 +7,8 @@ import {
     Button,
     Space,
     Select,
-    message
+    message,
+    Spin
 
 } from "antd";
 
@@ -110,8 +111,9 @@ export default function ProductForm({
 
         try {
 
-            const values =
-                form.getFieldsValue(true);
+            await form.validateFields();
+
+            const values = form.getFieldsValue(true);
 
             const payload = {
 
@@ -163,13 +165,21 @@ export default function ProductForm({
         }
         catch (error) {
 
-            console.error(error);
+            if (error.errorFields) {
 
-            message.error(
-                "Save failed"
-            );
+                setActiveTab("general");
+
+                message.error(
+                    "Vui lòng nhập đầy đủ các trường bắt buộc"
+                );
+
+                return;
+            }
+
+            message.error("Save failed");
 
         }
+
 
     };
 
@@ -215,302 +225,292 @@ export default function ProductForm({
 
     ]);
 
-    if (loading) {
-
-        return (
-            <div>
-                Loading...
-            </div>
-        );
-
-    }
-
     return (
+        <Spin spinning={loading}>
+            <Form
 
-        <Form
+                form={form}
 
-            form={form}
+                layout="vertical"
 
-            layout="vertical"
-
-            onFinish={handleSubmit}
-
-            style={{
-                height: "100%"
-            }}
-
-        >
-
-            <div
+                onFinish={handleSubmit}
 
                 style={{
-
-                    height: "100%",
-
-                    display: "flex",
-
-                    flexDirection:
-                        "column"
-
+                    height: "100%"
                 }}
 
             >
-
-                {/* Header */}
 
                 <div
 
                     style={{
 
-                        padding:
-                            "24px 24px 0",
+                        height: "100%",
 
-                        flexShrink: 0
+                        display: "flex",
+
+                        flexDirection:
+                            "column"
 
                     }}
 
                 >
+
+                    {/* Header */}
 
                     <div
 
                         style={{
 
-                            display: "flex",
+                            padding:
+                                "24px 24px 0",
 
-                            justifyContent:
-                                "space-between",
-
-                            alignItems:
-                                "center",
-
-                            marginBottom: 16
+                            flexShrink: 0
 
                         }}
 
                     >
 
-                        <h2
+                        <div
+
                             style={{
-                                margin: 0
+
+                                display: "flex",
+
+                                justifyContent:
+                                    "space-between",
+
+                                alignItems:
+                                    "center",
+
+                                marginBottom: 16
+
                             }}
+
                         >
 
-                        </h2>
-
-                        <Space>
-
-                            <Select
-
-                                value={
-                                    activeLocale
-                                }
-
-                                onChange={
-                                    setActiveLocale
-                                }
-
+                            <h2
                                 style={{
-                                    width: 140
+                                    margin: 0
                                 }}
+                            >
 
-                                options={
+                            </h2>
 
-                                    languages.map(
-                                        item => ({
+                            <Space>
 
-                                            label:
-                                                item.name,
+                                <Select
 
-                                            value:
-                                                item.code
+                                    value={
+                                        activeLocale
+                                    }
 
-                                        })
-                                    )
+                                    onChange={
+                                        setActiveLocale
+                                    }
 
+                                    style={{
+                                        width: 140
+                                    }}
+
+                                    options={
+
+                                        languages.map(
+                                            item => ({
+
+                                                label:
+                                                    item.name,
+
+                                                value:
+                                                    item.code
+
+                                            })
+                                        )
+
+                                    }
+
+                                />
+
+                                <Button
+                                    onClick={handleCancel}
+                                >
+
+                                    Cancel
+
+                                </Button>
+
+                                <Button
+                                    onClick={() =>
+                                        handleSubmit(false)
+                                    }
+                                >
+                                    Save
+                                </Button>
+
+                                <Button
+                                    type="primary"
+                                    onClick={() =>
+                                        handleSubmit(true)
+                                    }
+                                >
+                                    Save & Close
+                                </Button>
+
+                            </Space>
+
+                        </div>
+
+                        <Tabs
+
+                            activeKey={
+                                activeTab
+                            }
+
+                            onChange={
+                                setActiveTab
+                            }
+
+                            items={[
+
+                                {
+                                    key:
+                                        "general",
+
+                                    label:
+                                        "General"
+                                },
+
+                                {
+                                    key:
+                                        "images",
+
+                                    label:
+                                        "Images"
+                                },
+
+                                {
+                                    key:
+                                        "pricing",
+
+                                    label:
+                                        "Pricing"
+                                },
+
+                                {
+                                    key:
+                                        "inventory",
+
+                                    label:
+                                        "Inventory"
+                                },
+
+                                {
+                                    key:
+                                        "seo",
+
+                                    label:
+                                        "SEO"
+                                }
+
+                            ]}
+
+                        />
+
+                    </div>
+
+                    {/* Content */}
+
+                    <div
+
+                        style={{
+
+                            flex: 1,
+
+                            minHeight: 0,
+
+                            overflowY:
+                                "auto",
+
+                            padding:
+                                "0 24px 24px"
+
+                        }}
+
+                    >
+
+                        {
+
+                            activeTab ===
+                            "general" &&
+
+                            <GeneralTab
+
+                                lang={activeLocale}
+
+                                brands={
+                                    options.brands
+                                }
+
+                                categories={
+                                    options.categories
+                                }
+
+                                attributes={
+                                    options.attributes
                                 }
 
                             />
 
-                            <Button
-                                onClick={handleCancel}
-                            >
+                        }
 
-                                Cancel
+                        {
 
-                            </Button>
+                            activeTab ===
+                            "images" &&
 
-                            <Button
-                                onClick={() =>
-                                    handleSubmit(false)
-                                }
-                            >
-                                Save
-                            </Button>
+                            <ImagesTab
+                                product={product}
 
-                            <Button
-                                type="primary"
-                                onClick={() =>
-                                    handleSubmit(true)
-                                }
-                            >
-                                Save & Close
-                            </Button>
+                                form={form}
+                            />
 
-                        </Space>
+                        }
+
+                        {
+
+                            activeTab ===
+                            "pricing" &&
+
+                            <PricingTab />
+
+                        }
+
+                        {
+
+                            activeTab ===
+                            "inventory" &&
+
+                            <InventoryTab />
+
+                        }
+
+                        {
+
+                            activeTab ===
+                            "seo" &&
+
+                            <SeoTab
+                                lang={activeLocale}
+                            />
+
+                        }
 
                     </div>
 
-                    <Tabs
-
-                        activeKey={
-                            activeTab
-                        }
-
-                        onChange={
-                            setActiveTab
-                        }
-
-                        items={[
-
-                            {
-                                key:
-                                    "general",
-
-                                label:
-                                    "General"
-                            },
-
-                            {
-                                key:
-                                    "images",
-
-                                label:
-                                    "Images"
-                            },
-
-                            {
-                                key:
-                                    "pricing",
-
-                                label:
-                                    "Pricing"
-                            },
-
-                            {
-                                key:
-                                    "inventory",
-
-                                label:
-                                    "Inventory"
-                            },
-
-                            {
-                                key:
-                                    "seo",
-
-                                label:
-                                    "SEO"
-                            }
-
-                        ]}
-
-                    />
-
                 </div>
 
-                {/* Content */}
-
-                <div
-
-                    style={{
-
-                        flex: 1,
-
-                        minHeight: 0,
-
-                        overflowY:
-                            "auto",
-
-                        padding:
-                            "0 24px 24px"
-
-                    }}
-
-                >
-
-                    {
-
-                        activeTab ===
-                        "general" &&
-
-                        <GeneralTab
-
-                            lang={activeLocale}
-
-                            brands={
-                                options.brands
-                            }
-
-                            categories={
-                                options.categories
-                            }
-
-                            attributes={
-                                options.attributes
-                            }
-
-                        />
-
-                    }
-
-                    {
-
-                        activeTab ===
-                        "images" &&
-
-                        <ImagesTab
-                            product={product}
-
-                            form={form}
-                        />
-
-                    }
-
-                    {
-
-                        activeTab ===
-                        "pricing" &&
-
-                        <PricingTab />
-
-                    }
-
-                    {
-
-                        activeTab ===
-                        "inventory" &&
-
-                        <InventoryTab />
-
-                    }
-
-                    {
-
-                        activeTab ===
-                        "seo" &&
-
-                        <SeoTab
-                            lang={activeLocale}
-                        />
-
-                    }
-
-                </div>
-
-            </div>
-
-        </Form>
-
+            </Form>
+        </Spin>
     );
 
 }
