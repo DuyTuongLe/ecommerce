@@ -525,6 +525,11 @@ export default function MenuForm({
                 },
 
                 {
+                  label: "Blog category",
+                  value: "blog"
+                },
+
+                {
                   label: "External Link",
                   value: "external"
                 }

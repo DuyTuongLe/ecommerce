@@ -5,7 +5,8 @@ import {
     Button,
     Space,
     Select,
-    message
+    message,
+    Modal
 
 } from "antd";
 
@@ -173,9 +174,14 @@ export default function BrandToolbar({
                             selectedRowKeys.length === 0
                         }
 
-                        onClick={
-                            onDelete
-                        }
+                        onClick={() => {
+                            Modal.confirm({
+                                title: "Delete Brands?",
+                                content: `Are you sure you want to delete ${selectedRowKeys.length} selected brand(s)?`,
+                                okType: "danger",
+                                onOk: onDelete,
+                            });
+                        }}
 
                     >
 

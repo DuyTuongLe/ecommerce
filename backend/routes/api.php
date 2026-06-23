@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Admin\BrandController;
 use App\Http\Controllers\Api\Admin\AttributeController;
 use App\Http\Controllers\Api\Admin\AttributeValueController;
 use App\Http\Controllers\Api\Admin\ProductFormOptionsController;
+use App\Http\Controllers\Api\Admin\NoiDungController;
 
 Route::prefix('admin')->group(function () {
 
@@ -188,6 +189,46 @@ Route::prefix('admin')->group(function () {
     Route::post(
         '/products/bulk-delete',
         [ProductController::class, 'bulkDelete']
+    );
+
+    Route::get(
+        '/noi-dung',
+        [NoiDungController::class, 'index']
+    );
+
+    Route::post(
+        '/noi-dung',
+        [NoiDungController::class, 'store']
+    );
+
+    Route::get(
+        '/noi-dung/pages',
+        [NoiDungController::class, 'pages']
+    );
+
+    Route::post(
+        '/noi-dung/bulk-delete',
+        [NoiDungController::class, 'destroy']
+    );
+
+    Route::post(
+        '/noi-dung/reorder',
+        [NoiDungController::class, 'reorder']
+    );
+
+    Route::post(
+        '/noi-dung/toggle-status',
+        [NoiDungController::class, 'toggleStatus']
+    );
+
+    Route::get(
+        '/noi-dung/{id}',
+        [NoiDungController::class, 'show']
+    );
+
+    Route::put(
+        '/noi-dung/{id}',
+        [NoiDungController::class, 'update']
     );
 
 });

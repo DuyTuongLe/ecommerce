@@ -175,6 +175,10 @@ class ProductFormOptionsController extends Controller
                     );
                 },
 
+                'values' => function ($query) {
+                    $query->where('status', 1);
+                },
+
                 'values.translations' => function ($query) use ($lang) {
 
                     $query->where(
@@ -182,8 +186,9 @@ class ProductFormOptionsController extends Controller
                         $lang
                     );
                 }
-
             ])
+
+            ->where('status', 1)
 
             ->get();
 

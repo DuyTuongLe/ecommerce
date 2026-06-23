@@ -150,8 +150,6 @@ export default function useAttributeValues() {
 
                 return true;
 
-                return true;
-
             } catch (error) {
 
                 console.error(error);

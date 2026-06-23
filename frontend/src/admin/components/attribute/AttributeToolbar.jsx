@@ -2,10 +2,11 @@
 
 import {
 
-    Button,
+        Button,
     Space,
     Select,
-    message
+    message,
+    Modal
 
 } from "antd";
 
@@ -175,7 +176,7 @@ export default function AttributeToolbar({
 
                     </Button>
 
-                    <Button
+                                        <Button
 
                         danger
 
@@ -187,9 +188,14 @@ export default function AttributeToolbar({
                             selectedRowKeys.length === 0
                         }
 
-                        onClick={
-                            onDelete
-                        }
+                        onClick={() => {
+                            Modal.confirm({
+                                title: "Delete Attributes?",
+                                content: `Are you sure you want to delete ${selectedRowKeys.length} selected attribute(s)?`,
+                                okType: "danger",
+                                onOk: onDelete,
+                            });
+                        }}
 
                     >
 

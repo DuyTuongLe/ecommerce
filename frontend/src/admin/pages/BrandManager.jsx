@@ -91,14 +91,6 @@ export default function BrandManager() {
 
     }, [lang]);
 
-    useEffect(() => {
-
-        console.log(
-            "editedRows changed",
-            editedRows
-        );
-
-    }, [editedRows]);
 
     function handleSelectLogo(media) {
 

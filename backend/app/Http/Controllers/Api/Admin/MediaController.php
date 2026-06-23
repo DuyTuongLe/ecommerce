@@ -38,8 +38,16 @@ class MediaController extends Controller
                 $folderId
             )
 
+            ->select([
+                'id', 'folder_id', 'path',
+                'filename', 'mime_type',
+                'extension', 'size', 'alt',
+                'created_at'
+            ])
+
             ->latest()
 
+            ->limit(200)
             ->get();
         $currentFolder = null;
 

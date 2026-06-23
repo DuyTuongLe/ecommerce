@@ -10,6 +10,17 @@ class Product extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'status' => 'boolean',
+        'featured' => 'boolean',
+        'is_new' => 'boolean',
+        'manage_stock' => 'boolean',
+        'price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
+        'cost_price' => 'decimal:2',
+        'published_at' => 'datetime',
+    ];
+
     public function translations()
     {
         return $this->hasMany(

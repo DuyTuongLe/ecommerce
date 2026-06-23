@@ -91,7 +91,9 @@ class ProductController extends Controller
                 ->whereIn(
                     'product_danduong.danduong_id',
                     $categoryIds
-                );
+                )
+
+                ->distinct();
         }
 
         if ($request->filled('status')) {
@@ -483,35 +485,30 @@ class ProductController extends Controller
             $product->id
         )->delete();
 
-        foreach (
+        $attributeData = $data['attributes'] ?? [];
 
-            $data['attributes'] ?? []
+        if (!empty($attributeData)) {
+            $codes = array_keys($attributeData);
+            $attributeMap = Attribute::whereIn('code', $codes)
+                ->pluck('id', 'code');
 
-            as $code => $valueId
-
-        ) {
-
-            $attribute = Attribute::where(
-                'code',
-                $code
-            )->first();
-
-            if (!$attribute) {
-                continue;
+            $inserts = [];
+            foreach ($attributeData as $code => $valueId) {
+                if (!isset($attributeMap[$code]) || !$valueId) {
+                    continue;
+                }
+                $inserts[] = [
+                    'product_id' => $product->id,
+                    'attribute_id' => $attributeMap[$code],
+                    'attribute_value_id' => $valueId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
             }
 
-            ProductAttributeValue::create([
-
-                'product_id' =>
-                $product->id,
-
-                'attribute_id' =>
-                $attribute->id,
-
-                'attribute_value_id' =>
-                $valueId
-
-            ]);
+            if (!empty($inserts)) {
+                ProductAttributeValue::insert($inserts);
+            }
         }
     }
 }

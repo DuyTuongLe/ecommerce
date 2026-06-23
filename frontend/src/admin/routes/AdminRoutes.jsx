@@ -18,6 +18,8 @@ import PromotionManager from "../pages/PromotionManager";
 import AttributeValueManager from "../pages/AttributeValueManager";
 import ProductCreatePage from "../pages/ProductCreatePage";
 import ProductEditPage from "../pages/ProductEditPage";
+import NoiDungManager from "../pages/NoiDungManager";
+import NoiDungEditor from "../pages/NoiDungEditor";
 
 export default function AdminRoutes() {
 
@@ -84,7 +86,22 @@ export default function AdminRoutes() {
           path="products/:id/edit"
           element={<ProductEditPage />}
         />
-        
+
+        <Route
+          path="noi-dung"
+          element={<NoiDungManager />}
+        />
+
+        <Route
+          path="noi-dung/create"
+          element={<NoiDungEditor />}
+        />
+
+        <Route
+          path="noi-dung/:id/edit"
+          element={<NoiDungEditor />}
+        />
+
       </Route>
 
     </Routes>

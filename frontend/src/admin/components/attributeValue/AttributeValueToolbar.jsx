@@ -5,7 +5,8 @@ import {
     Button,
     Space,
     Select,
-    message
+    message,
+    Modal
 
 } from "antd";
 
@@ -187,9 +188,14 @@ export default function AttributeValueToolbar({
                             selectedRowKeys.length === 0
                         }
 
-                        onClick={
-                            onDelete
-                        }
+                        onClick={() => {
+                            Modal.confirm({
+                                title: "Delete Attributes Value?",
+                                content: `Are you sure you want to delete ${selectedRowKeys.length} selected attribute value(s)?`,
+                                okType: "danger",
+                                onOk: onDelete,
+                            });
+                        }}
 
                     >
 

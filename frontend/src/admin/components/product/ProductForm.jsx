@@ -438,10 +438,7 @@ export default function ProductForm({
 
                     >
 
-                        {
-
-                            activeTab ===
-                            "general" &&
+                        <div style={{ display: activeTab === "general" ? "block" : "none" }}>
 
                             <GeneralTab
 
@@ -461,12 +458,9 @@ export default function ProductForm({
 
                             />
 
-                        }
+                        </div>
 
-                        {
-
-                            activeTab ===
-                            "images" &&
+                        <div style={{ display: activeTab === "images" ? "block" : "none" }}>
 
                             <ImagesTab
                                 product={product}
@@ -474,36 +468,27 @@ export default function ProductForm({
                                 form={form}
                             />
 
-                        }
+                        </div>
 
-                        {
-
-                            activeTab ===
-                            "pricing" &&
+                        <div style={{ display: activeTab === "pricing" ? "block" : "none" }}>
 
                             <PricingTab />
 
-                        }
+                        </div>
 
-                        {
-
-                            activeTab ===
-                            "inventory" &&
+                        <div style={{ display: activeTab === "inventory" ? "block" : "none" }}>
 
                             <InventoryTab />
 
-                        }
+                        </div>
 
-                        {
-
-                            activeTab ===
-                            "seo" &&
+                        <div style={{ display: activeTab === "seo" ? "block" : "none" }}>
 
                             <SeoTab
                                 lang={activeLocale}
                             />
 
-                        }
+                        </div>
 
                     </div>
 
