@@ -226,7 +226,10 @@ export default function ProductForm({
     ]);
 
     return (
-        <Spin spinning={loading}>
+        <Spin
+            spinning={loading}
+            wrapperClassName="product-form-spin"
+        >
             <Form
 
                 form={form}

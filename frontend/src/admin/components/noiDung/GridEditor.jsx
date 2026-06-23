@@ -26,7 +26,7 @@ const VIEWPORT_OPTIONS = [
     { value: "desktop", icon: <DesktopOutlined />, label: "Desktop", width: "100%" },
     { value: "laptop", icon: <LaptopOutlined />, label: "1024px", width: 1024 },
     { value: "tablet", icon: <TabletOutlined />, label: "768px", width: 768 },
-    { value: "mobile", icon: <MobileOutlined />, label: "375px", width: 375 },
+    { value: "mobile", icon: <MobileOutlined />, label: "576px", width: 576 },
 ];
 
 export default function GridEditor({ value, onChange }) {
@@ -47,7 +47,13 @@ export default function GridEditor({ value, onChange }) {
         onChange({ ...value, rows: newRows, version: 1 });
     }
     function addRow() {
-        updateRows([...rows, { columns: [{ span: 12, content: "", style: {} }] }]);
+        updateRows([...rows, {
+            columns: [{
+                span: { desktop: 12, laptop: 12, tablet: 12, mobile: 12 },
+                content: "",
+                style: {},
+            }],
+        }]);
     }
     function updateRow(index, newRow) {
         updateRows(rows.map((r, i) => (i === index ? newRow : r)));
@@ -105,6 +111,7 @@ export default function GridEditor({ value, onChange }) {
                                 row={row}
                                 rowIndex={index}
                                 totalRows={rows.length}
+                                viewport={viewport}
                                 onUpdate={(newRow) => updateRow(index, newRow)}
                                 onDelete={() => deleteRow(index)}
                                 onMoveUp={() => moveRow(index, -1)}

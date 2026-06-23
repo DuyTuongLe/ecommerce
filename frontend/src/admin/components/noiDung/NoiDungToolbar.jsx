@@ -14,9 +14,6 @@ const TYPE_OPTIONS = [
 ];
 
 export default function NoiDungToolbar({
-    languages = [],
-    lang,
-    onLangChange,
     type,
     onTypeChange,
     pages = [],
@@ -35,16 +32,6 @@ export default function NoiDungToolbar({
             </div>
             <div style={{ padding: 16 }}>
                 <Space wrap>
-                    <Select
-                        value={lang}
-                        onChange={onLangChange}
-                        style={{ width: 140 }}
-                        options={languages.map(item => ({
-                            label: item.name,
-                            value: item.code,
-                        }))}
-                    />
-
                     <Select
                         value={type}
                         onChange={onTypeChange}

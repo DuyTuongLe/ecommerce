@@ -1,62 +1,41 @@
 // src/admin/hooks/useProductOptions.js
 
-import {
+import { useEffect, useState, useRef } from "react";
+import { getProductFormOptions } from "../../shared/services/productApi";
 
-    useEffect,
-    useState
+const EMPTY = { brands: [], categories: [], attributes: [] };
 
-} from "react";
+// Module-level cache keyed by lang — options đổi ít, tránh fetch lại mỗi lần
+// chuyển locale rồi quay lại.
+const cache = {};
 
-import {
+export default function useProductOptions(lang) {
 
-    getProductFormOptions
-
-} from "../../shared/services/productApi";
-
-export default function useProductOptions(
-    lang
-) {
-
-    const [
-
-    options,
-
-    setOptions
-
-] = useState({
-
-    brands: [],
-
-    categories: [],
-
-    attributes: []
-
-});
+    const [options, setOptions] = useState(cache[lang] || EMPTY);
+    const abortRef = useRef(null);
 
     useEffect(() => {
-
-        async function load() {
-
-            const data =
-
-                await getProductFormOptions(
-                    lang
-                );
-
-            setOptions(
-                data
-            );
-
+        if (cache[lang]) {
+            setOptions(cache[lang]);
+            return;
         }
 
-        load();
+        let cancelled = false;
 
-    }, [
+        async function load() {
+            const data = await getProductFormOptions(lang);
+            if (!cancelled) {
+                cache[lang] = data;
+                setOptions(data);
+            }
+        }
 
-        lang
+        load().catch((err) => {
+            if (!cancelled) console.error(err);
+        });
 
-    ]);
+        return () => { cancelled = true; };
+    }, [lang]);
 
     return options;
-
 }

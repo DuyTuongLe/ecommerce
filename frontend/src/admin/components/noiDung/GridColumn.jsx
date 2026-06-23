@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Select, Button, Tooltip } from "antd";
+import { Select, Button, Tooltip, Tag } from "antd";
 import { DeleteOutlined, SettingOutlined } from "@ant-design/icons";
 import { Editor } from "@tinymce/tinymce-react";
 import ColumnStyleModal from "./ColumnStyleModal";
@@ -18,6 +18,20 @@ const SPAN_CLASS = {
 
 export { SPAN_CLASS };
 
+const VIEWPORT_LABELS = {
+    desktop: "Desktop",
+    laptop: "Laptop",
+    tablet: "Tablet",
+    mobile: "Mobile",
+};
+
+const VIEWPORT_COLORS = {
+    desktop: "blue",
+    laptop: "cyan",
+    tablet: "orange",
+    mobile: "red",
+};
+
 const TOOLBAR_CONFIG =
     "undo redo removeformat | blocks fontsize | bold italic underline strikethrough | " +
     "alignleft aligncenter alignright alignjustify | forecolor backcolor | " +
@@ -33,8 +47,17 @@ const PLUGINS = [
     "accordion",
 ];
 
+// Lấy span theo viewport hiện tại. Hỗ trợ cả format cũ (span là số)
+// và format mới (span là object { desktop, laptop, tablet, mobile }).
+function getSpanForViewport(span, viewport) {
+    if (typeof span === "number") return span;
+    if (typeof span === "object" && span !== null) return span[viewport] ?? span.desktop ?? 6;
+    return 6;
+}
+
 export default function GridColumn({
     column,
+    viewport = "desktop",
     onChangeSpan,
     onChangeContent,
     onChangeStyle,
@@ -47,11 +70,17 @@ export default function GridColumn({
     const [styleModalOpen, setStyleModalOpen] = useState(false);
     const colStyle = column.style || {};
     const extraClasses = colStyle.classes || "";
+    const colWrapClasses = colStyle.colClasses || "";
+
+    const currentSpan = getSpanForViewport(column.span, viewport);
+
+    // Hiển thị tất cả breakpoint đã được tùy chỉnh (khác desktop)
+    const spanObj = typeof column.span === "object" ? column.span : null;
 
     return (
-        <div className={SPAN_CLASS[column.span] || "col-span-6"}>
+        <div className={SPAN_CLASS[currentSpan] || "col-span-6"}>
             <div
-                className="grid-column-wrap"
+                className={`grid-column-wrap ${colWrapClasses}`.trim()}
                 style={{
                     border: "1px solid #e8e8e8",
                     borderRadius: 8,
@@ -71,19 +100,40 @@ export default function GridColumn({
                         borderBottom: "1px solid #e8e8e8",
                         borderRadius: "8px 8px 0 0",
                         fontSize: 11,
+                        flexWrap: "wrap",
                     }}
                 >
-                    <Tooltip title="Column width">
+                    <Tag
+                        color={VIEWPORT_COLORS[viewport]}
+                        bordered={false}
+                        style={{ margin: 0, fontSize: 10, lineHeight: "18px" }}
+                    >
+                        {VIEWPORT_LABELS[viewport]}
+                    </Tag>
+
+                    <Tooltip title={`Column width (${VIEWPORT_LABELS[viewport]})`}>
                         <Select
                             size="small"
-                            value={column.span}
-                            onChange={onChangeSpan}
+                            value={currentSpan}
+                            onChange={(val) => onChangeSpan(val, viewport)}
                             options={SPAN_OPTIONS}
                             style={{ width: 72 }}
                             variant="borderless"
                         />
                     </Tooltip>
-                    <span style={{ color: "#bbb" }}>{SPAN_CLASS[column.span]}</span>
+
+                    <span style={{ color: "#bbb" }}>{SPAN_CLASS[currentSpan]}</span>
+
+                    {/* Hiển thị tóm tắt các breakpoint khác */}
+                    {spanObj && (
+                        <span style={{ color: "#999", fontSize: 10 }}>
+                            {["desktop", "laptop", "tablet", "mobile"]
+                                .filter((vp) => vp !== viewport && spanObj[vp] != null)
+                                .map((vp) => `${vp[0].toUpperCase()}:${spanObj[vp]}`)
+                                .join(" ")}
+                        </span>
+                    )}
+
                     {extraClasses && (
                         <span style={{ color: "#1677ff", fontSize: 10, maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                             {extraClasses}

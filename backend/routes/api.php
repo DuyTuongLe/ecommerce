@@ -46,9 +46,39 @@ Route::prefix('admin')->group(function () {
         [AdminMenuController::class, 'groups']
     );
 
+    Route::post(
+        '/menu-groups',
+        [AdminMenuController::class, 'storeGroup']
+    );
+
+    Route::put(
+        '/menu-groups/{id}',
+        [AdminMenuController::class, 'updateGroup']
+    );
+
+    Route::delete(
+        '/menu-groups/{id}',
+        [AdminMenuController::class, 'destroyGroup']
+    );
+
     Route::get(
         '/languages',
         [LanguageController::class, "index"]
+    );
+
+    Route::post(
+        '/languages',
+        [LanguageController::class, "store"]
+    );
+
+    Route::put(
+        '/languages/{id}',
+        [LanguageController::class, "update"]
+    );
+
+    Route::delete(
+        '/languages/{id}',
+        [LanguageController::class, "destroy"]
     );
 
     Route::get(

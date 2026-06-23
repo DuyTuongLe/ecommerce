@@ -1,6 +1,6 @@
 // src/admin/pages/ProductManager.jsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 import { Splitter } from "antd";
 
@@ -21,100 +21,82 @@ import { useLanguages } from "../hooks/useLanguages";
 export default function ProductManager() {
 
     const {
-
         products,
         categories,
-
         loading,
-
         fetchProducts,
         fetchCategories,
-
         publishProducts,
         unpublishProducts,
-
         removeProducts
-
     } = useProducts();
 
-    const [
-        selectedCategory,
-        setSelectedCategory
-    ] = useState(null);
-
-    const [
-        status,
-        setStatus
-    ] = useState(null);
-
-    const [
-
-        lang,
-
-        setLang
-
-    ] = useState("vi");
-
-    const [
-        search,
-        setSearch
-    ] = useState("");
-
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [status, setStatus] = useState(null);
+    const [lang, setLang] = useState("vi");
+    const [search, setSearch] = useState("");
     const languages = useLanguages();
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-    const [
+    // Ref giữ giá trị hiện tại để các callback không phải là dependency
+    const filtersRef = useRef({ lang, selectedCategory, status, search });
+    filtersRef.current = { lang, selectedCategory, status, search };
 
-        selectedRowKeys,
+    const reload = useCallback(() => {
+        const { lang, selectedCategory, status, search } = filtersRef.current;
+        fetchProducts({ lang, categoryId: selectedCategory, status, search });
+    }, [fetchProducts]);
 
-        setSelectedRowKeys
-
-    ] = useState([]);
-
-    const handleSearch = (value) => {
-
+    const handleSearch = useCallback((value) => {
         setSelectedCategory(null);
-
         setSearch(value);
+    }, []);
 
-    };
+    const handleSelectCategory = useCallback((item) => {
+        setSelectedCategory(item?.id ?? null);
+        setSearch("");
+    }, []);
 
     useEffect(() => {
+        fetchCategories(lang);
+    }, [lang, fetchCategories]);
 
-        fetchCategories(
-            lang
-        );
-
+    useEffect(() => {
         fetchProducts({
-
             lang,
-
-            categoryId:
-                selectedCategory,
-
+            categoryId: selectedCategory,
             status,
-
             search
-
         });
+    }, [lang, selectedCategory, status, search, fetchProducts]);
 
-    }, [
+    const handlePublish = useCallback(async () => {
+        await publishProducts(selectedRowKeys);
+        reload();
+        setSelectedRowKeys([]);
+    }, [selectedRowKeys, publishProducts, reload]);
 
-        lang,
+    const handleUnpublish = useCallback(async () => {
+        await unpublishProducts(selectedRowKeys);
+        reload();
+        setSelectedRowKeys([]);
+    }, [selectedRowKeys, unpublishProducts, reload]);
 
-        selectedCategory,
+    const handleDelete = useCallback(async () => {
+        await removeProducts(selectedRowKeys);
+        setSelectedRowKeys([]);
+        reload();
+    }, [selectedRowKeys, removeProducts, reload]);
 
-        status,
-
-        search
-
-    ]);
+    const handleReload = useCallback(() => {
+        reload();
+        setSelectedRowKeys([]);
+    }, [reload]);
 
     return (
 
         <Splitter
-            style={{
-                height: "100%"
-            }}
+            style={{ height: "100%" }}
         >
 
             <Splitter.Panel
@@ -124,29 +106,14 @@ export default function ProductManager() {
             >
 
                 <ProductCategorySidebar
-
                     categories={categories}
-
                     languages={languages}
-
                     lang={lang}
-
                     onLangChange={setLang}
-
-                    onSelect={(item) => {
-
-                        setSelectedCategory(
-                            item.id
-                        );
-
-                        setSearch("");
-
-                    }}
-
+                    selectedCategory={selectedCategory}
+                    onSelect={handleSelectCategory}
                     searchKeyword={search}
-
                     onSearch={handleSearch}
-
                 />
 
             </Splitter.Panel>
@@ -155,119 +122,20 @@ export default function ProductManager() {
 
                 <ProductToolbar
                     lang={lang}
-
                     status={status}
-
-                    onStatusChange={
-                        setStatus
-                    }
-
-                    selectedRowKeys={
-                        selectedRowKeys
-                    }
-
-                    onReload={() => {
-
-                        fetchProducts({
-
-                            lang,
-
-                            categoryId:
-                                selectedCategory,
-
-                            status,
-
-                            search
-
-                        });
-
-                        setSelectedRowKeys([]);
-
-                    }}
-                    onPublish={async () => {
-
-                        await publishProducts(
-                            selectedRowKeys
-                        );
-
-                        fetchProducts({
-
-                            lang,
-
-                            categoryId:
-                                selectedCategory,
-
-                            status,
-
-                            search
-
-                        });
-
-                        setSelectedRowKeys([]);
-
-                    }}
-
-                    onUnpublish={async () => {
-
-                        await unpublishProducts(
-                            selectedRowKeys
-                        );
-
-                        fetchProducts({
-
-                            lang,
-
-                            categoryId:
-                                selectedCategory,
-
-                            status,
-
-                            search
-
-                        });
-
-                        setSelectedRowKeys([]);
-
-                    }}
-
-                    onDelete={async () => {
-
-                        await removeProducts(
-                            selectedRowKeys
-                        );
-
-                        setSelectedRowKeys([]);
-
-                        fetchProducts({
-
-                            lang,
-
-                            categoryId:
-                                selectedCategory,
-
-                            status,
-
-                            search
-
-                        });
-
-                    }}
+                    onStatusChange={setStatus}
+                    selectedRowKeys={selectedRowKeys}
+                    onReload={handleReload}
+                    onPublish={handlePublish}
+                    onUnpublish={handleUnpublish}
+                    onDelete={handleDelete}
                 />
 
                 <ProductTable
-                    products={
-                        products?.data || []
-                    }
-
+                    products={products?.data || []}
                     loading={loading}
-
-                    selectedRowKeys={
-                        selectedRowKeys
-                    }
-
-                    onSelectionChange={
-                        setSelectedRowKeys
-                    }
+                    selectedRowKeys={selectedRowKeys}
+                    onSelectionChange={setSelectedRowKeys}
                 />
 
             </Splitter.Panel>
@@ -275,5 +143,4 @@ export default function ProductManager() {
         </Splitter>
 
     );
-
 }

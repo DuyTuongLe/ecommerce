@@ -5,16 +5,17 @@ import { message } from "antd";
 import NoiDungToolbar from "../components/noiDung/NoiDungToolbar";
 import NoiDungTable from "../components/noiDung/NoiDungTable";
 import useNoiDung from "../hooks/useNoiDung";
-import { useLanguages } from "../hooks/useLanguages";
 import { getNoiDungPages, toggleNoiDungStatus } from "../../shared/services/noiDungApi";
+
+// Tiêu đề lấy theo ngôn ngữ này (fallback ở backend nếu thiếu bản dịch).
+const DEFAULT_LANG = "vi";
 
 export default function NoiDungManager() {
 
     const { items, setItems, loading, fetchList, remove } = useNoiDung();
-    const languages = useLanguages();
     const navigate = useNavigate();
 
-    const [lang, setLang] = useState("vi");
+    const lang = DEFAULT_LANG;
     const [type, setType] = useState("");
     const [danduongId, setDanduongId] = useState(null);
     const [pages, setPages] = useState([]);
@@ -41,9 +42,6 @@ export default function NoiDungManager() {
             }}
         >
             <NoiDungToolbar
-                languages={languages}
-                lang={lang}
-                onLangChange={setLang}
                 type={type}
                 onTypeChange={setType}
                 pages={pages}

@@ -12,6 +12,9 @@ import {
     DatePicker
 } from "antd";
 
+import RichTextEditor
+    from "../../common/RichTextEditor";
+
 export default function GeneralTab({
 
     lang,
@@ -93,8 +96,8 @@ export default function GeneralTab({
                         ]}
                     >
 
-                        <Input.TextArea
-                            rows={14}
+                        <RichTextEditor
+                            height={420}
                         />
 
                     </Form.Item>

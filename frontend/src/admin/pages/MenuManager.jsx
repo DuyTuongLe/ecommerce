@@ -1,473 +1,333 @@
-//src/admin/pages/MenuManager.jsx
+// src/admin/pages/MenuManager.jsx
 
 import {
-  useState,
-  useEffect
+    useState,
+    useEffect,
+    useCallback
 } from "react";
 
 import {
-  useMenus
+    useMenus
 } from "../hooks/useMenus";
 
 import {
-  useMenuGroups
+    useMenuGroups
 } from "../hooks/useMenuGroups";
 
 import {
-  useLanguages
+    useLanguages
 } from "../hooks/useLanguages";
 
 import {
-  message, Modal, Spin
+    message, Modal, Spin
 } from "antd";
 
 import MenuToolbar from "../components/MenuToolbar";
-
 import MenuTree from "../components/MenuTree";
-
 import { buildSortPayload } from "../components/treeUtils";
-
-import { sortMenus, saveMenu, deleteMenu } from "../../shared/services/menuApi";
-
+import {
+    sortMenus,
+    saveMenu,
+    deleteMenu,
+    createMenuGroup,
+    updateMenuGroup,
+    deleteMenuGroup
+} from "../../shared/services/menuApi";
 import MenuForm from "../components/MenuForm";
+import MenuGroupModal from "../components/MenuGroupModal";
 
 export default function MenuManager() {
 
-  const [treeItems, setTreeItems] =
-    useState([]);
+    const [treeItems, setTreeItems] = useState([]);
+    const [menuGroup, setMenuGroup] = useState(null);
+    const [reLoadKey, setReloadKey] = useState(0);
+    const [language, setLanguage] = useState(null);
+    const [mode, setMode] = useState("add");
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [formLanguage, setFormLanguage] = useState(null);
 
-  const [menuGroup, setMenuGroup] =
-    useState(null);
+    const { menus, loading } = useMenus(language, menuGroup, reLoadKey);
+    const { groups: menuGroups, fetchGroups } = useMenuGroups();
+    const languages = useLanguages();
 
-  const [reLoadKey, setReloadKey] =
-    useState(0);
+    const [formKey, setFormKey] = useState(0);
 
-  const [language, setLanguage] =
-    useState(null);
+    // ── Group modal state ──
+    const [groupModalOpen, setGroupModalOpen] = useState(false);
+    const [groupModalMode, setGroupModalMode] = useState("create");
+    const [editingGroup, setEditingGroup] = useState(null);
+    const [groupSaving, setGroupSaving] = useState(false);
 
-  const [mode, setMode] = useState("add");
+    useEffect(() => {
+        if (!selectedItem) return;
 
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  const [formLanguage, setFormLanguage] = useState(null);
-
-  const {
-
-    menus,
-    loading
-
-  } = useMenus(
-
-    language,
-
-    menuGroup,
-
-    reLoadKey
-
-  );
-
-  const menuGroups =
-    useMenuGroups();
-
-  const languages =
-    useLanguages();
-
-  const [formKey, setFormKey] =
-    useState(0);
-
-  useEffect(() => {
-
-    if (!selectedItem) {
-      return;
-    }
-
-    function findItem(items, id) {
-
-      for (const item of items) {
-
-        if (item.id === id) {
-          return item;
+        function findItem(items, id) {
+            for (const item of items) {
+                if (item.id === id) return item;
+                if (item.children?.length) {
+                    const found = findItem(item.children, id);
+                    if (found) return found;
+                }
+            }
+            return null;
         }
 
-        if (item.children?.length) {
+        const updatedItem = findItem(menus, selectedItem.id);
+        if (!updatedItem) return;
 
-          const found =
-            findItem(
-              item.children,
-              id
-            );
+        setSelectedItem({
+            ...updatedItem,
+            parentId: updatedItem.goc_id
+        });
+    }, [menus, language]);
 
-          if (found) {
-            return found;
-          }
+    useEffect(() => {
+        if (!languages.length) return;
 
+        const defaultLanguage = languages.find(x => x.macdinh === 1);
+
+        if (defaultLanguage && !language) {
+            setLanguage(defaultLanguage.code);
         }
 
-      }
+        if (defaultLanguage && !formLanguage) {
+            setFormLanguage(defaultLanguage.code);
+        }
+    }, [languages]);
 
-      return null;
+    useEffect(() => {
+        if (!menuGroups.length) return;
 
+        const defaultGroup = menuGroups.find(x => x.macdinh === 1);
+
+        if (defaultGroup && !menuGroup) {
+            setMenuGroup(defaultGroup.id);
+        }
+    }, [menuGroups]);
+
+    function handleReload(showMessage = true) {
+        setReloadKey(prev => prev + 1);
+        if (showMessage) {
+            message.success("Reload successful");
+        }
     }
 
-    const updatedItem =
-      findItem(
-        menus,
-        selectedItem.id
-      );
-
-    if (!updatedItem) {
-      return;
-    }
-
-    setSelectedItem({
-
-      ...updatedItem,
-
-      parentId:
-        updatedItem.goc_id
-
-    });
-
-  }, [
-
-    menus,
-
-    language
-
-  ]);
-
-  useEffect(() => {
-
-    if (!languages.length)
-      return;
-
-    const defaultLanguage =
-      languages.find(
-        x => x.macdinh === 1
-      );
-
-    if (
-      defaultLanguage &&
-      !language
-    ) {
-
-      setLanguage(
-        defaultLanguage.code
-      );
-
-    }
-
-    if (
-      defaultLanguage &&
-      !formLanguage
-    ) {
-
-      setFormLanguage(
-        defaultLanguage.code
-      );
-
-    }
-
-  }, [languages]);
-
-
-  useEffect(() => {
-
-    if (!menuGroups.length)
-      return;
-
-    const defaultGroup =
-      menuGroups.find(
-        x => x.macdinh === 1
-      );
-
-    if (
-      defaultGroup &&
-      !menuGroup
-    ) {
-
-      setMenuGroup(
-        defaultGroup.id
-      );
-
-    }
-
-  }, [menuGroups]);
-
-  async function handleSave() {
-
-    try {
-
-      const payload =
-        buildSortPayload(
-          treeItems
-        );
-
-      await sortMenus(
-        payload
-      );
-
-      message.success(
-        "Saved successfully"
-      );
-
-    }
-    catch (error) {
-
-      console.error(error);
-
-      message.error(
-        "Save failed"
-      );
-
-    }
-
-  }
-  async function handleRemove() {
-
-    if (!selectedItem) {
-
-      message.warning(
-        "Please select menu"
-      );
-
-      return;
-    }
-
-    Modal.confirm({
-
-      title: "Delete Menu",
-
-      content:
-        "Are you sure to delete this menu?",
-
-      okText: "Delete",
-
-      okButtonProps: {
-        danger: true
-      },
-
-      async onOk() {
-
+    async function handleSave() {
         try {
-
-          await deleteMenu(
-            selectedItem.id
-          );
-
-          message.success(
-            "Deleted successfully"
-          );
-
-          setSelectedItem(null);
-
-          setMode("add");
-
-          handleReload(false);
-
+            const payload = buildSortPayload(treeItems);
+            await sortMenus(payload);
+            message.success("Saved successfully");
         } catch (error) {
+            console.error(error);
+            message.error("Save failed");
+        }
+    }
 
-          console.error(error);
-
-          message.error(
-            "Delete failed"
-          );
-
+    async function handleRemove() {
+        if (!selectedItem) {
+            message.warning("Please select menu");
+            return;
         }
 
-      }
-
-    });
-
-  }
-
-
-  function handleReload(showMessage = true) {
-    setReloadKey(
-      prev => prev + 1
-    );
-
-    if (showMessage) {
-      message.success(
-        "Reload successful"
-      );
-    }
-  }
-
-  async function handleSubmit(values) {
-
-    try {
-
-      const payload = {
-
-        ...values,
-
-        goc_id:
-          values.parent_id,
-
-        ngonngu:
-
-          mode === "add"
-
-            ? formLanguage
-
-            : language,
-
-        id:
-          selectedItem?.id
-
-      };
-
-      await saveMenu(
-        payload
-      );
-
-      message.success(
-        "Saved successfully"
-      );
-
-      handleReload(false);
-
-    }
-    catch (error) {
-
-      console.error(error);
-
-      message.error(
-        "Save failed"
-      );
-
+        Modal.confirm({
+            title: "Delete Menu",
+            content: "Are you sure to delete this menu?",
+            okText: "Delete",
+            okButtonProps: { danger: true },
+            async onOk() {
+                try {
+                    await deleteMenu(selectedItem.id);
+                    message.success("Deleted successfully");
+                    setSelectedItem(null);
+                    setMode("add");
+                    handleReload(false);
+                } catch (error) {
+                    console.error(error);
+                    message.error("Delete failed");
+                }
+            }
+        });
     }
 
-  }
+    async function handleSubmit(values) {
+        try {
+            const payload = {
+                ...values,
+                goc_id: values.parent_id,
+                ngonngu: mode === "add" ? formLanguage : language,
+                id: selectedItem?.id
+            };
 
+            await saveMenu(payload);
+            message.success("Saved successfully");
+            handleReload(false);
+        } catch (error) {
+            console.error(error);
+            message.error("Save failed");
+        }
+    }
 
-  return (
-    <div
-      style={{
-        padding: 20,
-      }}
-    >
+    // ── Group CRUD handlers ──
 
-      <MenuToolbar
+    const handleOpenAddGroup = useCallback(() => {
+        setGroupModalMode("create");
+        setEditingGroup(null);
+        setGroupModalOpen(true);
+    }, []);
 
-        languages={languages}
+    const handleOpenEditGroup = useCallback(() => {
+        const current = menuGroups.find(g => g.id === menuGroup);
+        if (!current) {
+            message.warning("Chọn nhóm menu trước");
+            return;
+        }
+        setGroupModalMode("edit");
+        setEditingGroup(current);
+        setGroupModalOpen(true);
+    }, [menuGroups, menuGroup]);
 
-        language={language}
+    const handleDeleteGroup = useCallback(() => {
+        const current = menuGroups.find(g => g.id === menuGroup);
+        if (!current) {
+            message.warning("Chọn nhóm menu trước");
+            return;
+        }
+        if (current.macdinh) {
+            message.warning("Không thể xóa nhóm mặc định");
+            return;
+        }
 
-        onChangeLanguage={setLanguage}
+        Modal.confirm({
+            title: "Xóa nhóm menu?",
+            content: `Xóa "${current.danduong_nhom_tieude}"?`,
+            okType: "danger",
+            okText: "Xóa",
+            cancelText: "Hủy",
+            async onOk() {
+                try {
+                    const result = await deleteMenuGroup(current.id);
+                    if (result?.success === false) {
+                        message.error(result.message);
+                        return;
+                    }
+                    message.success("Đã xóa nhóm");
+                    setMenuGroup(null);
+                    fetchGroups();
+                } catch (e) {
+                    message.error(e?.response?.data?.message || "Xóa thất bại");
+                }
+            }
+        });
+    }, [menuGroups, menuGroup, fetchGroups]);
 
-        menuGroup={menuGroup}
+    const handleGroupSubmit = useCallback(async (payload) => {
+        setGroupSaving(true);
+        try {
+            const result = editingGroup
+                ? await updateMenuGroup(editingGroup.id, payload)
+                : await createMenuGroup(payload);
 
-        onChangeMenuGroup={setMenuGroup}
+            if (result?.success === false) {
+                message.error(result.message || "Lưu thất bại");
+                return;
+            }
 
-        menuGroups={menuGroups}
+            message.success(editingGroup ? "Đã cập nhật nhóm" : "Đã thêm nhóm");
+            setGroupModalOpen(false);
+            fetchGroups();
 
-        onSave={handleSave}
+            if (!editingGroup && result?.group?.id) {
+                setMenuGroup(result.group.id);
+            }
+        } catch (e) {
+            message.error(
+                e?.response?.data?.message
+                || "Lưu thất bại. Kiểm tra lại tên nhóm (có thể bị trùng)."
+            );
+        } finally {
+            setGroupSaving(false);
+        }
+    }, [editingGroup, fetchGroups]);
 
-        onReload={handleReload}
+    return (
+        <div style={{ padding: 20 }}>
 
-        onAdd={() => {
-
-          setMode("add");
-
-          setSelectedItem(null);
-
-          setFormLanguage(language);
-          setFormKey(
-            prev => prev + 1
-          );
-        }}
-
-        onRemove={handleRemove}
-
-      />
-
-      <div
-        style={{
-
-          display: "grid",
-
-          gridTemplateColumns:
-            "1fr 400px",
-
-          gap: 20,
-        }}
-      >
-
-        <div
-          style={{
-
-            minWidth: 0,
-
-            height: "calc(100vh - 85px)",
-
-            overflowY: "auto",
-
-            scrollbarWidth: "none",
-
-            msOverflowStyle: "none"
-
-          }}
-        >
-
-          <Spin spinning={loading}>
-
-            <MenuTree
-
-              items={menus}
-
-              onChange={
-                setTreeItems
-              }
-
-              onSelect={(item) => {
-
-                setSelectedItem(item);
-
-                setMode("edit");
-
-              }}
-
-              selectedItem={
-                selectedItem
-              }
-
-              language={language}
-
+            <MenuToolbar
+                languages={languages}
+                language={language}
+                onChangeLanguage={setLanguage}
+                menuGroup={menuGroup}
+                onChangeMenuGroup={setMenuGroup}
+                menuGroups={menuGroups}
+                onSave={handleSave}
+                onReload={handleReload}
+                onAdd={() => {
+                    setMode("add");
+                    setSelectedItem(null);
+                    setFormLanguage(language);
+                    setFormKey(prev => prev + 1);
+                }}
+                onRemove={handleRemove}
+                onAddGroup={handleOpenAddGroup}
+                onEditGroup={handleOpenEditGroup}
+                onDeleteGroup={handleDeleteGroup}
             />
 
-          </Spin>
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 400px",
+                    gap: 20,
+                }}
+            >
+                <div
+                    style={{
+                        minWidth: 0,
+                        height: "calc(100vh - 85px)",
+                        overflowY: "auto",
+                        scrollbarWidth: "none",
+                        msOverflowStyle: "none"
+                    }}
+                >
+                    <Spin spinning={loading}>
+                        <MenuTree
+                            items={menus}
+                            onChange={setTreeItems}
+                            onSelect={(item) => {
+                                setSelectedItem(item);
+                                setMode("edit");
+                            }}
+                            selectedItem={selectedItem}
+                            language={language}
+                        />
+                    </Spin>
+                </div>
 
+                <div>
+                    <MenuForm
+                        key={formKey}
+                        mode={mode}
+                        language={language}
+                        formLanguage={formLanguage}
+                        setFormLanguage={setFormLanguage}
+                        languages={languages}
+                        selectedItem={selectedItem}
+                        menus={menus}
+                        menuGroups={menuGroups}
+                        menuGroup={menuGroup}
+                        onSubmit={handleSubmit}
+                    />
+                </div>
+            </div>
+
+            <MenuGroupModal
+                open={groupModalOpen}
+                mode={groupModalMode}
+                initialValues={editingGroup}
+                confirmLoading={groupSaving}
+                onSubmit={handleGroupSubmit}
+                onCancel={() => setGroupModalOpen(false)}
+            />
         </div>
-
-        <div
-          style={{
-
-          }}
-        >
-
-          <MenuForm
-            key={formKey}
-            mode={mode}
-            language={language}
-            formLanguage={formLanguage}
-            setFormLanguage={
-              setFormLanguage
-            }
-            languages={languages}
-            selectedItem={selectedItem}
-            menus={menus}
-            menuGroups={menuGroups}
-            menuGroup={menuGroup}
-            onSubmit={handleSubmit}
-          />
-
-        </div>
-
-      </div>
-
-    </div>
-
-  );
+    );
 }

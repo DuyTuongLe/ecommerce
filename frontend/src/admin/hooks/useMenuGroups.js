@@ -1,43 +1,24 @@
-///admin/hooks/useMenuGroups.js
+// src/admin/hooks/useMenuGroups.js
 
-import {
-  useEffect,
-  useState
-} from "react";
-
-import {
-  getMenuGroups
-} from "../../shared/services/menuApi";
+import { useEffect, useState, useCallback } from "react";
+import { getMenuGroups } from "../../shared/services/menuApi";
 
 export function useMenuGroups() {
 
-  const [groups, setGroups] =
-    useState([]);
+    const [groups, setGroups] = useState([]);
 
-  useEffect(() => {
+    const fetchGroups = useCallback(async () => {
+        try {
+            const data = await getMenuGroups();
+            setGroups(data);
+        } catch (error) {
+            console.error(error);
+        }
+    }, []);
 
-    async function fetchGroups() {
+    useEffect(() => {
+        fetchGroups();
+    }, [fetchGroups]);
 
-      try {
-
-        const data =
-          await getMenuGroups();
-
-        setGroups(data);
-
-      }
-      catch (error) {
-
-        console.error(error);
-
-      }
-
-    }
-
-    fetchGroups();
-
-  }, []);
-
-  return groups;
-
+    return { groups, fetchGroups };
 }

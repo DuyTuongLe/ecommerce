@@ -20,6 +20,7 @@ import ProductCreatePage from "../pages/ProductCreatePage";
 import ProductEditPage from "../pages/ProductEditPage";
 import NoiDungManager from "../pages/NoiDungManager";
 import NoiDungEditor from "../pages/NoiDungEditor";
+import LanguageManager from "../pages/LanguageManager";
 
 export default function AdminRoutes() {
 
@@ -85,6 +86,11 @@ export default function AdminRoutes() {
         <Route
           path="products/:id/edit"
           element={<ProductEditPage />}
+        />
+
+        <Route
+          path="languages"
+          element={<LanguageManager />}
         />
 
         <Route

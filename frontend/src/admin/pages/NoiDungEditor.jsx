@@ -22,7 +22,12 @@ const TYPE_OPTIONS = [
 
 const DEFAULT_JSON = {
     version: 1,
-    rows: [{ columns: [{ span: 12, content: "" }] }],
+    rows: [{
+        columns: [{
+            span: { desktop: 12, laptop: 12, tablet: 12, mobile: 12 },
+            content: "",
+        }],
+    }],
 };
 
 export default function NoiDungEditor() {

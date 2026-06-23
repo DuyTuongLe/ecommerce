@@ -44,7 +44,7 @@
 .ge-inline-editor [contenteditable="true"]:focus { outline: none; }
 
 /* ===== Column Style Modal ===== */
-.ge-style-tabs { display: flex; gap: 0; border-bottom: 1px solid #e8e8e8; margin-bottom: 12px; flex-wrap: wrap; }
+.ge-style-tabs { display: flex; gap: 0; border-bottom: 1px solid #e8e8e8; margin-bottom: 12px; flex-wrap: nowrap; overflow-x: auto; }
 .ge-style-tab {
     padding: 6px 14px;
     font-size: 13px;

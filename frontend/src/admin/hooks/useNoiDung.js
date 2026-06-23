@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 import {
     getNoiDungs,
@@ -14,7 +14,7 @@ export default function useNoiDung() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchList = async (params = {}) => {
+    const fetchList = useCallback(async (params = {}) => {
         setLoading(true);
         try {
             const data = await getNoiDungs(params);
@@ -22,36 +22,36 @@ export default function useNoiDung() {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const fetchOne = async (id) => {
+    const fetchOne = useCallback(async (id) => {
         setLoading(true);
         try {
             return await getNoiDung(id);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const create = async (payload) => {
+    const create = useCallback(async (payload) => {
         try {
             return await createApi(payload);
         } catch (error) {
             console.error(error);
             return null;
         }
-    };
+    }, []);
 
-    const update = async (id, payload) => {
+    const update = useCallback(async (id, payload) => {
         try {
             return await updateApi(id, payload);
         } catch (error) {
             console.error(error);
             return null;
         }
-    };
+    }, []);
 
-    const remove = async (ids, params = {}) => {
+    const remove = useCallback(async (ids, params = {}) => {
         try {
             const data = await deleteApi(ids);
             await fetchList(params);
@@ -60,16 +60,16 @@ export default function useNoiDung() {
             console.error(error);
             return null;
         }
-    };
+    }, [fetchList]);
 
-    const reorder = async (orderedItems) => {
+    const reorder = useCallback(async (orderedItems) => {
         try {
             return await reorderApi(orderedItems);
         } catch (error) {
             console.error(error);
             return null;
         }
-    };
+    }, []);
 
     return {
         items,

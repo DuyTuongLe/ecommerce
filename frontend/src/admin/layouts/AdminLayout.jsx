@@ -14,6 +14,7 @@ import {
     ApartmentOutlined,
     GiftOutlined,
     FileTextOutlined,
+    GlobalOutlined,
 } from "@ant-design/icons";
 
 import { useState } from "react";
@@ -65,6 +66,11 @@ export default function AdminLayout() {
                             key: "/admin/noi-dung",
                             icon: <FileTextOutlined />,
                             label: <Link to="/admin/noi-dung">Content</Link>,
+                        },
+                        {
+                            key: "/admin/languages",
+                            icon: <GlobalOutlined />,
+                            label: <Link to="/admin/languages">Languages</Link>,
                         },
                         {
                             key: "products",

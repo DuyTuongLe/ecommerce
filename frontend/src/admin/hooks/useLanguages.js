@@ -1,44 +1,57 @@
-//src/admin/hooks/useLanguages.js
+// src/admin/hooks/useLanguages.js
 
+import { useEffect, useState } from "react";
+import { getLanguages } from "../../shared/services/menuApi";
 
-import {
-  useEffect,
-  useState
-} from "react";
+// Module-level cache: tất cả component dùng useLanguages() chia sẻ cùng một
+// kết quả. Tránh N request song song khi nhiều trang mount cùng lúc.
+let cached = null;
+let pending = null;
 
-import {
-  getLanguages
-} from "../../shared/services/menuApi";
+function fetchOnce() {
+    if (cached) {
+        return Promise.resolve(cached);
+    }
+    if (!pending) {
+        pending = getLanguages()
+            .then((data) => {
+                cached = data;
+                pending = null;
+                return data;
+            })
+            .catch((err) => {
+                pending = null;
+                throw err;
+            });
+    }
+    return pending;
+}
+
+// Cho phép invalidate từ bên ngoài (vd: sau khi thêm/sửa ngôn ngữ).
+export function invalidateLanguagesCache() {
+    cached = null;
+    pending = null;
+}
 
 export function useLanguages() {
 
-  const [languages, setLanguages] =
-    useState([]);
+    const [languages, setLanguages] = useState(cached || []);
 
-  useEffect(() => {
+    useEffect(() => {
+        let cancelled = false;
 
-    async function fetchLanguages() {
+        fetchOnce()
+            .then((data) => {
+                if (!cancelled) {
+                    setLanguages(data);
+                }
+            })
+            .catch((error) => {
+                console.error(error);
+            });
 
-      try {
+        return () => { cancelled = true; };
+    }, []);
 
-        const data =
-          await getLanguages();
-
-        setLanguages(data);
-
-      }
-      catch (error) {
-
-        console.error(error);
-
-      }
-
-    }
-
-    fetchLanguages();
-
-  }, []);
-
-  return languages;
-
+    return languages;
 }

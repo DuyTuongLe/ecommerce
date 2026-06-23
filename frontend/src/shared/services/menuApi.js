@@ -50,6 +50,21 @@ export async function getMenuGroups() {
 
 }
 
+export async function createMenuGroup(payload) {
+  const { data } = await api.post("/admin/menu-groups", payload);
+  return data;
+}
+
+export async function updateMenuGroup(id, payload) {
+  const { data } = await api.put(`/admin/menu-groups/${id}`, payload);
+  return data;
+}
+
+export async function deleteMenuGroup(id) {
+  const { data } = await api.delete(`/admin/menu-groups/${id}`);
+  return data;
+}
+
 export async function sortMenus(items) {
   const res = await api.post(
     "/admin/menus/sort",

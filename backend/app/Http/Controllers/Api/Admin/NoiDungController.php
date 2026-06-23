@@ -9,6 +9,7 @@ use App\Models\NoiDungNgonngu;
 use App\Models\Danduong;
 use App\Models\Url;
 use App\Services\SlugService;
+use Illuminate\Support\Facades\DB;
 
 class NoiDungController extends Controller
 {
@@ -72,7 +73,14 @@ class NoiDungController extends Controller
                 'noi_dung.thutu',
                 'noi_dung.trangthai',
                 'noi_dung.created_at',
-                'noi_dung_ngonngu.tieu_de as title',
+                DB::raw(
+                    'COALESCE('
+                    . 'noi_dung_ngonngu.tieu_de, '
+                    . '(SELECT nn2.tieu_de FROM noi_dung_ngonngu nn2 '
+                    . 'WHERE nn2.noi_dung_id = noi_dung.id '
+                    . 'ORDER BY nn2.id ASC LIMIT 1)'
+                    . ') as title'
+                ),
                 'danduong_ngonngu.danduong_nn_ten as page_name',
                 'media.path as thumbnail',
             ])
