@@ -13,6 +13,14 @@ use App\Http\Controllers\Api\Admin\AttributeController;
 use App\Http\Controllers\Api\Admin\AttributeValueController;
 use App\Http\Controllers\Api\Admin\ProductFormOptionsController;
 use App\Http\Controllers\Api\Admin\NoiDungController;
+use App\Http\Controllers\Api\Admin\AuthController;
+
+Route::post('/auth/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+});
 
 Route::prefix('admin')->group(function () {
 
@@ -267,17 +275,20 @@ Route::prefix('admin')->group(function () {
 
 
 
+use App\Http\Controllers\Api\Frontend\PageController;
+
 Route::prefix('menus')->group(function () {
 
-    // Header menu
     Route::get(
         '/header',
         [MenuController::class, 'header']
     );
 
-    // Product menu
     Route::get(
         '/product-menu',
         [MenuController::class, 'productMenu']
     );
 });
+
+Route::get('/page/home', [PageController::class, 'home']);
+Route::get('/page/{slug}', [PageController::class, 'show']);

@@ -1,5 +1,5 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
-import { Layout, Menu } from "antd";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { Layout, Menu, Button, Tooltip } from "antd";
 const { Sider, Content } = Layout;
 
 import {
@@ -15,13 +15,22 @@ import {
     GiftOutlined,
     FileTextOutlined,
     GlobalOutlined,
+    LogoutOutlined,
 } from "@ant-design/icons";
 
 import { useState } from "react";
+import { useAuth } from "../../shared/context/AuthContext";
 
 export default function AdminLayout() {
     const [collapsed, setCollapsed] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user, logout } = useAuth();
+
+    async function handleLogout() {
+        await logout();
+        navigate("/admin/login");
+    }
 
     return (
         <Layout style={{ minHeight: "100vh" }}>
@@ -38,8 +47,19 @@ export default function AdminLayout() {
                         : <MenuFoldOutlined style={{ color: "#fff" }} />
                 }
             >
-                <div className="admin-sidebar-logo">
-                    {collapsed ? "CMS" : "Admin CMS"}
+                <div className="admin-sidebar-logo" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>{collapsed ? "CMS" : "Admin CMS"}</span>
+                    {!collapsed && (
+                        <Tooltip title={`Logout (${user?.name})`}>
+                            <Button
+                                type="text"
+                                size="small"
+                                icon={<LogoutOutlined />}
+                                onClick={handleLogout}
+                                style={{ color: "rgba(255,255,255,0.6)" }}
+                            />
+                        </Tooltip>
+                    )}
                 </div>
 
                 <Menu

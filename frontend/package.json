@@ -23,6 +23,7 @@
     "react-resizable-panels": "^4.11.1",
     "react-router-dom": "^7.14.0",
     "slugify": "^1.6.9",
+    "swiper": "^12.2.0",
     "tailwindcss": "^4.2.2",
     "tinymce": "^8.6.0"
   },

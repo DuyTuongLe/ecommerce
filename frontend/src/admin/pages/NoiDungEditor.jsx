@@ -3,12 +3,13 @@ import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
     Input, Select, Button, Space, Card, Row, Col,
     Checkbox, InputNumber, Spin, message, Image, DatePicker,
-    Divider,
+    Divider, ColorPicker, Switch,
 } from "antd";
 import dayjs from "dayjs";
 import slugify from "slugify";
 
 import GridEditor from "../components/noiDung/GridEditor";
+import SlideEditor from "../components/noiDung/SlideEditor";
 import MediaPickerModal from "../components/media/MediaPickerModal";
 import useNoiDung from "../hooks/useNoiDung";
 import { useLanguages } from "../hooks/useLanguages";
@@ -16,6 +17,7 @@ import { getNoiDungPages } from "../../shared/services/noiDungApi";
 
 const TYPE_OPTIONS = [
     { value: "section", label: "Section" },
+    { value: "slide", label: "Slide" },
     { value: "news", label: "News" },
     { value: "blog", label: "Blog" },
 ];
@@ -28,6 +30,12 @@ const DEFAULT_JSON = {
             content: "",
         }],
     }],
+};
+
+const DEFAULT_SLIDE_JSON = {
+    version: 1,
+    settings: { autoplay: true, delay: 3000, loop: true, effect: "slide", slidesPerView: 1 },
+    slides: [],
 };
 
 export default function NoiDungEditor() {
@@ -229,9 +237,13 @@ export default function NoiDungEditor() {
                         </Col>
                     </Row>
 
-                    {/* Grid Editor */}
+                    {/* Content Editor */}
                     <div style={{ marginBottom: 24 }}>
-                        <GridEditor value={gridData} onChange={setGridData} />
+                        {type === "slide" ? (
+                            <SlideEditor value={gridData} onChange={setGridData} />
+                        ) : (
+                            <GridEditor value={gridData} onChange={setGridData} />
+                        )}
                     </div>
 
                     <Divider />
@@ -244,13 +256,20 @@ export default function NoiDungEditor() {
                                     <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>Type</label>
                                     <Select
                                         value={type}
-                                        onChange={setType}
+                                        onChange={(newType) => {
+                                            setType(newType);
+                                            if (newType === "slide" && gridData?.rows) {
+                                                setGridData(DEFAULT_SLIDE_JSON);
+                                            } else if (newType !== "slide" && gridData?.slides) {
+                                                setGridData(DEFAULT_JSON);
+                                            }
+                                        }}
                                         options={TYPE_OPTIONS}
                                         style={{ width: "100%" }}
                                     />
                                 </div>
 
-                                {type === "section" && (
+                                {(type === "section" || type === "slide") && (
                                     <div style={{ marginBottom: 12 }}>
                                         <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>Page</label>
                                         <Select
@@ -310,6 +329,108 @@ export default function NoiDungEditor() {
                                 <Button block onClick={() => setMediaModalOpen(true)}>
                                     Select Thumbnail
                                 </Button>
+                            </Card>
+                        </Col>
+
+                        <Col span={8}>
+                            <Card title="Section Appearance" size="small" style={{ borderRadius: 10 }}>
+                                <div style={{ marginBottom: 12 }}>
+                                    <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>Background Color</label>
+                                    <Space>
+                                        <ColorPicker
+                                            value={gridData?.sectionSettings?.bgColor || ""}
+                                            onChange={(_, hex) => setGridData((prev) => ({
+                                                ...prev,
+                                                sectionSettings: { ...prev?.sectionSettings, bgColor: hex, bgGradient: "" },
+                                            }))}
+                                        />
+                                        <Input
+                                            size="small"
+                                            value={gridData?.sectionSettings?.bgColor || ""}
+                                            onChange={(e) => setGridData((prev) => ({
+                                                ...prev,
+                                                sectionSettings: { ...prev?.sectionSettings, bgColor: e.target.value, bgGradient: "" },
+                                            }))}
+                                            placeholder="#ffffff"
+                                            style={{ width: 120 }}
+                                        />
+                                        {gridData?.sectionSettings?.bgColor && (
+                                            <Button size="small" type="text" danger onClick={() => setGridData((prev) => ({
+                                                ...prev,
+                                                sectionSettings: { ...prev?.sectionSettings, bgColor: "" },
+                                            }))}>
+                                                Clear
+                                            </Button>
+                                        )}
+                                    </Space>
+                                </div>
+
+                                <div style={{ marginBottom: 12 }}>
+                                    <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>Background Gradient</label>
+                                    <Input
+                                        size="small"
+                                        value={gridData?.sectionSettings?.bgGradient || ""}
+                                        onChange={(e) => setGridData((prev) => ({
+                                            ...prev,
+                                            sectionSettings: { ...prev?.sectionSettings, bgGradient: e.target.value, bgColor: "" },
+                                        }))}
+                                        placeholder="linear-gradient(135deg, #667eea, #764ba2)"
+                                    />
+                                    {gridData?.sectionSettings?.bgGradient && (
+                                        <div style={{
+                                            height: 24, borderRadius: 4, marginTop: 6,
+                                            background: gridData.sectionSettings.bgGradient,
+                                        }} />
+                                    )}
+                                </div>
+
+                                <div style={{ marginBottom: 12 }}>
+                                    <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>Text Color</label>
+                                    <Space>
+                                        <ColorPicker
+                                            value={gridData?.sectionSettings?.textColor || ""}
+                                            onChange={(_, hex) => setGridData((prev) => ({
+                                                ...prev,
+                                                sectionSettings: { ...prev?.sectionSettings, textColor: hex },
+                                            }))}
+                                        />
+                                        <Input
+                                            size="small"
+                                            value={gridData?.sectionSettings?.textColor || ""}
+                                            onChange={(e) => setGridData((prev) => ({
+                                                ...prev,
+                                                sectionSettings: { ...prev?.sectionSettings, textColor: e.target.value },
+                                            }))}
+                                            placeholder="#000000"
+                                            style={{ width: 120 }}
+                                        />
+                                    </Space>
+                                </div>
+
+                                <div style={{ marginBottom: 12 }}>
+                                    <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>Custom Classes</label>
+                                    <Input
+                                        size="small"
+                                        value={gridData?.sectionSettings?.classes || ""}
+                                        onChange={(e) => setGridData((prev) => ({
+                                            ...prev,
+                                            sectionSettings: { ...prev?.sectionSettings, classes: e.target.value },
+                                        }))}
+                                        placeholder="py-16 my-4"
+                                    />
+                                </div>
+
+                                <div>
+                                    <Switch
+                                        checked={gridData?.sectionSettings?.fullWidth || false}
+                                        onChange={(checked) => setGridData((prev) => ({
+                                            ...prev,
+                                            sectionSettings: { ...prev?.sectionSettings, fullWidth: checked },
+                                        }))}
+                                        size="small"
+                                    />
+                                    <span style={{ marginLeft: 8, fontSize: 13 }}>Full Width (no max-width)</span>
+                                </div>
                             </Card>
                         </Col>
 

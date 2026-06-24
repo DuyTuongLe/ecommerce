@@ -2,6 +2,7 @@ import { Table, Tag, Switch, Checkbox } from "antd";
 
 const TYPE_COLORS = {
     section: "blue",
+    slide: "orange",
     news: "green",
     blog: "purple",
 };

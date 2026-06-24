@@ -9,6 +9,7 @@ import {
 const TYPE_OPTIONS = [
     { label: "All", value: "" },
     { label: "Section", value: "section" },
+    { label: "Slide", value: "slide" },
     { label: "News", value: "news" },
     { label: "Blog", value: "blog" },
 ];

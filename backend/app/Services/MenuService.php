@@ -385,8 +385,11 @@ class MenuService
 
     public function getHeaderMenu($lang = 'vi')
     {
+        $mainGroup = DanduongNhom::where('danduong_nhom_ten', 'main_menu')->first();
+
         $menus = $this->baseQuery($lang)
             ->where('trangthai', 1)
+            ->where('danduong_nhom_id', $mainGroup?->id ?? 1)
             ->orderBy('thutu')
             ->get();
 
