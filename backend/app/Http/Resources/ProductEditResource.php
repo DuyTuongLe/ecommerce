@@ -48,6 +48,9 @@ class ProductEditResource extends JsonResource
             'sale_price' => $this->sale_price,
 
             'cost_price' => $this->cost_price,
+            'discount_percent' => $this->discount_percent,
+            'discount_type' => $this->discount_type,
+            'discount_amount' => $this->discount_amount,
 
             // Inventory
 

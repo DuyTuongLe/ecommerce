@@ -92,6 +92,83 @@ class PageController extends Controller
             return response()->json(['error' => 'Page not found'], 404);
         }
 
+        if ($page->type === 'blog') {
+            $posts = NoiDung::query()
+                ->leftJoin('noi_dung_ngonngu', function ($join) use ($lang) {
+                    $join->on('noi_dung.id', '=', 'noi_dung_ngonngu.noi_dung_id')
+                        ->where('noi_dung_ngonngu.ngonngu', $lang);
+                })
+                ->leftJoin('media', 'noi_dung.thumbnail_id', '=', 'media.id')
+                ->leftJoin('url', function ($join) use ($lang) {
+                    $join->on('noi_dung.id', '=', 'url.entity_id')
+                        ->where('url.entity_type', 'noi_dung')
+                        ->where('url.ngonngu', $lang);
+                })
+                ->where('noi_dung.danduong_id', $danduongId)
+                ->where('noi_dung.type', 'blog')
+                ->where('noi_dung.trangthai', 1)
+                ->select([
+                    'noi_dung.id',
+                    'noi_dung.created_at',
+                    'noi_dung_ngonngu.tieu_de as title',
+                    'noi_dung_ngonngu.seo_description as excerpt',
+                    'media.path as thumbnail',
+                    'url.slug',
+                ])
+                ->orderBy('noi_dung.created_at', 'desc')
+                ->paginate(12);
+
+            $posts->getCollection()->transform(function ($item) {
+                $item->thumbnail = $item->thumbnail ? asset('storage/' . $item->thumbnail) : null;
+                return $item;
+            });
+
+            // Also get child blog categories
+            $children = Danduong::query()
+                ->leftJoin('danduong_ngonngu', function ($join) use ($lang) {
+                    $join->on('danduong.id', '=', 'danduong_ngonngu.danduong_id')
+                        ->where('danduong_ngonngu.ngonngu', $lang);
+                })
+                ->leftJoin('url as u', function ($join) use ($lang) {
+                    $join->on('danduong.id', '=', 'u.entity_id')
+                        ->where('u.entity_type', 'danduong')
+                        ->where('u.ngonngu', $lang);
+                })
+                ->where('danduong.goc_id', $danduongId)
+                ->where('danduong.type', 'blog')
+                ->where('danduong.trangthai', 1)
+                ->select([
+                    'danduong.id',
+                    'danduong_ngonngu.danduong_nn_ten as name',
+                    'u.slug',
+                ])
+                ->orderBy('danduong.thutu')
+                ->get();
+
+            return response()->json([
+                'type' => 'blog',
+                'title' => $page->title,
+                'seo_title' => $page->seo_title,
+                'seo_description' => $page->seo_description,
+                'children' => $children,
+                'posts' => $posts,
+                'alternate_slugs' => $this->getAlternateSlugs('danduong', $danduongId),
+                'breadcrumbs' => $this->getBreadcrumbs($danduongId, $lang),
+            ]);
+        }
+
+        if (in_array($page->type, ['product_category', 'menu_group'])) {
+            return response()->json([
+                'type' => 'product_category',
+                'category_id' => $page->id,
+                'title' => $page->title,
+                'seo_title' => $page->seo_title,
+                'seo_description' => $page->seo_description,
+                'alternate_slugs' => $this->getAlternateSlugs('danduong', $danduongId),
+                'breadcrumbs' => $this->getBreadcrumbs($danduongId, $lang),
+            ]);
+        }
+
         $sections = NoiDung::query()
             ->leftJoin('noi_dung_ngonngu', function ($join) use ($lang) {
                 $join->on('noi_dung.id', '=', 'noi_dung_ngonngu.noi_dung_id')
@@ -127,7 +204,31 @@ class PageController extends Controller
             'page' => $page,
             'sections' => $sections,
             'alternate_slugs' => $this->getAlternateSlugs('danduong', $danduongId),
+            'breadcrumbs' => $this->getBreadcrumbs($danduongId, $lang),
         ]);
+    }
+
+    protected function getBreadcrumbs($danduongId, $lang)
+    {
+        $crumbs = [];
+        $current = Danduong::find($danduongId);
+
+        while ($current && !$current->macdinh) {
+            $trans = $current->ngonngus()->where('ngonngu', $lang)->first();
+            $url = Url::where('entity_type', 'danduong')
+                ->where('entity_id', $current->id)
+                ->where('ngonngu', $lang)
+                ->first();
+
+            $crumbs[] = [
+                'title' => $trans?->danduong_nn_ten ?? '',
+                'slug' => $url?->slug,
+            ];
+
+            $current = $current->goc_id ? Danduong::find($current->goc_id) : null;
+        }
+
+        return array_reverse($crumbs);
     }
 
     protected function getContent($noiDungId, $lang)
@@ -150,6 +251,7 @@ class PageController extends Controller
                 'noi_dung_ngonngu.seo_description',
                 'noi_dung_ngonngu.seo_keywords',
                 'media.path as thumbnail',
+                'noi_dung.image_settings',
             ])
             ->first();
 
@@ -164,11 +266,24 @@ class PageController extends Controller
         if (is_string($content->noi_dung_json)) {
             $content->noi_dung_json = json_decode($content->noi_dung_json, true);
         }
+        if (is_string($content->image_settings)) {
+            $content->image_settings = json_decode($content->image_settings, true);
+        }
+
+        $noiDung = NoiDung::find($noiDungId);
+        $breadcrumbs = $noiDung?->danduong_id
+            ? $this->getBreadcrumbs($noiDung->danduong_id, $lang)
+            : [];
+
+        if ($content->title) {
+            $breadcrumbs[] = ['title' => $content->title, 'slug' => null];
+        }
 
         return response()->json([
             'type' => 'content',
             'content' => $content,
             'alternate_slugs' => $this->getAlternateSlugs('noi_dung', $noiDungId),
+            'breadcrumbs' => $breadcrumbs,
         ]);
     }
 }

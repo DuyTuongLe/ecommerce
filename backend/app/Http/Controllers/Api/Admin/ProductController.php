@@ -351,6 +351,10 @@ class ProductController extends Controller
 
             'sale_price' => $data['sale_price'] ?? null,
 
+            'discount_type' => $data['discount_type'] ?? null,
+            'discount_percent' => ($data['discount_type'] ?? null) === 'percent' ? ($data['discount_percent'] ?? null) : null,
+            'discount_amount' => ($data['discount_type'] ?? null) === 'fixed' ? ($data['discount_amount'] ?? null) : null,
+
             'cost_price' => $data['cost_price'] ?? null,
 
             'stock' => $data['stock'] ?? 0,

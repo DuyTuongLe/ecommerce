@@ -14,12 +14,17 @@ use App\Http\Controllers\Api\Admin\AttributeValueController;
 use App\Http\Controllers\Api\Admin\ProductFormOptionsController;
 use App\Http\Controllers\Api\Admin\NoiDungController;
 use App\Http\Controllers\Api\Admin\AuthController;
+use App\Http\Controllers\Api\Admin\SettingsController;
+use App\Http\Controllers\Api\Admin\UserController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::get('/settings', [SettingsController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::post('/settings/css-variables', [SettingsController::class, 'saveCssVariables']);
+    Route::post('/settings', [SettingsController::class, 'update']);
 });
 
 Route::prefix('admin')->group(function () {
@@ -229,6 +234,14 @@ Route::prefix('admin')->group(function () {
         [ProductController::class, 'bulkDelete']
     );
 
+    // Users
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::put('/users/{id}/password', [UserController::class, 'changePassword']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::post('/users/bulk-delete', [UserController::class, 'bulkDelete']);
+
     Route::get(
         '/noi-dung',
         [NoiDungController::class, 'index']
@@ -242,6 +255,11 @@ Route::prefix('admin')->group(function () {
     Route::get(
         '/noi-dung/pages',
         [NoiDungController::class, 'pages']
+    );
+
+    Route::get(
+        '/noi-dung/blog-categories',
+        [NoiDungController::class, 'blogCategories']
     );
 
     Route::post(
@@ -276,19 +294,16 @@ Route::prefix('admin')->group(function () {
 
 
 use App\Http\Controllers\Api\Frontend\PageController;
+use App\Http\Controllers\Api\Frontend\StoreProductController;
 
-Route::prefix('menus')->group(function () {
-
-    Route::get(
-        '/header',
-        [MenuController::class, 'header']
-    );
-
-    Route::get(
-        '/product-menu',
-        [MenuController::class, 'productMenu']
-    );
+Route::withoutMiddleware(\Illuminate\Session\Middleware\StartSession::class)->group(function () {
+    Route::get('/menus/header', [MenuController::class, 'header']);
+    Route::get('/menus/product-menu', [MenuController::class, 'productMenu']);
+    Route::get('/page/home', [PageController::class, 'home']);
+    Route::get('/page/{slug}', [PageController::class, 'show']);
+    Route::get('/products', [StoreProductController::class, 'index']);
+    Route::get('/products/{id}', [StoreProductController::class, 'show']);
+    Route::get('/product-categories', [StoreProductController::class, 'categories']);
+    Route::get('/brands', [StoreProductController::class, 'brands']);
+    Route::get('/attributes', [StoreProductController::class, 'attributes']);
 });
-
-Route::get('/page/home', [PageController::class, 'home']);
-Route::get('/page/{slug}', [PageController::class, 'show']);

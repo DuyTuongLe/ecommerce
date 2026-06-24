@@ -13,6 +13,7 @@ class NguoiDung extends Authenticatable
         'email',
         'password',
         'role',
+        'permissions',
         'trangthai',
     ];
 
@@ -26,6 +27,7 @@ class NguoiDung extends Authenticatable
         return [
             'password' => 'hashed',
             'trangthai' => 'boolean',
+            'permissions' => 'array',
         ];
     }
 }

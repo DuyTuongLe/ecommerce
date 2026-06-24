@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Select, Button, Tooltip, Tag } from "antd";
 import { DeleteOutlined, SettingOutlined } from "@ant-design/icons";
 import { Editor } from "@tinymce/tinymce-react";
+import { filePickerCallback } from "../common/tinymceMediaPicker";
 import ColumnStyleModal from "./ColumnStyleModal";
 
 const SPAN_OPTIONS = Array.from({ length: 12 }, (_, i) => ({
@@ -178,6 +179,8 @@ export default function GridColumn({
                             plugins: PLUGINS,
                             fixed_toolbar_container: `#${toolbarContainerId}`,
                             fixed_toolbar_container_target: document.getElementById(toolbarContainerId),
+                            file_picker_callback: filePickerCallback,
+                            file_picker_types: "image",
                             visualblocks_default_state: true,
                             block_formats: "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquote=blockquote; Preformatted=pre",
                             font_size_formats: "8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 24pt 28pt 32pt 36pt 48pt 60pt 72pt",

@@ -18,7 +18,8 @@ function buildLink(slug, lang) {
     return lang === "en" ? `/en/${slug}` : `/${slug}`;
 }
 
-export default function StoreHeader({ lang = "vi" }) {
+
+export default function StoreHeader({ lang = "vi", siteSettings = {} }) {
     const [menu, setMenu] = useState([]);
     const location = useLocation();
     const { alternateSlugs } = usePageContext();
@@ -49,10 +50,12 @@ export default function StoreHeader({ lang = "vi" }) {
 
                 if (!title) return null;
 
+                const href = slug ? buildLink(slug, lang) : null;
+
                 return (
                     <li key={item.id}>
-                        {slug ? (
-                            <Link to={buildLink(slug, lang)}>{title}</Link>
+                        {href ? (
+                            <Link to={href}>{title}</Link>
                         ) : (
                             <span className="cursor-default">{title}</span>
                         )}
@@ -74,7 +77,11 @@ export default function StoreHeader({ lang = "vi" }) {
                     to={lang === "en" ? "/en" : "/"}
                     className="text-xl font-bold text-white no-underline hover:text-white"
                 >
-                    Ecommerce
+                    {siteSettings.logo_id_url ? (
+                        <img src={siteSettings.logo_id_url} alt={siteSettings.site_name || "Logo"} style={{ height: 40, objectFit: "contain" }} />
+                    ) : (
+                        siteSettings.site_name || "Ecommerce"
+                    )}
                 </Link>
 
                 <div className="hidden md:flex items-center gap-6">

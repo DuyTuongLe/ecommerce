@@ -30,6 +30,11 @@ export async function getNoiDungPages(lang = "vi") {
     return data;
 }
 
+export async function getBlogCategories(lang = "vi") {
+    const { data } = await api.get("/admin/noi-dung/blog-categories", { params: { lang } });
+    return data;
+}
+
 export async function toggleNoiDungStatus(id, trangthai) {
     const { data } = await api.post(`/admin/noi-dung/toggle-status`, { id, trangthai: trangthai ? 1 : 0 });
     return data;

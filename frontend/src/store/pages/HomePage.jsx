@@ -6,11 +6,12 @@ import { usePageContext } from "../context/PageContext";
 export default function HomePage({ lang = "vi" }) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { setAlternateSlugs } = usePageContext();
+    const { setAlternateSlugs, setBreadcrumbs } = usePageContext();
 
     useEffect(() => {
         setLoading(true);
         setAlternateSlugs({});
+        setBreadcrumbs(null);
         getHomePage(lang).then((res) => {
             setData(res);
             setAlternateSlugs(res?.alternate_slugs || {});

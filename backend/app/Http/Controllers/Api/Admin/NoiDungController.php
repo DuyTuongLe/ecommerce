@@ -106,6 +106,7 @@ class NoiDungController extends Controller
             'danduong_id' => $request->input('danduong_id'),
             'type' => $request->input('type', 'section'),
             'thumbnail_id' => $request->input('thumbnail_id'),
+            'image_settings' => $request->input('image_settings'),
             'thutu' => $request->input('thutu', 0),
             'trangthai' => $request->input('trangthai', 1),
         ]);
@@ -170,6 +171,7 @@ class NoiDungController extends Controller
                     'url' => asset('storage/' . $noiDung->thumbnail->path),
                 ]
                 : null,
+            'image_settings' => $noiDung->image_settings,
             'thutu' => $noiDung->thutu,
             'trangthai' => $noiDung->trangthai,
             'created_at' => $noiDung->created_at,
@@ -187,6 +189,7 @@ class NoiDungController extends Controller
             'danduong_id' => $request->input('danduong_id'),
             'type' => $request->input('type', $noiDung->type),
             'thumbnail_id' => $request->input('thumbnail_id'),
+            'image_settings' => $request->input('image_settings'),
             'thutu' => $request->input('thutu', $noiDung->thutu),
             'trangthai' => $request->input('trangthai', $noiDung->trangthai),
         ]);
@@ -251,6 +254,27 @@ class NoiDungController extends Controller
                         ->where('danduong_ngonngu.ngonngu', $lang);
                 })
                 ->where('danduong.type', 'page')
+                ->select([
+                    'danduong.id as value',
+                    'danduong_ngonngu.danduong_nn_ten as label',
+                ])
+                ->orderBy('danduong.thutu')
+                ->get()
+        );
+    }
+
+    public function blogCategories(Request $request)
+    {
+        $lang = $request->get('lang', 'vi');
+
+        return response()->json(
+            Danduong::query()
+                ->leftJoin('danduong_ngonngu', function ($join) use ($lang) {
+                    $join->on('danduong.id', '=', 'danduong_ngonngu.danduong_id')
+                        ->where('danduong_ngonngu.ngonngu', $lang);
+                })
+                ->where('danduong.type', 'blog')
+                ->where('danduong.trangthai', 1)
                 ->select([
                     'danduong.id as value',
                     'danduong_ngonngu.danduong_nn_ten as label',

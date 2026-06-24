@@ -18,6 +18,8 @@ class Product extends Model
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
         'cost_price' => 'decimal:2',
+        'discount_percent' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
         'published_at' => 'datetime',
     ];
 

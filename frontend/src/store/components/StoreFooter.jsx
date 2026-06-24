@@ -1,6 +1,6 @@
 export default function StoreFooter() {
     return (
-        <footer className="mt-16 py-10 px-5" style={{ background: "var(--color-primary-dark)", color: "rgba(255,255,255,0.7)" }}>
+        <footer className="py-10 px-5" style={{ background: "var(--color-primary-dark)", color: "rgba(255,255,255,0.7)" }}>
             <div className="max-w-6xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div>

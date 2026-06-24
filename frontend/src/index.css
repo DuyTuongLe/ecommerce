@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
 :root {
   /* Primary */
   --color-primary: #2f456f;

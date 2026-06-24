@@ -12,12 +12,14 @@ class NoiDung extends Model
         'danduong_id',
         'type',
         'thumbnail_id',
+        'image_settings',
         'thutu',
         'trangthai',
     ];
 
     protected $casts = [
         'trangthai' => 'boolean',
+        'image_settings' => 'array',
     ];
 
     public function translations()

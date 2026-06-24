@@ -13,12 +13,11 @@ import SlideEditor from "../components/noiDung/SlideEditor";
 import MediaPickerModal from "../components/media/MediaPickerModal";
 import useNoiDung from "../hooks/useNoiDung";
 import { useLanguages } from "../hooks/useLanguages";
-import { getNoiDungPages } from "../../shared/services/noiDungApi";
+import { getNoiDungPages, getBlogCategories } from "../../shared/services/noiDungApi";
 
 const TYPE_OPTIONS = [
     { value: "section", label: "Section" },
     { value: "slide", label: "Slide" },
-    { value: "news", label: "News" },
     { value: "blog", label: "Blog" },
 ];
 
@@ -61,12 +60,15 @@ export default function NoiDungEditor() {
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
     const [mediaModalOpen, setMediaModalOpen] = useState(false);
     const [pages, setPages] = useState([]);
+    const [blogCats, setBlogCats] = useState([]);
     const [allTranslations, setAllTranslations] = useState({});
     const [allSlugs, setAllSlugs] = useState({});
     const [createdAt, setCreatedAt] = useState(null);
+    const [imageSettings, setImageSettings] = useState({});
 
     useEffect(() => {
         getNoiDungPages(lang).then(setPages);
+        getBlogCategories(lang).then(setBlogCats);
     }, [lang]);
 
     useEffect(() => {
@@ -82,6 +84,7 @@ export default function NoiDungEditor() {
             setAllTranslations(data.translations || {});
             setAllSlugs(data.slugs || {});
             setCreatedAt(data.created_at ? dayjs(data.created_at) : null);
+            setImageSettings(data.image_settings || {});
             loadLang(data.translations, data.slugs, lang);
         });
     }, [id]);
@@ -131,6 +134,7 @@ export default function NoiDungEditor() {
             danduong_id: danduongId,
             type,
             thumbnail_id: thumbnailId,
+            image_settings: imageSettings,
             thutu,
             trangthai: trangthai ? 1 : 0,
             tieu_de: tieu_de,
@@ -283,6 +287,20 @@ export default function NoiDungEditor() {
                                     </div>
                                 )}
 
+                                {type === "blog" && (
+                                    <div style={{ marginBottom: 12 }}>
+                                        <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>Danh mục Blog</label>
+                                        <Select
+                                            value={danduongId}
+                                            onChange={setDanduongId}
+                                            options={blogCats}
+                                            allowClear
+                                            placeholder="Chọn danh mục"
+                                            style={{ width: "100%" }}
+                                        />
+                                    </div>
+                                )}
+
                                 <Row gutter={12}>
                                     <Col span={12}>
                                         <div style={{ marginBottom: 12 }}>
@@ -329,6 +347,76 @@ export default function NoiDungEditor() {
                                 <Button block onClick={() => setMediaModalOpen(true)}>
                                     Select Thumbnail
                                 </Button>
+
+                                {thumbnailId && (
+                                    <div style={{ marginTop: 12, borderTop: "1px solid #f0f0f0", paddingTop: 10 }}>
+                                        <Checkbox
+                                            checked={imageSettings.hide_in_detail || false}
+                                            onChange={(e) => setImageSettings((s) => ({ ...s, hide_in_detail: e.target.checked }))}
+                                        >
+                                            Ẩn ảnh trong chi tiết
+                                        </Checkbox>
+
+                                        <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                                            <Select
+                                                size="small"
+                                                value={imageSettings.align || undefined}
+                                                onChange={(v) => setImageSettings((s) => ({ ...s, align: v }))}
+                                                placeholder="Align"
+                                                allowClear
+                                                style={{ width: 90 }}
+                                                options={[
+                                                    { value: "left", label: "Left" },
+                                                    { value: "center", label: "Center" },
+                                                    { value: "right", label: "Right" },
+                                                ]}
+                                            />
+                                            <Select
+                                                size="small"
+                                                value={imageSettings.width || undefined}
+                                                onChange={(v) => setImageSettings((s) => ({ ...s, width: v }))}
+                                                placeholder="Width"
+                                                allowClear
+                                                style={{ width: 85 }}
+                                                options={[
+                                                    { value: "auto", label: "Auto" },
+                                                    { value: "100", label: "100%" },
+                                                    { value: "75", label: "75%" },
+                                                    { value: "50", label: "50%" },
+                                                    { value: "25", label: "25%" },
+                                                ]}
+                                            />
+                                            <Select
+                                                size="small"
+                                                value={imageSettings.height || undefined}
+                                                onChange={(v) => setImageSettings((s) => ({ ...s, height: v }))}
+                                                placeholder="Height"
+                                                allowClear
+                                                style={{ width: 85 }}
+                                                options={[
+                                                    { value: "auto", label: "Auto" },
+                                                    { value: "100", label: "100%" },
+                                                    { value: "75", label: "75%" },
+                                                    { value: "50", label: "50%" },
+                                                    { value: "25", label: "25%" },
+                                                ]}
+                                            />
+                                            <Select
+                                                size="small"
+                                                value={imageSettings.fit || undefined}
+                                                onChange={(v) => setImageSettings((s) => ({ ...s, fit: v }))}
+                                                placeholder="Fit"
+                                                allowClear
+                                                style={{ width: 100 }}
+                                                options={[
+                                                    { value: "cover", label: "Cover" },
+                                                    { value: "contain", label: "Contain" },
+                                                    { value: "fill", label: "Fill" },
+                                                ]}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </Card>
                         </Col>
 
@@ -434,7 +522,7 @@ export default function NoiDungEditor() {
                             </Card>
                         </Col>
 
-                        {(type === "news" || type === "blog") && (
+                        {type === "blog" && (
                             <Col span={8}>
                                 <Card title="SEO" size="small" style={{ borderRadius: 10 }}>
                                     <div style={{ marginBottom: 10 }}>

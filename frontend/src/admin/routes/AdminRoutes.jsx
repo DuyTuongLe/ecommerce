@@ -18,6 +18,8 @@ import ProductEditPage from "../pages/ProductEditPage";
 import NoiDungManager from "../pages/NoiDungManager";
 import NoiDungEditor from "../pages/NoiDungEditor";
 import LanguageManager from "../pages/LanguageManager";
+import UserManager from "../pages/UserManager";
+import SettingsManager from "../pages/SettingsManager";
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useAuth();
@@ -91,6 +93,8 @@ export default function AdminRoutes() {
                     <Route path="noi-dung" element={<NoiDungManager />} />
                     <Route path="noi-dung/create" element={<NoiDungEditor />} />
                     <Route path="noi-dung/:id/edit" element={<NoiDungEditor />} />
+                    <Route path="users" element={<UserManager />} />
+                    <Route path="settings" element={<SettingsManager />} />
                 </Route>
             </Routes>
         </AuthProvider>

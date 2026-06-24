@@ -16,16 +16,27 @@ import {
     FileTextOutlined,
     GlobalOutlined,
     LogoutOutlined,
+    TeamOutlined,
+    SettingOutlined,
 } from "@ant-design/icons";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../../shared/context/AuthContext";
+import MediaPickerModal from "../components/media/MediaPickerModal";
+import { resolveMediaPicker, cancelMediaPicker } from "../components/common/mediaPickerBridge";
 
 export default function AdminLayout() {
     const [collapsed, setCollapsed] = useState(false);
+    const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const { user, logout } = useAuth();
+
+    const handleOpenMediaPicker = useCallback(() => setMediaPickerOpen(true), []);
+    useEffect(() => {
+        window.addEventListener("open-media-picker", handleOpenMediaPicker);
+        return () => window.removeEventListener("open-media-picker", handleOpenMediaPicker);
+    }, [handleOpenMediaPicker]);
 
     async function handleLogout() {
         await logout();
@@ -128,6 +139,16 @@ export default function AdminLayout() {
                             icon: <GiftOutlined />,
                             label: <Link to="/admin/promotions">Promotions</Link>,
                         },
+                        {
+                            key: "/admin/users",
+                            icon: <TeamOutlined />,
+                            label: <Link to="/admin/users">Users</Link>,
+                        },
+                        {
+                            key: "/admin/settings",
+                            icon: <SettingOutlined />,
+                            label: <Link to="/admin/settings">Settings</Link>,
+                        },
                     ]}
                 />
             </Sider>
@@ -137,6 +158,12 @@ export default function AdminLayout() {
                     <Outlet />
                 </Content>
             </Layout>
+
+            <MediaPickerModal
+                open={mediaPickerOpen}
+                onCancel={() => { setMediaPickerOpen(false); cancelMediaPicker(); }}
+                onSelect={(media) => { setMediaPickerOpen(false); resolveMediaPicker(media); }}
+            />
         </Layout>
     );
 }

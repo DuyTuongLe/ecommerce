@@ -1,6 +1,7 @@
 // src/admin/components/common/RichTextEditor.jsx
 
 import { Editor } from "@tinymce/tinymce-react";
+import { filePickerCallback } from "./tinymceMediaPicker";
 
 const DEFAULT_PLUGINS = [
     "advlist", "autolink", "lists", "link", "image",
@@ -44,6 +45,8 @@ export default function RichTextEditor({
                 toolbar_mode: "wrap",
                 toolbar,
                 plugins,
+                file_picker_callback: filePickerCallback,
+                file_picker_types: "image",
                 visualblocks_default_state: true,
                 block_formats:
                     "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; " +

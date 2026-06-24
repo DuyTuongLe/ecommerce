@@ -22,8 +22,8 @@ export default function SectionRenderer({ data, sectionClass, sectionId }) {
     }
 
     const containerClass = ss.fullWidth
-        ? "px-5"
-        : "max-w-6xl mx-auto px-5";
+        ? ""
+        : "max-w-6xl mx-auto";
 
     const extraClasses = ss.classes || "";
 
