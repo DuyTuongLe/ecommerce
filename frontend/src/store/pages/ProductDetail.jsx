@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getProductDetail } from "../../shared/services/storeApi";
+import api from "../../shared/services/api";
 import { usePageContext } from "../context/PageContext";
+import { useCart } from "../context/CartContext";
 
 export default function ProductDetail({ productId, lang = "vi" }) {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeImg, setActiveImg] = useState(null);
+    const [qty, setQty] = useState(1);
     const { setAlternateSlugs, setBreadcrumbs } = usePageContext();
+    const { addToCart } = useCart();
 
     useEffect(() => {
         setLoading(true);
@@ -113,6 +117,21 @@ export default function ProductDetail({ productId, lang = "vi" }) {
                             ? (lang === "vi" ? "Còn hàng" : "In stock")
                             : (lang === "vi" ? "Hết hàng" : "Out of stock")}
                     </div>
+
+                    {/* Add to cart */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <div style={{ display: "flex", alignItems: "center", border: "1px solid #ddd", borderRadius: 6 }}>
+                            <button onClick={() => setQty((q) => Math.max(1, q - 1))} style={{ width: 36, height: 36, border: "none", background: "none", fontSize: 18, cursor: "pointer" }}>−</button>
+                            <span style={{ width: 40, textAlign: "center", fontWeight: 600 }}>{qty}</span>
+                            <button onClick={() => setQty((q) => q + 1)} style={{ width: 36, height: 36, border: "none", background: "none", fontSize: 18, cursor: "pointer" }}>+</button>
+                        </div>
+                        <button
+                            onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, sale_price: product.sale_price, thumbnail: product.thumbnail, slug: null }, qty)}
+                            style={{ flex: 1, padding: "10px 20px", background: "#ff4d4f", color: "#fff", border: "none", borderRadius: 6, fontSize: 15, fontWeight: 700, cursor: "pointer" }}
+                        >
+                            {lang === "vi" ? "Đặt hàng" : "Add to Cart"}
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -125,6 +144,9 @@ export default function ProductDetail({ productId, lang = "vi" }) {
                     <div dangerouslySetInnerHTML={{ __html: product.content }} />
                 </div>
             )}
+
+            {/* Reviews */}
+            <ProductReviews productId={productId} lang={lang} />
 
             {/* Related Products */}
             {product.related?.length > 0 && (
@@ -161,6 +183,140 @@ export default function ProductDetail({ productId, lang = "vi" }) {
                         ))}
                     </div>
                 </div>
+            )}
+        </div>
+    );
+}
+
+function StarRating({ value, onChange, size = 20 }) {
+    const [hover, setHover] = useState(0);
+    return (
+        <div style={{ display: "flex", gap: 2 }}>
+            {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                    key={star}
+                    onClick={() => onChange?.(star)}
+                    onMouseEnter={() => onChange && setHover(star)}
+                    onMouseLeave={() => setHover(0)}
+                    style={{ cursor: onChange ? "pointer" : "default", fontSize: size, color: star <= (hover || value) ? "#fadb14" : "#ddd" }}
+                >★</span>
+            ))}
+        </div>
+    );
+}
+
+function ProductReviews({ productId, lang }) {
+    const [summary, setSummary] = useState(null);
+    const [reviews, setReviews] = useState([]);
+    const [showForm, setShowForm] = useState(false);
+    const [form, setForm] = useState({ rating: 5, title: "", content: "" });
+    const [submitting, setSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+
+    useEffect(() => {
+        api.get(`/products/${productId}/reviews/summary`).then((r) => setSummary(r.data));
+        api.get(`/products/${productId}/reviews`).then((r) => setReviews(r.data?.data || []));
+    }, [productId]);
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        if (!form.content.trim()) return;
+        setSubmitting(true);
+        try {
+            await api.post(`/products/${productId}/reviews`, form);
+            setSubmitted(true);
+            setShowForm(false);
+            setForm({ rating: 5, title: "", content: "" });
+        } catch {
+            alert("Lỗi gửi đánh giá");
+        } finally {
+            setSubmitting(false);
+        }
+    }
+
+    return (
+        <div style={{ marginBottom: 40 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12, paddingBottom: 8, borderBottom: "2px solid #2f456f" }}>
+                {lang === "vi" ? "Đánh giá sản phẩm" : "Customer Reviews"}
+                {summary?.total > 0 && <span style={{ fontWeight: 400, fontSize: 14, color: "#999" }}> ({summary.total})</span>}
+            </h2>
+
+            {/* Summary */}
+            {summary && summary.total > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 24, marginBottom: 20, padding: 16, background: "#f9f9f9", borderRadius: 8 }}>
+                    <div style={{ textAlign: "center" }}>
+                        <div style={{ fontSize: 36, fontWeight: 700, color: "#2f456f" }}>{summary.average}</div>
+                        <StarRating value={Math.round(summary.average)} size={16} />
+                        <div style={{ fontSize: 12, color: "#999", marginTop: 4 }}>{summary.total} {lang === "vi" ? "đánh giá" : "reviews"}</div>
+                    </div>
+                    <div style={{ flex: 1, maxWidth: 300 }}>
+                        {[5, 4, 3, 2, 1].map((star) => {
+                            const count = summary.breakdown?.[star] || 0;
+                            const pct = summary.total > 0 ? (count / summary.total) * 100 : 0;
+                            return (
+                                <div key={star} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                                    <span style={{ fontSize: 12, width: 16 }}>{star}★</span>
+                                    <div style={{ flex: 1, height: 8, background: "#eee", borderRadius: 4, overflow: "hidden" }}>
+                                        <div style={{ width: `${pct}%`, height: "100%", background: "#fadb14", borderRadius: 4 }} />
+                                    </div>
+                                    <span style={{ fontSize: 11, color: "#999", width: 20 }}>{count}</span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* Review form */}
+            {submitted ? (
+                <div style={{ padding: 16, background: "#f0fdf0", borderRadius: 6, marginBottom: 16, color: "#389e0d" }}>
+                    {lang === "vi" ? "Cảm ơn! Đánh giá của bạn đang chờ duyệt." : "Thank you! Your review is pending approval."}
+                </div>
+            ) : showForm ? (
+                <form onSubmit={handleSubmit} style={{ padding: 16, border: "1px solid #eee", borderRadius: 8, marginBottom: 16 }}>
+                    <div style={{ marginBottom: 12 }}>
+                        <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>{lang === "vi" ? "Đánh giá" : "Rating"}</label>
+                        <StarRating value={form.rating} onChange={(v) => setForm((f) => ({ ...f, rating: v }))} size={24} />
+                    </div>
+                    <div style={{ marginBottom: 12 }}>
+                        <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>{lang === "vi" ? "Tiêu đề" : "Title"}</label>
+                        <input value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder={lang === "vi" ? "Tóm tắt đánh giá..." : "Summary..."} style={{ width: "100%", padding: "6px 10px", border: "1px solid #ddd", borderRadius: 4, boxSizing: "border-box" }} />
+                    </div>
+                    <div style={{ marginBottom: 12 }}>
+                        <label style={{ display: "block", fontSize: 13, fontWeight: 500, marginBottom: 4 }}>{lang === "vi" ? "Nội dung *" : "Content *"}</label>
+                        <textarea required value={form.content} onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))} rows={3} placeholder={lang === "vi" ? "Chia sẻ trải nghiệm của bạn..." : "Share your experience..."} style={{ width: "100%", padding: "6px 10px", border: "1px solid #ddd", borderRadius: 4, boxSizing: "border-box", resize: "vertical" }} />
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                        <button type="submit" disabled={submitting} style={{ padding: "8px 20px", background: "#2f456f", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600 }}>
+                            {submitting ? "..." : (lang === "vi" ? "Gửi đánh giá" : "Submit")}
+                        </button>
+                        <button type="button" onClick={() => setShowForm(false)} style={{ padding: "8px 20px", background: "#f5f5f5", border: "1px solid #ddd", borderRadius: 4, cursor: "pointer" }}>
+                            {lang === "vi" ? "Hủy" : "Cancel"}
+                        </button>
+                    </div>
+                </form>
+            ) : (
+                <button onClick={() => setShowForm(true)} style={{ padding: "8px 20px", background: "#fff", border: "1px solid #2f456f", color: "#2f456f", borderRadius: 4, cursor: "pointer", fontWeight: 500, marginBottom: 16 }}>
+                    {lang === "vi" ? "Viết đánh giá" : "Write a Review"}
+                </button>
+            )}
+
+            {/* Review list */}
+            {reviews.length > 0 ? (
+                <div>
+                    {reviews.map((r) => (
+                        <div key={r.id} style={{ padding: "12px 0", borderBottom: "1px solid #f0f0f0" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                                <StarRating value={r.rating} size={14} />
+                                {r.title && <span style={{ fontWeight: 600 }}>{r.title}</span>}
+                            </div>
+                            <p style={{ margin: "4px 0", fontSize: 14, color: "#555", lineHeight: 1.5 }}>{r.content}</p>
+                            <div style={{ fontSize: 12, color: "#999" }}>{new Date(r.created_at).toLocaleDateString(lang === "vi" ? "vi-VN" : "en-US")}</div>
+                        </div>
+                    ))}
+                </div>
+            ) : !submitted && (
+                <p style={{ color: "#999", fontSize: 14 }}>{lang === "vi" ? "Chưa có đánh giá nào." : "No reviews yet."}</p>
             )}
         </div>
     );

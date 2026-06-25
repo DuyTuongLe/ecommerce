@@ -102,12 +102,19 @@ class NoiDungController extends Controller
     {
         $lang = $request->get('lang', 'vi');
 
+        $thutu = $request->input('thutu');
+        if (!$thutu && $thutu !== 0) {
+            $danduongId = $request->input('danduong_id');
+            $maxThutu = NoiDung::where('danduong_id', $danduongId)->max('thutu');
+            $thutu = ($maxThutu ?? 0) + 1;
+        }
+
         $noiDung = NoiDung::create([
             'danduong_id' => $request->input('danduong_id'),
             'type' => $request->input('type', 'section'),
             'thumbnail_id' => $request->input('thumbnail_id'),
             'image_settings' => $request->input('image_settings'),
-            'thutu' => $request->input('thutu', 0),
+            'thutu' => $thutu,
             'trangthai' => $request->input('trangthai', 1),
         ]);
 
@@ -119,6 +126,7 @@ class NoiDungController extends Controller
             'seo_title' => $request->input('seo_title'),
             'seo_description' => $request->input('seo_description'),
             'seo_keywords' => $request->input('seo_keywords'),
+            'custom' => $request->input('custom'),
         ]);
 
         $this->saveSlug(
@@ -149,6 +157,7 @@ class NoiDungController extends Controller
                 'seo_title' => $t->seo_title,
                 'seo_description' => $t->seo_description,
                 'seo_keywords' => $t->seo_keywords,
+                'custom' => $t->custom,
             ];
         }
 
@@ -205,6 +214,7 @@ class NoiDungController extends Controller
                 'seo_title' => $request->input('seo_title'),
                 'seo_description' => $request->input('seo_description'),
                 'seo_keywords' => $request->input('seo_keywords'),
+                'custom' => $request->input('custom'),
             ]
         );
 

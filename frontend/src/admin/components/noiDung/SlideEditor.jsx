@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import {
     Card, Button, Input, InputNumber, Switch,
     Space, Tooltip, Row, Col,
@@ -19,7 +19,7 @@ const DEFAULT_SETTINGS = {
     speed: 600,
 };
 
-export default function SlideEditor({ value, onChange }) {
+function SlideEditor({ value, onChange }) {
     const data = value || { version: 1, settings: DEFAULT_SETTINGS, slides: [] };
     const settings = { ...DEFAULT_SETTINGS, ...data.settings };
     const slides = data.slides || [];
@@ -195,3 +195,5 @@ export default function SlideEditor({ value, onChange }) {
         </div>
     );
 }
+
+export default memo(SlideEditor);

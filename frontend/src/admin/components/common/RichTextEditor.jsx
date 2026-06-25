@@ -47,6 +47,9 @@ export default function RichTextEditor({
                 plugins,
                 file_picker_callback: filePickerCallback,
                 file_picker_types: "image",
+                image_advtab: true,
+                image_dimensions: true,
+                object_resizing: true,
                 visualblocks_default_state: true,
                 block_formats:
                     "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; " +

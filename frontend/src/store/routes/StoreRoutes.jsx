@@ -3,6 +3,8 @@ import StoreLayout from "../layouts/StoreLayout";
 import HomePage from "../pages/HomePage";
 import DynamicPage from "../pages/DynamicPage";
 import ProductPage from "../pages/ProductPage";
+import CartPage from "../pages/CartPage";
+import OrderLookup from "../pages/OrderLookup";
 
 export default function StoreRoutes() {
     return (
@@ -11,6 +13,8 @@ export default function StoreRoutes() {
             <Route path="/" element={<StoreLayout lang="vi" />}>
                 <Route index element={<HomePage lang="vi" />} />
                 <Route path="san-pham" element={<ProductPage lang="vi" />} />
+                <Route path="gio-hang" element={<CartPage lang="vi" />} />
+                <Route path="tra-cuu-don-hang" element={<OrderLookup lang="vi" />} />
                 <Route path=":slug" element={<DynamicPage lang="vi" />} />
             </Route>
 
@@ -18,6 +22,8 @@ export default function StoreRoutes() {
             <Route path="/en" element={<StoreLayout lang="en" />}>
                 <Route index element={<HomePage lang="en" />} />
                 <Route path="products" element={<ProductPage lang="en" />} />
+                <Route path="cart" element={<CartPage lang="en" />} />
+                <Route path="order-lookup" element={<OrderLookup lang="en" />} />
                 <Route path=":slug" element={<DynamicPage lang="en" />} />
             </Route>
         </Routes>

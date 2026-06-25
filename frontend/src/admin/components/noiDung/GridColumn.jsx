@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Select, Button, Tooltip, Tag } from "antd";
 import { DeleteOutlined, SettingOutlined } from "@ant-design/icons";
 import { Editor } from "@tinymce/tinymce-react";
@@ -48,8 +48,6 @@ const PLUGINS = [
     "accordion",
 ];
 
-// Lấy span theo viewport hiện tại. Hỗ trợ cả format cũ (span là số)
-// và format mới (span là object { desktop, laptop, tablet, mobile }).
 function getSpanForViewport(span, viewport) {
     if (typeof span === "number") return span;
     if (typeof span === "object" && span !== null) return span[viewport] ?? span.desktop ?? 6;
@@ -69,14 +67,25 @@ export default function GridColumn({
     onEditorBlur,
 }) {
     const [styleModalOpen, setStyleModalOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const editorRef = useRef(null);
+    const onChangeContentRef = useRef(onChangeContent);
+    const onEditorFocusRef = useRef(onEditorFocus);
+    const onEditorBlurRef = useRef(onEditorBlur);
+
+    onChangeContentRef.current = onChangeContent;
+    onEditorFocusRef.current = onEditorFocus;
+    onEditorBlurRef.current = onEditorBlur;
+
     const colStyle = column.style || {};
     const extraClasses = colStyle.classes || "";
     const colWrapClasses = colStyle.colClasses || "";
-
     const currentSpan = getSpanForViewport(column.span, viewport);
-
-    // Hiển thị tất cả breakpoint đã được tùy chỉnh (khác desktop)
     const spanObj = typeof column.span === "object" ? column.span : null;
+
+    function getContent() {
+        return editorRef.current?.getContent() ?? "";
+    }
 
     return (
         <div className={SPAN_CLASS[currentSpan] || "col-span-6"}>
@@ -125,7 +134,6 @@ export default function GridColumn({
 
                     <span style={{ color: "#bbb" }}>{SPAN_CLASS[currentSpan]}</span>
 
-                    {/* Hiển thị tóm tắt các breakpoint khác */}
                     {spanObj && (
                         <span style={{ color: "#999", fontSize: 10 }}>
                             {["desktop", "laptop", "tablet", "mobile"]
@@ -163,41 +171,56 @@ export default function GridColumn({
                     id={colStyle.id || undefined}
                     style={{ minHeight: 180 }}
                 >
-                    <Editor
-                        tinymceScriptSrc="/tinymce/tinymce.min.js"
-                        value={column.content || ""}
-                        onEditorChange={onChangeContent}
-                        init={{
-                            license_key: "gpl",
-                            inline: true,
-                            menubar: false,
-                            promotion: false,
-                            branding: false,
-                            statusbar: false,
-                            toolbar_mode: "wrap",
-                            toolbar: TOOLBAR_CONFIG,
-                            plugins: PLUGINS,
-                            fixed_toolbar_container: `#${toolbarContainerId}`,
-                            fixed_toolbar_container_target: document.getElementById(toolbarContainerId),
-                            file_picker_callback: filePickerCallback,
-                            file_picker_types: "image",
-                            visualblocks_default_state: true,
-                            block_formats: "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquote=blockquote; Preformatted=pre",
-                            font_size_formats: "8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 24pt 28pt 32pt 36pt 48pt 60pt 72pt",
-                            setup: (editor) => {
-                                editor.on("focus", () => {
-                                    const wrap = editor.getElement().closest(".grid-column-wrap");
-                                    if (wrap) wrap.style.boxShadow = "0 0 0 2px rgba(47,69,111,0.25)";
-                                    onEditorFocus?.();
-                                });
-                                editor.on("blur", () => {
-                                    const wrap = editor.getElement().closest(".grid-column-wrap");
-                                    if (wrap) wrap.style.boxShadow = "none";
-                                    onEditorBlur?.();
-                                });
-                            },
-                        }}
-                    />
+                    {mounted ? (
+                        <Editor
+                            tinymceScriptSrc="/tinymce/tinymce.min.js"
+                            initialValue={column.content || ""}
+                            onInit={(_, editor) => { editorRef.current = editor; editor.focus(); }}
+                            init={{
+                                license_key: "gpl",
+                                inline: true,
+                                menubar: false,
+                                promotion: false,
+                                branding: false,
+                                statusbar: false,
+                                toolbar_mode: "wrap",
+                                toolbar: TOOLBAR_CONFIG,
+                                plugins: PLUGINS,
+                                fixed_toolbar_container: `#${toolbarContainerId}`,
+                                fixed_toolbar_container_target: document.getElementById(toolbarContainerId),
+                                file_picker_callback: filePickerCallback,
+                                file_picker_types: "image",
+                                image_advtab: true,
+                                image_dimensions: true,
+                                object_resizing: true,
+                                visualblocks_default_state: true,
+                                block_formats: "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Blockquote=blockquote; Preformatted=pre",
+                                font_size_formats: "8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 24pt 28pt 32pt 36pt 48pt 60pt 72pt",
+                                setup: (editor) => {
+                                    editor.on("focus", () => {
+                                        const wrap = editor.getElement()?.closest(".grid-column-wrap");
+                                        if (wrap) wrap.style.boxShadow = "0 0 0 2px rgba(47,69,111,0.25)";
+                                        onEditorFocusRef.current?.();
+                                    });
+                                    editor.on("blur", () => {
+                                        const wrap = editor.getElement()?.closest(".grid-column-wrap");
+                                        if (wrap) wrap.style.boxShadow = "none";
+                                        onChangeContentRef.current?.(editor.getContent());
+                                        onEditorBlurRef.current?.();
+                                    });
+                                },
+                            }}
+                        />
+                    ) : (
+                        <div
+                            className="ge-editor-preview"
+                            style={{ minHeight: 180, padding: 8, cursor: "text" }}
+                            onClick={() => setMounted(true)}
+                            dangerouslySetInnerHTML={{
+                                __html: column.content || '<p style="color:#bbb">Bấm để soạn nội dung...</p>',
+                            }}
+                        />
+                    )}
                 </div>
             </div>
 

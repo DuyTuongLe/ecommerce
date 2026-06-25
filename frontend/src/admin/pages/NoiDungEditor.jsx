@@ -21,6 +21,20 @@ const TYPE_OPTIONS = [
     { value: "blog", label: "Blog" },
 ];
 
+function DebouncedInput({ value, onChange, textarea, ...props }) {
+    const [local, setLocal] = useState(value);
+    useEffect(() => { setLocal(value); }, [value]);
+    const Comp = textarea ? Input.TextArea : Input;
+    return (
+        <Comp
+            {...props}
+            value={local}
+            onChange={(e) => setLocal(e.target.value)}
+            onBlur={() => onChange(local)}
+        />
+    );
+}
+
 const DEFAULT_JSON = {
     version: 1,
     rows: [{
@@ -56,6 +70,7 @@ export default function NoiDungEditor() {
     const [seoTitle, setSeoTitle] = useState("");
     const [seoDescription, setSeoDescription] = useState("");
     const [seoKeywords, setSeoKeywords] = useState("");
+    const [custom, setCustom] = useState("");
     const [thumbnailId, setThumbnailId] = useState(null);
     const [thumbnailPreview, setThumbnailPreview] = useState(null);
     const [mediaModalOpen, setMediaModalOpen] = useState(false);
@@ -102,6 +117,7 @@ export default function NoiDungEditor() {
         setSeoTitle(t?.seo_title || "");
         setSeoDescription(t?.seo_description || "");
         setSeoKeywords(t?.seo_keywords || "");
+        setCustom(t?.custom || "");
         setSlug(slugs?.[code] || "");
     }
 
@@ -114,6 +130,7 @@ export default function NoiDungEditor() {
                 seo_title: seoTitle,
                 seo_description: seoDescription,
                 seo_keywords: seoKeywords,
+                custom: custom,
             },
         }));
         setAllSlugs((prev) => ({ ...prev, [lang]: slug }));
@@ -135,7 +152,7 @@ export default function NoiDungEditor() {
             type,
             thumbnail_id: thumbnailId,
             image_settings: imageSettings,
-            thutu,
+            thutu: isEdit ? thutu : (thutu || undefined),
             trangthai: trangthai ? 1 : 0,
             tieu_de: tieu_de,
             slug: slug,
@@ -143,6 +160,7 @@ export default function NoiDungEditor() {
             seo_title: seoTitle,
             seo_description: seoDescription,
             seo_keywords: seoKeywords,
+            custom: custom,
             created_at: createdAt?.format("YYYY-MM-DD HH:mm:ss") || null,
         };
 
@@ -215,10 +233,9 @@ export default function NoiDungEditor() {
                     {/* Title + Slug */}
                     <Row gutter={12} style={{ marginBottom: 20 }}>
                         <Col flex="1">
-                            <Input
+                            <DebouncedInput
                                 value={tieu_de}
-                                onChange={(e) => setTieuDe(e.target.value)}
-                                onBlur={() => { if (!slug) generateSlug(); }}
+                                onChange={(val) => { setTieuDe(val); if (!slug) setSlug(slugify(val, { lower: true, strict: true, locale: "vi" })); }}
                                 placeholder="Enter title..."
                                 size="large"
                                 style={{ fontSize: 20, fontWeight: 600, borderRadius: 8 }}
@@ -227,9 +244,9 @@ export default function NoiDungEditor() {
                     </Row>
                     <Row gutter={12} style={{ marginBottom: 20 }}>
                         <Col flex="1">
-                            <Input
+                            <DebouncedInput
                                 value={slug}
-                                onChange={(e) => setSlug(e.target.value)}
+                                onChange={setSlug}
                                 placeholder="slug-url"
                                 addonBefore="Slug"
                                 addonAfter={
@@ -316,6 +333,15 @@ export default function NoiDungEditor() {
                                     </Col>
                                 </Row>
 
+                                <div style={{ marginBottom: 12 }}>
+                                    <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>Custom (biến tùy biến: footer, sidebar...)</label>
+                                    <DebouncedInput
+                                        value={custom}
+                                        onChange={setCustom}
+                                        placeholder="vd: footer, sidebar, banner..."
+                                    />
+                                </div>
+
                                 <Checkbox checked={trangthai} onChange={(e) => setTrangthai(e.target.checked)}>
                                     Active
                                 </Checkbox>
@@ -344,9 +370,16 @@ export default function NoiDungEditor() {
                                         No image selected
                                     </div>
                                 )}
-                                <Button block onClick={() => setMediaModalOpen(true)}>
-                                    Select Thumbnail
-                                </Button>
+                                <div style={{ display: "flex", gap: 8 }}>
+                                    <Button style={{ flex: 1 }} onClick={() => setMediaModalOpen(true)}>
+                                        Select Thumbnail
+                                    </Button>
+                                    {thumbnailId && (
+                                        <Button danger onClick={() => { setThumbnailId(null); setThumbnailPreview(null); setImageSettings({}); }}>
+                                            Xóa
+                                        </Button>
+                                    )}
+                                </div>
 
                                 {thumbnailId && (
                                     <div style={{ marginTop: 12, borderTop: "1px solid #f0f0f0", paddingTop: 10 }}>
@@ -527,15 +560,15 @@ export default function NoiDungEditor() {
                                 <Card title="SEO" size="small" style={{ borderRadius: 10 }}>
                                     <div style={{ marginBottom: 10 }}>
                                         <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>SEO Title</label>
-                                        <Input value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} />
+                                        <DebouncedInput value={seoTitle} onChange={setSeoTitle} />
                                     </div>
                                     <div style={{ marginBottom: 10 }}>
                                         <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>SEO Description</label>
-                                        <Input.TextArea rows={3} value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} />
+                                        <DebouncedInput textarea rows={3} value={seoDescription} onChange={setSeoDescription} />
                                     </div>
                                     <div>
                                         <label style={{ display: "block", marginBottom: 4, fontSize: 12, color: "#666" }}>SEO Keywords</label>
-                                        <Input value={seoKeywords} onChange={(e) => setSeoKeywords(e.target.value)} />
+                                        <DebouncedInput value={seoKeywords} onChange={setSeoKeywords} />
                                     </div>
                                 </Card>
                             </Col>

@@ -5,8 +5,10 @@ import StoreFooter from "../components/StoreFooter";
 import Breadcrumb from "../components/Breadcrumb";
 import ColorEditor from "../components/ColorEditor";
 import { PageProvider } from "../context/PageContext";
+import { CartProvider } from "../context/CartContext";
 import { getSettings } from "../../shared/services/storeApi";
 import { getMe } from "../../shared/services/authApi";
+import { getCached, setCached } from "../utils/cache";
 import "../styles/store.css";
 import "../styles/main.css";
 
@@ -14,7 +16,8 @@ export default function StoreLayout({ lang = "vi" }) {
     const [isAdmin, setIsAdmin] = useState(false);
     const [editorOpen, setEditorOpen] = useState(false);
     const [savedVars, setSavedVars] = useState(null);
-    const [siteSettings, setSiteSettings] = useState({});
+    // Hiện ngay từ cache (logo/footer/site_name) để không nhấp nháy khi reload.
+    const [siteSettings, setSiteSettings] = useState(() => getCached("site_settings") || {});
 
     useEffect(() => {
         getMe()
@@ -23,6 +26,7 @@ export default function StoreLayout({ lang = "vi" }) {
 
         getSettings().then((settings) => {
             setSiteSettings(settings);
+            setCached("site_settings", settings);
             if (settings?.css_variables && typeof settings.css_variables === "object") {
                 setSavedVars(settings.css_variables);
                 for (const [name, value] of Object.entries(settings.css_variables)) {
@@ -35,13 +39,14 @@ export default function StoreLayout({ lang = "vi" }) {
 
     return (
         <PageProvider>
+            <CartProvider>
             <div className="store-page">
             <StoreHeader lang={lang} siteSettings={siteSettings} />
             <Breadcrumb lang={lang} />
             <main className="main">
                 <Outlet />
             </main>
-            <StoreFooter />
+            <StoreFooter lang={lang} siteSettings={siteSettings} />
 
             {isAdmin && (
                 <button
@@ -79,6 +84,7 @@ export default function StoreLayout({ lang = "vi" }) {
                 />
             )}
             </div>
+            </CartProvider>
         </PageProvider>
     );
 }

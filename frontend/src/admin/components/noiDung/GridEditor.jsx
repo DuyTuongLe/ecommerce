@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useId, useState, useEffect, memo } from "react";
 import { Button, Segmented } from "antd";
 import "./grid-editor.css";
 import {
@@ -29,7 +29,7 @@ const VIEWPORT_OPTIONS = [
     { value: "mobile", icon: <MobileOutlined />, label: "576px", width: 576 },
 ];
 
-export default function GridEditor({ value, onChange }) {
+function GridEditor({ value, onChange }) {
     const rows = value?.rows || [];
     const reactId = useId().replace(/:/g, "");
     const toolbarContainerId = `grid-toolbar-${reactId}`;
@@ -39,6 +39,23 @@ export default function GridEditor({ value, onChange }) {
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
     );
+
+    // Ẩn toolbar chỉ khi click thực sự ra ngoài cột.
+    // Giữ toolbar khi click vào UI của TinyMCE (.tox: toolbar, dropdown, dialog)
+    // hoặc click vào một cột khác (.grid-column-wrap).
+    useEffect(() => {
+        if (!editorActive) return;
+        function handlePointerDown(e) {
+            const t = e.target;
+            if (t.closest?.(".tox")) return;
+            if (t.closest?.(".tox-tinymce-aux")) return;
+            if (t.closest?.(".grid-column-wrap")) return;
+            if (t.closest?.(".ant-modal-root")) return;
+            setEditorActive(false);
+        }
+        document.addEventListener("pointerdown", handlePointerDown);
+        return () => document.removeEventListener("pointerdown", handlePointerDown);
+    }, [editorActive]);
 
     const currentVp = VIEWPORT_OPTIONS.find((v) => v.value === viewport);
     const previewWidth = currentVp?.width || "100%";
@@ -119,7 +136,6 @@ export default function GridEditor({ value, onChange }) {
                                 canDelete={rows.length > 1}
                                 toolbarContainerId={toolbarContainerId}
                                 onEditorFocus={() => setEditorActive(true)}
-                                onEditorBlur={() => { setTimeout(() => setEditorActive(false), 300); }}
                             />
                         ))}
                     </SortableContext>
@@ -132,3 +148,5 @@ export default function GridEditor({ value, onChange }) {
         </div>
     );
 }
+
+export default memo(GridEditor);

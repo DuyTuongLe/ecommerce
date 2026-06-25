@@ -140,6 +140,11 @@ export default function AdminLayout() {
                             label: <Link to="/admin/promotions">Promotions</Link>,
                         },
                         {
+                            key: "/admin/reviews",
+                            icon: <TagsOutlined />,
+                            label: <Link to="/admin/reviews">Reviews</Link>,
+                        },
+                        {
                             key: "/admin/users",
                             icon: <TeamOutlined />,
                             label: <Link to="/admin/users">Users</Link>,

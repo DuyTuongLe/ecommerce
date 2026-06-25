@@ -6,29 +6,45 @@ import ProductDetail from "./ProductDetail";
 import ProductPage from "./ProductPage";
 import BlogPage from "./BlogPage";
 import { usePageContext } from "../context/PageContext";
+import { getCached, setCached } from "../utils/cache";
 
 export default function DynamicPage({ lang = "vi" }) {
     const { slug } = useParams();
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const cacheKey = `page_${lang}_${slug}`;
+    const [data, setData] = useState(() => getCached(cacheKey));
+    const [renderedKey, setRenderedKey] = useState(cacheKey);
     const { setAlternateSlugs, setBreadcrumbs } = usePageContext();
 
+    // Đổi slug/lang: đồng bộ ngay trong render từ cache → không hiện nội dung
+    // trang cũ trong 1 frame.
+    if (renderedKey !== cacheKey) {
+        setRenderedKey(cacheKey);
+        setData(getCached(cacheKey));
+    }
+
+    const loading = data == null;
+
     useEffect(() => {
-        setLoading(true);
+        const key = `page_${lang}_${slug}`;
+        let alive = true;
+
         getPageBySlug(slug, lang)
             .then((res) => {
+                if (!alive) return;
                 setData(res);
+                setCached(key, res);
                 setAlternateSlugs(res?.alternate_slugs || {});
                 setBreadcrumbs(res?.breadcrumbs || null);
                 const title = res?.seo_title || res?.page?.seo_title || res?.content?.seo_title || res?.page?.title || res?.title || "";
                 if (title) document.title = title;
             })
-            .catch(() => setData(null))
-            .finally(() => setLoading(false));
+            .catch(() => { if (alive) setData((d) => d ?? false); });
+
+        return () => { alive = false; };
     }, [slug, lang]);
 
     if (loading) return <div className="max-w-6xl mx-auto px-5 py-16 text-center">Loading...</div>;
-    if (!data) return <div className="max-w-6xl mx-auto px-5 py-16"><h1 className="text-2xl font-bold">404 - Page not found</h1></div>;
+    if (data === false) return <div className="max-w-6xl mx-auto px-5 py-16"><h1 className="text-2xl font-bold">404 - Page not found</h1></div>;
 
     if (data.type === "page") {
         return (

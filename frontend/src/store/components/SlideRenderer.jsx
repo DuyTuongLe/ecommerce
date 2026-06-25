@@ -57,12 +57,19 @@ export default function SlideRenderer({ data, title }) {
                 >
                     {slides.map((slide, i) => (
                         <SwiperSlide key={i}>
-                            {slide.image && <img src={slide.image} alt={slide.title || ""} />}
-                            {slide.title && <h3>{slide.title}</h3>}
-                            {slide.description && <p>{slide.description}</p>}
-                            {slide.link && slide.button_text && (
-                                <a href={slide.link}>{slide.button_text}</a>
-                            )}
+                            <div className="slide-item">
+                                <div className="slider-item_image">
+                                    {slide.image && <img src={slide.image} alt={slide.title || ""} />}
+                                </div>
+
+                                <div className="slide-item_content">
+                                    {slide.title && <h3>{slide.title}</h3>}
+                                    {slide.description && <p>{slide.description}</p>}
+                                    {slide.link && slide.button_text && (
+                                        <a href={slide.link}>{slide.button_text}</a>
+                                    )}
+                                </div>
+                            </div>
                         </SwiperSlide>
                     ))}
                 </Swiper>

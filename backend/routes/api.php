@@ -16,9 +16,17 @@ use App\Http\Controllers\Api\Admin\NoiDungController;
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\SettingsController;
 use App\Http\Controllers\Api\Admin\UserController;
+use App\Http\Controllers\Api\Admin\AdminOrderController;
+use App\Http\Controllers\Api\Admin\PromotionController;
+use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\ReviewController as AdminReviewController;
+use App\Http\Controllers\Api\Frontend\ReviewController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
-Route::get('/settings', [SettingsController::class, 'index']);
+
+// Public read — bỏ session middleware để tránh session-lock làm chậm request.
+Route::withoutMiddleware(\Illuminate\Session\Middleware\StartSession::class)
+    ->get('/settings', [SettingsController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
@@ -287,6 +295,33 @@ Route::prefix('admin')->group(function () {
         [NoiDungController::class, 'update']
     );
 
+    // Orders
+    Route::get('/orders', [AdminOrderController::class, 'index']);
+    Route::get('/orders/{id}', [AdminOrderController::class, 'show']);
+    Route::put('/orders/{id}/status', [AdminOrderController::class, 'updateStatus']);
+    Route::delete('/orders/{id}', [AdminOrderController::class, 'destroy']);
+    Route::post('/orders/bulk-delete', [AdminOrderController::class, 'bulkDelete']);
+
+    // Promotions
+    Route::get('/promotions', [PromotionController::class, 'index']);
+    Route::get('/promotions/{id}', [PromotionController::class, 'show']);
+    Route::post('/promotions', [PromotionController::class, 'store']);
+    Route::put('/promotions/{id}', [PromotionController::class, 'update']);
+    Route::delete('/promotions/{id}', [PromotionController::class, 'destroy']);
+    Route::post('/promotions/bulk-delete', [PromotionController::class, 'bulkDelete']);
+
+    // Dashboard
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+    Route::get('/dashboard/chart', [DashboardController::class, 'chart']);
+    Route::get('/dashboard/top-products', [DashboardController::class, 'topProducts']);
+
+    // Reviews
+    Route::get('/reviews', [AdminReviewController::class, 'index']);
+    Route::put('/reviews/{id}/approve', [AdminReviewController::class, 'approve']);
+    Route::put('/reviews/{id}/reject', [AdminReviewController::class, 'reject']);
+    Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy']);
+    Route::post('/reviews/bulk-action', [AdminReviewController::class, 'bulkAction']);
+
 });
 
 
@@ -295,6 +330,7 @@ Route::prefix('admin')->group(function () {
 
 use App\Http\Controllers\Api\Frontend\PageController;
 use App\Http\Controllers\Api\Frontend\StoreProductController;
+use App\Http\Controllers\Api\Frontend\OrderController;
 
 Route::withoutMiddleware(\Illuminate\Session\Middleware\StartSession::class)->group(function () {
     Route::get('/menus/header', [MenuController::class, 'header']);
@@ -306,4 +342,11 @@ Route::withoutMiddleware(\Illuminate\Session\Middleware\StartSession::class)->gr
     Route::get('/product-categories', [StoreProductController::class, 'categories']);
     Route::get('/brands', [StoreProductController::class, 'brands']);
     Route::get('/attributes', [StoreProductController::class, 'attributes']);
+    Route::get('/content/{custom}', [PageController::class, 'byCustom']);
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::post('/orders/lookup', [OrderController::class, 'lookup']);
+    Route::post('/coupon/apply', [OrderController::class, 'applyCoupon']);
+    Route::get('/products/{id}/reviews', [ReviewController::class, 'index']);
+    Route::get('/products/{id}/reviews/summary', [ReviewController::class, 'summary']);
+    Route::post('/products/{id}/reviews', [ReviewController::class, 'store']);
 });

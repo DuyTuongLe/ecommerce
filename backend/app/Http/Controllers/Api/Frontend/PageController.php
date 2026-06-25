@@ -42,6 +42,39 @@ class PageController extends Controller
         return response()->json(['error' => 'Not found'], 404);
     }
 
+    public function byCustom(Request $request, $custom)
+    {
+        $lang = $request->get('lang', 'vi');
+
+        $items = NoiDung::query()
+            ->leftJoin('noi_dung_ngonngu', function ($join) use ($lang) {
+                $join->on('noi_dung.id', '=', 'noi_dung_ngonngu.noi_dung_id')
+                    ->where('noi_dung_ngonngu.ngonngu', $lang);
+            })
+            ->leftJoin('media', 'noi_dung.thumbnail_id', '=', 'media.id')
+            ->where('noi_dung_ngonngu.custom', $custom)
+            ->where('noi_dung.trangthai', 1)
+            ->select([
+                'noi_dung.id',
+                'noi_dung.type',
+                'noi_dung_ngonngu.tieu_de as title',
+                'noi_dung_ngonngu.noi_dung_json',
+                'media.path as thumbnail',
+            ])
+            ->orderBy('noi_dung.thutu')
+            ->get();
+
+        $items->transform(function ($item) {
+            $item->thumbnail = $item->thumbnail ? asset('storage/' . $item->thumbnail) : null;
+            if (is_string($item->noi_dung_json)) {
+                $item->noi_dung_json = json_decode($item->noi_dung_json, true);
+            }
+            return $item;
+        });
+
+        return response()->json($items);
+    }
+
     public function home(Request $request)
     {
         $lang = $request->get('lang', 'vi');
@@ -93,6 +126,8 @@ class PageController extends Controller
         }
 
         if ($page->type === 'blog') {
+            $categoryIds = $this->getDescendantIds($danduongId);
+
             $posts = NoiDung::query()
                 ->leftJoin('noi_dung_ngonngu', function ($join) use ($lang) {
                     $join->on('noi_dung.id', '=', 'noi_dung_ngonngu.noi_dung_id')
@@ -104,7 +139,7 @@ class PageController extends Controller
                         ->where('url.entity_type', 'noi_dung')
                         ->where('url.ngonngu', $lang);
                 })
-                ->where('noi_dung.danduong_id', $danduongId)
+                ->whereIn('noi_dung.danduong_id', $categoryIds)
                 ->where('noi_dung.type', 'blog')
                 ->where('noi_dung.trangthai', 1)
                 ->select([
@@ -229,6 +264,25 @@ class PageController extends Controller
         }
 
         return array_reverse($crumbs);
+    }
+
+    protected function getDescendantIds($danduongId)
+    {
+        $ids = [$danduongId];
+        $parentIds = [$danduongId];
+
+        while (!empty($parentIds)) {
+            $childIds = Danduong::whereIn('goc_id', $parentIds)
+                ->where('type', 'blog')
+                ->where('trangthai', 1)
+                ->pluck('id')
+                ->all();
+
+            $ids = array_merge($ids, $childIds);
+            $parentIds = $childIds;
+        }
+
+        return $ids;
     }
 
     protected function getContent($noiDungId, $lang)

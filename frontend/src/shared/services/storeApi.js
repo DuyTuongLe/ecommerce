@@ -20,6 +20,21 @@ export async function saveCssVariables(cssVariables) {
     return data;
 }
 
+export async function placeOrder(orderData) {
+    const { data } = await api.post("/orders", orderData);
+    return data;
+}
+
+export async function applyCoupon(code, subtotal) {
+    const { data } = await api.post("/coupon/apply", { code, subtotal });
+    return data;
+}
+
+export async function getCustomContent(custom, lang = "vi") {
+    const { data } = await api.get(`/content/${custom}`, { params: { lang } });
+    return data;
+}
+
 export async function getHeaderMenu(lang = "vi") {
     const { data } = await api.get("/menus/header", { params: { lang } });
     return data;

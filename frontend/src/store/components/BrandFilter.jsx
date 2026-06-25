@@ -4,12 +4,14 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { getStoreBrands } from "../../shared/services/storeApi";
+import { getCached, setCached } from "../utils/cache";
 
 export default function BrandFilter({ lang = "vi", activeBrandId, onSelect }) {
-    const [brands, setBrands] = useState([]);
+    const [brands, setBrands] = useState(() => getCached(`store_brands_${lang}`) || []);
 
     useEffect(() => {
-        getStoreBrands(lang).then(setBrands);
+        setBrands(getCached(`store_brands_${lang}`) || []);
+        getStoreBrands(lang).then((d) => { setBrands(d); setCached(`store_brands_${lang}`, d); });
     }, [lang]);
 
     if (brands.length === 0) return null;

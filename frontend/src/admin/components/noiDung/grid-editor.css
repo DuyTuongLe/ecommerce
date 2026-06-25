@@ -1,28 +1,47 @@
+/* ===== TinyMCE dialog / popup z-index fix ===== */
+.tox-tinymce-aux {
+    z-index: 100000 !important;
+    position: relative;
+}
+
 /* ===== Toolbar ===== */
+/* Container luôn cao 0 → không chiếm layout. Toolbar bên trong position absolute
+   để che (overlay) lên nội dung phía dưới thay vì đẩy layout. */
 .ge-toolbar-container {
     position: sticky;
     top: 57px;
-    z-index: 40;
-    margin-bottom: 12px;
-    max-height: 0;
-    overflow: hidden;
+    z-index: 50;
+    height: 0;
+}
+.ge-toolbar-container .tox-editor-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important;
+    border: 1px solid #e8e8e8 !important;
+    border-radius: 6px;
+    background: #fff;
+}
+.ge-toolbar-container:not(.ge-toolbar-visible) {
     pointer-events: none;
 }
-.ge-toolbar-container.ge-toolbar-visible {
-    max-height: 200px;
-    overflow: visible;
-    pointer-events: auto;
+.ge-toolbar-container:not(.ge-toolbar-visible) .tox-editor-header {
+    display: none !important;
 }
 .ge-toolbar-container .tox-toolbar-overlord { display: block !important; }
 .ge-toolbar-container .tox .tox-toolbar { flex-wrap: wrap !important; }
 .ge-toolbar-container .tox-toolbar__group { flex-wrap: wrap !important; }
 .ge-toolbar-container .tox .tox-toolbar__overflow,
 .ge-toolbar-container .tox .tox-toolbar__overflow--open { display: none !important; }
-.ge-toolbar-container .tox-editor-header { box-shadow: none !important; border: none !important; }
 .ge-toolbar-container .tox .tox-tbtn[aria-label="More..."],
 .ge-toolbar-container .tox .tox-tbtn[aria-label="Reveal or hide additional toolbar items"] {
     display: none !important;
 }
+
+/* ===== Lazy editor preview (chưa mount TinyMCE) ===== */
+.ge-editor-preview { transition: background 0.15s; border-radius: 4px; }
+.ge-editor-preview:hover { background: #fafafa; }
 
 /* ===== Inline editor content ===== */
 .ge-inline-editor h1 { font-size: 2em; font-weight: 700; margin: 0.5em 0; line-height: 1.2; }

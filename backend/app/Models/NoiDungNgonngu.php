@@ -16,6 +16,7 @@ class NoiDungNgonngu extends Model
         'seo_title',
         'seo_description',
         'seo_keywords',
+        'custom',
     ];
 
     protected $casts = [

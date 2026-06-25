@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { getStoreProducts, getProductCategories, getStoreAttributes } from "../../shared/services/storeApi";
 import { usePageContext } from "../context/PageContext";
+import { useCart } from "../context/CartContext";
+import { getCached, setCached } from "../utils/cache";
 import BrandFilter from "../components/BrandFilter";
 
 function CategoryTree({ categories, activeId, lang, level = 0 }) {
@@ -56,9 +58,10 @@ const badgeStyle = {
 export default function ProductPage({ lang = "vi", categoryIdOverride }) {
     const [searchParams] = useSearchParams();
     const categoryId = categoryIdOverride ? String(categoryIdOverride) : searchParams.get("category");
+    const searchKeyword = searchParams.get("search") || "";
 
-    const [categories, setCategories] = useState([]);
-    const [attributes, setAttributes] = useState([]);
+    const [categories, setCategories] = useState(() => getCached(`product_categories_${lang}`) || []);
+    const [attributes, setAttributes] = useState(() => getCached(`product_attributes_${lang}`) || []);
     const [products, setProducts] = useState([]);
     const [pagination, setPagination] = useState({});
     const [loading, setLoading] = useState(true);
@@ -72,11 +75,11 @@ export default function ProductPage({ lang = "vi", categoryIdOverride }) {
     const { setBreadcrumbs } = usePageContext();
 
     useEffect(() => {
-        getProductCategories(lang).then(setCategories);
-        getStoreAttributes(lang).then(setAttributes);
+        getProductCategories(lang).then((d) => { setCategories(d); setCached(`product_categories_${lang}`, d); });
+        getStoreAttributes(lang).then((d) => { setAttributes(d); setCached(`product_attributes_${lang}`, d); });
     }, [lang]);
 
-    useEffect(() => { setPage(1); }, [categoryId, brandId, sort, limit, selectedAttrs]);
+    useEffect(() => { setPage(1); }, [categoryId, brandId, sort, limit, selectedAttrs, searchKeyword]);
 
     useEffect(() => {
         setLoading(true);
@@ -88,6 +91,7 @@ export default function ProductPage({ lang = "vi", categoryIdOverride }) {
             lang,
             category_id: categoryId || undefined,
             brand_id: brandId || undefined,
+            search: searchKeyword || undefined,
             page, sort, limit,
             attrs: Object.keys(attrsParam).length > 0 ? attrsParam : undefined,
         })
@@ -96,7 +100,7 @@ export default function ProductPage({ lang = "vi", categoryIdOverride }) {
                 setPagination({ current: res.current_page, last: res.last_page, total: res.total });
             })
             .finally(() => setLoading(false));
-    }, [lang, categoryId, brandId, page, sort, limit, selectedAttrs]);
+    }, [lang, categoryId, brandId, page, sort, limit, selectedAttrs, searchKeyword]);
 
     useEffect(() => {
         const crumbs = [{ title: lang === "vi" ? "Sản phẩm" : "Products", slug: null }];
@@ -136,6 +140,7 @@ export default function ProductPage({ lang = "vi", categoryIdOverride }) {
     const hasActiveAttrs = Object.values(selectedAttrs).some((v) => v.length > 0);
     const hasActiveFilters = (brandId && brandName) || hasActiveAttrs;
 
+    const { addToCart } = useCart();
     const prefix = lang === "vi" ? "" : `/${lang}`;
     const catName = categoryId ? findCat(categories, Number(categoryId))?.name : null;
     const contextLabel = catName || (lang === "vi" ? "Sản phẩm" : "Products");
@@ -295,6 +300,19 @@ export default function ProductPage({ lang = "vi", categoryIdOverride }) {
                                                     ) : p.price ? (
                                                         <span style={{ fontWeight: 700 }}>{Number(p.price).toLocaleString("vi-VN")}₫</span>
                                                     ) : null}
+                                                </div>
+                                                <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                                                    {p.slug && (
+                                                        <Link to={`${prefix}/${p.slug}`} style={{ flex: 1, textAlign: "center", padding: "6px 0", border: "1px solid #2f456f", borderRadius: 4, color: "#2f456f", textDecoration: "none", fontSize: 13, fontWeight: 500 }}>
+                                                            {lang === "vi" ? "Chi tiết" : "Detail"}
+                                                        </Link>
+                                                    )}
+                                                    <button
+                                                        onClick={() => addToCart({ id: p.id, name: p.name, price: p.price, sale_price: p.sale_price, thumbnail: p.thumbnail, slug: p.slug })}
+                                                        style={{ flex: 1, padding: "6px 0", border: "none", borderRadius: 4, background: "#ff4d4f", color: "#fff", fontSize: 13, fontWeight: 500, cursor: "pointer" }}
+                                                    >
+                                                        {lang === "vi" ? "Đặt hàng" : "Order"}
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
