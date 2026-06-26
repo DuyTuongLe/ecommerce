@@ -158,7 +158,16 @@ class PageController extends Controller
                 return $item;
             });
 
-            // Also get child blog categories
+            // Get sibling/child categories for navigation
+            $currentCat = Danduong::find($danduongId);
+            $childrenOfCurrent = Danduong::where('goc_id', $danduongId)
+                ->where('type', 'blog')->where('trangthai', 1)->count();
+
+            // If current has children → show children; otherwise show siblings
+            $siblingParentId = $childrenOfCurrent > 0
+                ? $danduongId
+                : ($currentCat->goc_id ?? $danduongId);
+
             $children = Danduong::query()
                 ->leftJoin('danduong_ngonngu', function ($join) use ($lang) {
                     $join->on('danduong.id', '=', 'danduong_ngonngu.danduong_id')
@@ -169,7 +178,7 @@ class PageController extends Controller
                         ->where('u.entity_type', 'danduong')
                         ->where('u.ngonngu', $lang);
                 })
-                ->where('danduong.goc_id', $danduongId)
+                ->where('danduong.goc_id', $siblingParentId)
                 ->where('danduong.type', 'blog')
                 ->where('danduong.trangthai', 1)
                 ->select([
@@ -183,6 +192,7 @@ class PageController extends Controller
             return response()->json([
                 'type' => 'blog',
                 'title' => $page->title,
+                'current_id' => $danduongId,
                 'seo_title' => $page->seo_title,
                 'seo_description' => $page->seo_description,
                 'children' => $children,

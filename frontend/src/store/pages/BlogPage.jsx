@@ -5,6 +5,7 @@ export default function BlogPage({ data, lang = "vi" }) {
     const posts = data.posts?.data || [];
     const children = data.children || [];
     const pagination = data.posts || {};
+    const currentId = data.current_id;
 
     return (
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 20px" }}>
@@ -13,22 +14,26 @@ export default function BlogPage({ data, lang = "vi" }) {
             {/* Child categories */}
             {children.length > 0 && (
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-                    {children.map((cat) => (
-                        <Link
-                            key={cat.id}
-                            to={cat.slug ? `${prefix}/${cat.slug}` : "#"}
-                            style={{
-                                padding: "6px 16px",
-                                border: "1px solid #ddd",
-                                borderRadius: 20,
-                                textDecoration: "none",
-                                color: "#333",
-                                fontSize: 14,
-                            }}
-                        >
-                            {cat.name}
-                        </Link>
-                    ))}
+                    {children.map((cat) => {
+                        const isActive = cat.id === currentId;
+                        return (
+                            <Link
+                                key={cat.id}
+                                to={cat.slug ? `${prefix}/${cat.slug}` : "#"}
+                                style={{
+                                    padding: "6px 16px",
+                                    border: isActive ? "1px solid #2f456f" : "1px solid #ddd",
+                                    borderRadius: 20,
+                                    textDecoration: "none",
+                                    color: isActive ? "#fff" : "#333",
+                                    background: isActive ? "#2f456f" : "transparent",
+                                    fontSize: 14,
+                                }}
+                            >
+                                {cat.name}
+                            </Link>
+                        );
+                    })}
                 </div>
             )}
 
